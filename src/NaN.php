@@ -29,7 +29,7 @@ final class NaN {
 	}
 
 	/**
-	 * Called automatically! Multiple calls does nothing!
+	 * Called automatically! Multiple calls do nothing!
 	 */
 	static public function init() {
 		static $init = false;

@@ -19,6 +19,20 @@ class Route {
 	) {
 		$this->pattern = new RoutePattern($pattern);
 	}
+
+	static public function all(string $pattern, mixed $handler): array {
+		if (\is_a($handler, ControllerInterface::class)) {
+			$handler = [$handler, 'handle'];
+		}
+
+		return [
+			new static('DELETE', $pattern, $handler),
+			new static('GET', $pattern, $handler),
+			new static('PATCH', $pattern, $handler),
+			new static('POST', $pattern, $handler),
+			new static('PUT', $pattern, $handler),
+		];
+	}
 	
 	static public function controller(string $pattern, mixed $controller): array {
 		if (!\is_a($controller, ControllerInterface::class)) {
@@ -57,28 +71,18 @@ class Route {
 		return new static('PUT', $pattern, $handler);
 	}
 
-	static public function singleton(string $pattern, mixed $controller): array {
-		return [
-			new static('DELETE', $pattern, [$controller, 'handle']),
-			new static('GET', $pattern, [$controller, 'handle']),
-			new static('PATCH', $pattern, [$controller, 'handle']),
-			new static('POST', $pattern, [$controller, 'handle']),
-			new static('PUT', $pattern, [$controller, 'handle']),
-		];
-	}
-
 	public function toCallable(): callable {
 		$handler = $this->handler;
 		if (!\is_callable($handler)) {
-			if (\class_exists($handler)) {
-				if (\is_a($handler, ResponseInterface::class))  {
-					return [new $handler(), 'handle'];
-				}
-			} else {
+			if (\is_array($handler)) {
 				[$controller, $action] = $handler;
 				if (\is_string($controller)) {
 					$controller = new $controller();
 					return [$controller, $action];
+				}
+			} else if (\class_exists($handler)) {
+				if (\is_a($handler, ResponseInterface::class))  {
+					return [new $handler(), 'handle'];
 				}
 			}
 		} 

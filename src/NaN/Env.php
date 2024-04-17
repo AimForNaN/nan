@@ -7,7 +7,6 @@ namespace NaN;
  */
 class Env {
 	static protected $aliases = [];
-	static public string $dev_key = 'DEV';
 	protected array $env = [];
 	/** @var string $root Default directory of .env file. */
 

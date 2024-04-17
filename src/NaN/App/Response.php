@@ -6,10 +6,6 @@ use GuzzleHttp\Psr7\Utils;
 use Psr\Http\Message\ResponseInterface;
 
 class Response extends \GuzzleHttp\Psr7\Response {
-	public function __invoke() {
-		static::send($this);
-	}
-
 	static public function send(ResponseInterface $rsp) {
 		$status = $rsp->getStatusCode();
 		\http_response_code($status);

@@ -10,5 +10,5 @@ interface ProvideInterface {
 	 *
 	 * @return static Instance of class.
 	 */
-	public function provide(mixed $data): static;
+	static public function provide(mixed $data): static;
 }

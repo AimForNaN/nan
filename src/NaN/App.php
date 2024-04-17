@@ -2,7 +2,6 @@
 
 namespace NaN;
 
-use GuzzleHttp\Psr7\Utils;
 use League\Container\{
 	Container,
 	Definition\Definition,
@@ -57,10 +56,25 @@ class App implements \ArrayAccess, RequestHandlerInterface {
 	public function handle(ServerRequestInterface $request): ResponseInterface {
 		$route = $this->match($request);
 		$this->assertRoute($route);
+		$route->pattern->compile();
+		$route->pattern->match($request);
+		$args = $route->pattern->getMatches();
 
 		$handler = $route->toCallable();
+
 		$rsp = new Response(200, ['Content-Type' => 'text/html']);
-		$rsp = $handler($rsp);
+		$rsp = DI::inject($handler, $args, function ($value, $type) use ($request, $rsp) {
+			switch ($type) {
+				case Response::class:
+				case ResponseInterface::class:
+					return $rsp;
+				case Request::class:
+				case ServerRequestInterface::class:
+					return $request;
+			}
+
+			return null;
+		});
 		$this->assertResponseInterface($rsp);
 
 		switch ($request->getMethod()) {

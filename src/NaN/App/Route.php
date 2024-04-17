@@ -82,6 +82,6 @@ class Route {
 				}
 			}
 		} 
-		return $handler;
+		return $handler(...);
 	}
 }

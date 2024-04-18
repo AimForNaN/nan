@@ -2,7 +2,7 @@
 
 namespace NaN;
 
-class Collection implements \ArrayAccess, \IteratorAggregate {
+class Collection implements \ArrayAccess, \Countable, \IteratorAggregate {
 	/**
 	 * @param iterable $data 
 	 */
@@ -16,6 +16,10 @@ class Collection implements \ArrayAccess, \IteratorAggregate {
 			}
 		}
 		return null;
+	}
+
+	public function count(): int {
+		return \iterator_count($this->getIterator());
 	}
 
 	public function getIterator(): \Traversable {

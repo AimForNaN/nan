@@ -31,7 +31,7 @@ abstract class TypedCollection extends Collection {
 	}
 
 	public function getIterator(): \Traversable {
-		return new \CallbackFilterIterator($this->data, function ($item) {
+		return new \CallbackFilterIterator(new \ArrayIterator($this->data), function ($item) {
 			$this->assertType($item);
 			return true;
 		});

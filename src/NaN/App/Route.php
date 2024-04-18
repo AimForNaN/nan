@@ -5,6 +5,7 @@ namespace NaN\App;
 use Psr\Http\Message\ResponseInterface;
 
 class Route {
+	public readonly string $method;
 	public readonly RoutePattern $pattern;
 
 	/**
@@ -13,10 +14,11 @@ class Route {
 	 * @param mixed $handler Fully-qualified class name or callable.
 	 */
 	public function __construct(
-		public readonly string $method,
+		string $method,
 		string $pattern,
 		protected readonly mixed $handler,
 	) {
+		$this->method = \strtoupper($method);
 		$this->pattern = new RoutePattern($pattern);
 	}
 

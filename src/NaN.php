@@ -5,11 +5,12 @@ use League\Container\{
 	Definition\Definition,
 	Definition\DefinitionAggregate,
 };
-use NaN\{App,Env};
+use NaN\{App};
 
 /**
+ * @todo Refactor
+ *
  * @method static App app() Shared instance of App.
- * @method static Env env() Shared instance of Env.
  */
 final class NaN {
 	static private Container $registry;
@@ -37,7 +38,6 @@ final class NaN {
 			$init = true;
 			$aggregate = new DefinitionAggregate([
 				(new Definition('app', App::class))->setShared(),
-				(new Definition('env', Env::class))->setShared(),
 			]);
 			self::$registry = new Container($aggregate);
 		}

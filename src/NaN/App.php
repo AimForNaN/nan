@@ -18,10 +18,13 @@ use NaN\App\{
     Response,
     Route,
     Routes,
+    TemplateEngine,
 };
 
 /**
+ * @property Env env
  * @property Request request
+ * @property TemplateEngine tpl
  */
 class App implements \ArrayAccess, RequestHandlerInterface {
 	private Container $registry;
@@ -29,11 +32,13 @@ class App implements \ArrayAccess, RequestHandlerInterface {
 
 	public function __construct() {
 		$aggregate = new DefinitionAggregate([
-		(new Definition('request', Request::class))->addArguments([
+			(new Definition('env', Env::class))->setShared(),
+			(new Definition('request', Request::class))->addArguments([
 				$_SERVER['REQUEST_METHOD'],
 				$_SERVER['PATH_INFO'] ?? '/',
 				getallheaders(),
 			]),
+			(new Definition('tpl', TemplateEngine::class))->setShared(),
 		]);
 		$this->registry = new Container($aggregate);
 		$this->routes = new Routes();
@@ -50,6 +55,10 @@ class App implements \ArrayAccess, RequestHandlerInterface {
 	protected function assertResponseInterface(ResponseInterface $rsp) {}
 
 	protected function assertRoute(Route $route) {}
+
+	public function extendService(string $name): DefinitionInterface {
+		return $this->registry->extend($name);
+	}
 
 	/**
 	 * @todo Dependency injection for handler!
@@ -68,12 +77,16 @@ class App implements \ArrayAccess, RequestHandlerInterface {
 			switch ($type) {
 				case App::class:
 					return $this;
+				case Env::class:
+					return $this->registry->get('env');
 				case Response::class:
 				case ResponseInterface::class:
 					return $rsp;
 				case Request::class:
 				case ServerRequestInterface::class:
 					return $request;
+				case TemplateEngine::class:
+					return $this->registry->get('tpl');
 			}
 
 			return null;

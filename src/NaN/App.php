@@ -6,6 +6,7 @@ use League\Container\{
 	Container,
 	Definition\Definition,
 	Definition\DefinitionAggregate,
+	Definition\DefinitionInterface,
 };
 use Psr\Http\Message\{
 	ResponseInterface,
@@ -65,6 +66,8 @@ class App implements \ArrayAccess, RequestHandlerInterface {
 		$rsp = new Response(200, ['Content-Type' => 'text/html']);
 		$rsp = DI::inject($handler, $args, function ($value, $type) use ($request, $rsp) {
 			switch ($type) {
+				case App::class:
+					return $this;
 				case Response::class:
 				case ResponseInterface::class:
 					return $rsp;
@@ -109,7 +112,7 @@ class App implements \ArrayAccess, RequestHandlerInterface {
 
 	public function match(ServerRequestInterface $request): ?Route {
 		$method = \strtoupper($request->getMethod());
-		$routes = $this->routes[$method] ?? [];
+		$routes = $this->routes[$method];
 
 		foreach ($routes as $route) {
 			$route->pattern->compile();
@@ -133,8 +136,8 @@ class App implements \ArrayAccess, RequestHandlerInterface {
 	 *
 	 * Any service that is registered can be accessed as a property by name.
 	 */
-	public function registerService(string $name, string $class, array $args = []) {
-		$this->registry->add($name, $class)->addArguments($args);
+	public function registerService(string $name, string $class, array $args = []): DefinitionInterface {
+		return $this->registry->add($name, $class)->addArguments($args);
 	}
 
 	public function run() {

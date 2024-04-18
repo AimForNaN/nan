@@ -7,6 +7,13 @@ class Routes extends \NaN\TypedCollection {
 		parent::__construct(Route::class);
 	}
 
+	/**
+	 * Get routes by method.
+	 *
+	 * @param string $offset HTTP method.
+	 *
+	 * @return \Iterator
+	 */
 	public function offsetGet(mixed $offset): mixed {
 		return new \CallbackFilterIterator(new \ArrayIterator($this->data), function (Route $route) use ($offset) {
 			return $route->method === $offset;

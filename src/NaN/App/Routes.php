@@ -7,9 +7,14 @@ class Routes extends \NaN\TypedCollection {
 		parent::__construct(Route::class);
 	}
 
+	public function offsetGet(mixed $offset): mixed {
+		return new \CallbackFilterIterator(new \ArrayIterator($this->data), function (Route $route) use ($offset) {
+			return $route->method === $offset;
+		});
+	}
+
 	public function offsetSet(mixed $offset, mixed $value): void {
 		$this->assertType($value);
-		$method = \strtoupper($value->method);
-		$this->data[$method][] = $value;
+		$this->data[] = $value;
 	}
 }

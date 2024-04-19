@@ -26,9 +26,16 @@ class Env {
 	 *
 	 * @return string Environment variable value.
 	 */
-	public function __invoke(string $key): string {
+	public function __get(string $key): string {
 		$key = static::$aliases[$key] ?? $key;
 		return $this->env[$key] ?? $_ENV[$key] ?? $_SERVER[$key];
+	}
+
+	/**
+	 * @see Env::__get()
+	 */
+	public function __invoke(string $key): string {
+		return $this->__get($key);
 	}
 
 	protected function load(string $dir): void {

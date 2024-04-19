@@ -6,7 +6,6 @@ namespace NaN;
  * Manange environment variables.
  */
 class Env {
-	static protected $aliases = [];
 	protected array $env = [];
 	/** @var string $root Default directory of .env file. */
 
@@ -15,7 +14,10 @@ class Env {
 	 *
 	 * @param string $dir Directory of .env file.
 	 */
-	public function __construct(string $dir = '.') {
+	public function __construct(
+		string $dir = '.',
+		protected array $aliases = [],
+	) {
 		$this->load($dir);
 	}
 
@@ -27,7 +29,7 @@ class Env {
 	 * @return string Environment variable value.
 	 */
 	public function __get(string $key): string {
-		$key = static::$aliases[$key] ?? $key;
+		$key = $this->aliases[$key] ?? $key;
 		return $this->env[$key] ?? $_ENV[$key] ?? $_SERVER[$key];
 	}
 
@@ -50,7 +52,7 @@ class Env {
 	 * @param string $alias Alias key.
 	 */
 	public function registerAlias(string $original, string $alias): void {
-		static::$aliases[$alias] = $original;
+		$this->aliases[$alias] = $original;
 	}
 }
 

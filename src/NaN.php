@@ -20,6 +20,8 @@ final class NaN {
 
 	/**
 	 * Conveniently get an instance of a service.
+	 *
+	 * @disregard
 	 */
 	static public function __callStatic(string $name, array $args = []) {
 		return self::$registry->get($name);

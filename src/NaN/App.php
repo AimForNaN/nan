@@ -52,8 +52,14 @@ class App implements \ArrayAccess, RequestHandlerInterface {
 		return $this->registry->has($name);
 	}
 
+	/**
+	 * @disregard
+	 */
 	protected function assertResponseInterface(ResponseInterface $rsp) {}
 
+	/**
+	 * @disregard
+	 */
 	protected function assertRoute(Route $route) {}
 
 	public function extendService(string $name): DefinitionInterface {
@@ -87,6 +93,10 @@ class App implements \ArrayAccess, RequestHandlerInterface {
 					return $request;
 				case TemplateEngine::class:
 					return $this->registry->get('tpl');
+			}
+
+			if ($this->registry->has($type)) {
+				return $this->registry->get($type);
 			}
 
 			return null;

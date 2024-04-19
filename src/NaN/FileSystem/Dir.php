@@ -10,7 +10,7 @@ namespace NaN;
  *  As such, you should not assume that the directory exists.
  *  Instead, try what you want to do and handle any thrown errors.
  */
-class Dir extends \NaN\Collection implements \ArrayAccess {
+class Dir extends \NaN\Collection implements \ArrayAccess, \Stringable {
 	public readonly string $path;
 
 	/**
@@ -18,6 +18,10 @@ class Dir extends \NaN\Collection implements \ArrayAccess {
 	 */
 	public function __construct(string ...$paths) {
 		$this->path = static::toForwardSlashes(...$paths);
+	}
+
+	public function __toString(): string {
+		return $this->path;
 	}
 
 	public function getIterator(): \Traversable {

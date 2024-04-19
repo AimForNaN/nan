@@ -4,8 +4,6 @@ namespace NaN;
 
 use League\Container\{
 	Container,
-	Definition\Definition,
-	Definition\DefinitionAggregate,
 	Definition\DefinitionInterface,
 };
 use Psr\Http\Message\{
@@ -31,16 +29,7 @@ class App implements \ArrayAccess, RequestHandlerInterface {
 	private Routes $routes;
 
 	public function __construct() {
-		$aggregate = new DefinitionAggregate([
-			(new Definition('env', Env::class))->setShared(),
-			(new Definition('request', Request::class))->addArguments([
-				$_SERVER['REQUEST_METHOD'],
-				$_SERVER['PATH_INFO'] ?? '/',
-				getallheaders(),
-			]),
-			(new Definition('tpl', TemplateEngine::class))->setShared(),
-		]);
-		$this->registry = new Container($aggregate);
+		$this->registry = new Container();
 		$this->routes = new Routes();
 	}
 
@@ -146,6 +135,22 @@ class App implements \ArrayAccess, RequestHandlerInterface {
 		}
 
 		return null;
+	}
+
+	public function registerDefaultEnvService(string $alias = 'env'): DefinitionInterface {
+		return $this->registerService($alias, Env::class)->setShared(true);
+	}
+
+	public function registerDefaultRequestService(string $alias = 'request'): DefinitionInterface {
+		return $this->registerService($alias, Request::class)->addArguments([
+			$_SERVER['REQUEST_METHOD'],
+			$_SERVER['PATH_INFO'] ?? '/',
+			getallheaders(),
+		])->setShared(true);
+	}
+
+	public function registerDefaultTemplateService(string $alias = 'tpl'): DefinitionInterface {
+		return $this->registerService($alias, TemplateEngine::class)->setShared(true);
 	}
 
 	public function registerRoutes(array $routes) {

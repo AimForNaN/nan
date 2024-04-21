@@ -2,9 +2,11 @@
 
 namespace NaN\App;
 
-class Routes extends \NaN\TypedCollection {
-	public function __construct() {
-		parent::__construct(Route::class);
+class Routes extends \NaN\Collections\TypedCollection {
+	public function __construct(
+		protected array $data = [],
+	) {
+		parent::__construct($data, Route::class);
 	}
 
 	/**

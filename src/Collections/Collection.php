@@ -1,12 +1,14 @@
 <?php
 
-namespace NaN;
+namespace NaN\Collections;
 
 class Collection implements \ArrayAccess, \Countable, \IteratorAggregate {
 	/**
 	 * @param iterable $data 
 	 */
-	public function __construct(protected iterable $data = []) {
+	public function __construct(
+		protected array $data = [],
+	) {
 	}
 
 	public function find(callable $fn): mixed {
@@ -22,8 +24,18 @@ class Collection implements \ArrayAccess, \Countable, \IteratorAggregate {
 		return \iterator_count($this->getIterator());
 	}
 
+	public function filter(callable $filter): static {
+		$data = new \CallbackFilterIterator($this->getIterator(), $filter);
+		$data = \iterator_to_array($data);
+
+		$ret = clone $this;
+		$ret->data = $data;
+
+		return $ret;
+	}
+
 	public function getIterator(): \Traversable {
-		return new \IteratorIterator($this->data);
+		return new \ArrayIterator($this->data);
 	}
 
 	public function map(callable $fn): \Traversable {
@@ -41,7 +53,11 @@ class Collection implements \ArrayAccess, \Countable, \IteratorAggregate {
 	}
 
 	public function offsetSet(mixed $offset, mixed $value): void {
-		$this->data[$offset] = $value;
+		if (!\is_null($offset)) {
+			$this->data[$offset] = $value;
+		} else {
+			$this->data[] = $value;
+		}
 	}
 
 	public function offsetUnset(mixed $offset): void {

@@ -3,13 +3,13 @@
 namespace NaN;
 
 use League\Container\{
-	Container,
 	Definition\DefinitionInterface,
 };
 use Psr\Http\Message\{
 	ResponseInterface,
 	ServerRequestInterface,
 };
+use Psr\Container\ContainerInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use NaN\App\{
 	Request,
@@ -24,21 +24,21 @@ use NaN\App\{
  * @property Request request
  * @property TemplateEngine tpl
  */
-class App implements \ArrayAccess, RequestHandlerInterface {
-	private Container $registry;
-	private Routes $routes;
+class App implements RequestHandlerInterface {
+	public readonly Routes $routes;
 
-	public function __construct() {
-		$this->registry = new Container();
+	public function __construct(
+		public readonly ContainerInterface $services,
+	) {
 		$this->routes = new Routes();
 	}
 
 	public function __get(string $name) {
-		return $this->registry->get($name);
+		return $this->services->get($name);
 	}
 
 	public function __isset($name): bool {
-		return $this->registry->has($name);
+		return $this->services->has($name);
 	}
 
 	/**
@@ -52,7 +52,7 @@ class App implements \ArrayAccess, RequestHandlerInterface {
 	protected function assertRoute(Route $route) {}
 
 	public function extendService(string $name): DefinitionInterface {
-		return $this->registry->extend($name);
+		return $this->services->extend($name);
 	}
 
 	/**
@@ -73,7 +73,7 @@ class App implements \ArrayAccess, RequestHandlerInterface {
 				case App::class:
 					return $this;
 				case Env::class:
-					return $this->registry->get('env');
+					return $this->services->get('env');
 				case Response::class:
 				case ResponseInterface::class:
 					return $rsp;
@@ -81,11 +81,11 @@ class App implements \ArrayAccess, RequestHandlerInterface {
 				case ServerRequestInterface::class:
 					return $request;
 				case TemplateEngine::class:
-					return $this->registry->get('tpl');
+					return $this->services->get('tpl');
 			}
 
-			if ($this->registry->has($type)) {
-				return $this->registry->get($type);
+			if ($this->services->has($type)) {
+				return $this->services->get($type);
 			}
 
 			return null;
@@ -104,24 +104,6 @@ class App implements \ArrayAccess, RequestHandlerInterface {
 		return $rsp;
 	}
 
-	public function offsetExists(mixed $offset): bool {
-		return false;
-	}
-
-	public function offsetGet(mixed $offset): mixed {
-		return null;
-	}
-
-	public function offsetSet(mixed $offset, mixed $value): void {
-		if (!\is_array($value)) {
-			$value = [$value];
-		}
-		$this->registerRoutes($value);
-	}
-
-	public function offsetUnset(mixed $offset): void {
-	}
-
 	public function match(ServerRequestInterface $request): ?Route {
 		$method = \strtoupper($request->getMethod());
 		$routes = $this->routes[$method];
@@ -137,44 +119,13 @@ class App implements \ArrayAccess, RequestHandlerInterface {
 		return null;
 	}
 
-	public function registerDefaultEnvService(string $alias = 'env'): DefinitionInterface {
-		return $this->registerService($alias, Env::class)->setShared(true);
-	}
-
-	public function registerDefaultRequestService(string $alias = 'request'): DefinitionInterface {
-		return $this->registerService($alias, Request::class)->addArguments([
-			$_SERVER['REQUEST_METHOD'],
-			$_SERVER['PATH_INFO'] ?? '/',
-			getallheaders(),
-		])->setShared(true);
-	}
-
-	public function registerDefaultTemplateService(string $alias = 'tpl'): DefinitionInterface {
-		return $this->registerService($alias, TemplateEngine::class)->setShared(true);
-	}
-
-	public function registerRoutes(array $routes) {
-		foreach ($routes as $route) {
-			$this->routes[] = $route;
-		}
-	}
-
-	/**
-	 * Register service locally.
-	 *
-	 * Any service that is registered can be accessed as a property by name.
-	 */
-	public function registerService(string $name, string $class, array $args = []): DefinitionInterface {
-		return $this->registry->add($name, $class)->addArguments($args);
-	}
-
 	public function run() {
-		$req = $this->registry->get('request');
+		$req = $this->services->get('request');
 		try {
 			$rsp = $this->handle($req);
 		} catch (\Throwable $th) {
-			if ($this->registry->has('logger')) {
-				$logger = $this->registry->get('logger');
+			if ($this->services->has('logger')) {
+				$logger = $this->services->get('logger');
 				$logger->error($th->getMessage());
 			}
 			$rsp = new Response(500);

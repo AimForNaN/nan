@@ -63,7 +63,7 @@ class DI {
 
 		if (\is_callable($type_resolver)) {
 			$ret = $type_resolver($value, $type);
-			if ($ret) {
+			if (!\is_null($ret)) {
 				return $ret;
 			}
 		}
@@ -84,11 +84,7 @@ class DI {
 		[$analysis, $rf] = static::analyze($handler);
 
 		foreach ($analysis as $meta) {
-			$default_value = $meta['default_value'];
-			$name = $meta['name'];
-			$optional = $meta['optional'];
-			$type = $meta['type'];
-			$variadic = $meta['variadic'];
+			\extract($meta);
 
 			if ($variadic) {
 				// @todo
@@ -96,9 +92,8 @@ class DI {
 			} else if (isset($args[$name])) {
 				$value = $args[$name];
 				$args[$name] = DI::cast($value, $type, $type_resolver);
-			} else {
-				$value = $optional ? $default_value : null;
-				$args[$name] = DI::cast($value, $type, $type_resolver);
+			} else if (!$optional) {
+				$args[$name] = DI::cast(null, $type, $type_resolver);
 			}
 		}
 

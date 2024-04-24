@@ -11,15 +11,6 @@ class Collection implements \ArrayAccess, \Countable, \IteratorAggregate {
 	) {
 	}
 
-	public function find(callable $fn): mixed {
-		foreach ($this->getIterator() as $val) {
-			if ($fn($val)) {
-				return $val;
-			}
-		}
-		return null;
-	}
-
 	public function count(): int {
 		return \iterator_count($this->getIterator());
 	}
@@ -32,6 +23,15 @@ class Collection implements \ArrayAccess, \Countable, \IteratorAggregate {
 		$ret->data = $data;
 
 		return $ret;
+	}
+
+	public function find(callable $fn): mixed {
+		foreach ($this->getIterator() as $val) {
+			if ($fn($val)) {
+				return $val;
+			}
+		}
+		return null;
 	}
 
 	public function getIterator(): \Traversable {

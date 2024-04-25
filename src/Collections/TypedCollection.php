@@ -14,7 +14,7 @@ class TypedCollection extends Collection {
 		protected array $data,
 		private string $type,
 	) {
-		parent::__construct($this->filter($this->checkType(...))->toArray());
+		parent::__construct($this->filter([$this, 'checkType'])->toArray());
 	}
 
 	protected function assertType(mixed $item) {
@@ -25,7 +25,8 @@ class TypedCollection extends Collection {
 
 	protected function checkType(mixed $item): bool {
 		if (\is_callable($this->type)) {
-			return ${$this->type}($item);
+			$callable = $this->type;
+			return $callable($item);
 		}
 
 		return \is_a($item, $this->type);

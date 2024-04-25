@@ -2,7 +2,7 @@
 
 namespace NaN\Collections;
 
-class Collection implements \ArrayAccess, \Countable, \IteratorAggregate {
+class Collection implements CollectionInterface {
 	/**
 	 * @param iterable $data 
 	 */
@@ -15,7 +15,7 @@ class Collection implements \ArrayAccess, \Countable, \IteratorAggregate {
 		return \iterator_count($this->getIterator());
 	}
 
-	public function filter(callable $filter): static {
+	public function filter(callable $filter): CollectionInterface {
 		$data = new \CallbackFilterIterator($this->getIterator(), $filter);
 		$data = \iterator_to_array($data);
 
@@ -38,10 +38,17 @@ class Collection implements \ArrayAccess, \Countable, \IteratorAggregate {
 		return new \ArrayIterator($this->data);
 	}
 
-	public function map(callable $fn): \Traversable {
-		foreach ($this->getIterator() as $key => $val) {
-			yield $fn($val, $key);
+	public function map(callable $fn): CollectionInterface {
+		$data = [];
+		$it = $this->getIterator();
+		
+		foreach ($it as $key => $val) {
+			$data[$key] = $fn($val, $it);
 		}
+
+		$ret = clone $this;
+		$ret->data = $data;
+		return $ret;
 	}
 
 	public function offsetExists(mixed $offset): bool {

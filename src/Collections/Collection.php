@@ -15,6 +15,16 @@ class Collection implements CollectionInterface {
 		return \iterator_count($this->getIterator());
 	}
 
+	public function every(callable $fn): bool {
+		foreach ($this->getIterator() as $value) {
+			if (!$fn($value)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	public function filter(callable $filter): CollectionInterface {
 		$data = new \CallbackFilterIterator($this->getIterator(), $filter);
 		$data = \iterator_to_array($data);
@@ -69,6 +79,16 @@ class Collection implements CollectionInterface {
 
 	public function offsetUnset(mixed $offset): void {
 		unset($this->data[$offset]);
+	}
+
+	public function some(callable $fn): bool {
+		foreach ($this->getIterator() as $value) {
+			if ($fn($value)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 	
 	public function toArray(): array {

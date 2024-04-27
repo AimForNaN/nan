@@ -14,7 +14,7 @@ class Routes extends \NaN\Collections\TypedCollection {
 	 *
 	 * @param string $offset HTTP method.
 	 *
-	 * @return \Iterator
+	 * @return \Traversable
 	 */
 	public function offsetGet(mixed $offset): mixed {
 		return new \CallbackFilterIterator(new \ArrayIterator($this->data), function (Route $route) use ($offset) {
@@ -22,6 +22,9 @@ class Routes extends \NaN\Collections\TypedCollection {
 		});
 	}
 
+	/**
+	 * Ignores offset.
+	 */
 	public function offsetSet(mixed $offset, mixed $value): void {
 		$this->assertType($value);
 		$this->data[] = $value;

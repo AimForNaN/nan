@@ -16,7 +16,7 @@ class Route {
 	public function __construct(
 		string $method,
 		string $pattern,
-		protected readonly mixed $handler,
+		private mixed $handler,
 	) {
 		$this->method = \strtoupper($method);
 		$this->pattern = new RoutePattern($pattern);

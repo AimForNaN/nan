@@ -16,7 +16,6 @@ use Psr\Http\{
 };
 
 class App implements PsrRequestHandlerInterface {
-
 	public function __construct(
 		protected PsrContainerInterface $services,
 		protected Routes $routes,
@@ -35,29 +34,16 @@ class App implements PsrRequestHandlerInterface {
 
 	protected function assertRoute(Route $route) {}
 
-	/**
-	 * @todo Dependency injection for handler!
-	 */
 	public function handle(PsrServerRequestInterface $request): PsrResponseInterface {
-		$rsp = new Response(200, ['Content-Type' => 'text/html;charset=utf-8']);
-
-		$route = $this->match($request);
-		$this->assertRoute($route);
-		$route->pattern->compile();
-		$route->pattern->match($request);
-
-		$values = $route->pattern->getMatches();
-		$handler = $route->toCallable();
-		$arguments = Arguments::fromCallable($handler, $values);
-		$definition = new Definition($handler, $arguments->toArray());
-
 		$container = new Container(new Definitions([
-			(new Definition($rsp))->setAlias(PsrResponseInterface::class),
 			(new Definition($request))->setAlias(PsrServerRequestInterface::class),
 		]));
 		$container->addDelegate($this->services);
 
-		$rsp = $definition->resolve($container);
+		$route = $this->match($request);
+		$this->assertRoute($route);
+
+		$rsp = $route->handle($request, $container);
 		$this->assertResponseInterface($rsp);
 
 		switch ($request->getMethod()) {
@@ -77,9 +63,7 @@ class App implements PsrRequestHandlerInterface {
 		$routes = $this->routes[$method];
 
 		foreach ($routes as $route) {
-			$route->pattern->compile();
-
-			if ($route->pattern->match($request)) {
+			if ($route->matches($request)) {
 				return $route;
 			}
 		}

@@ -2,11 +2,20 @@
 
 namespace NaN\App;
 
-use Psr\Http\Message\ResponseInterface;
+use NaN\DI\{
+	Arguments\Arguments,
+	Definition,
+};
+use Psr\Container\ContainerInterface as PsrContainerInterface;
+use Psr\Http\{
+	Message\ResponseInterface as PsrResponseInterface,
+	Message\ServerRequestInterface as PsrServerRequestInterface,
+	Server\RequestHandlerInterface as PsrRequestHandlerInterface,
+};
 
-class Route {
+class Route implements PsrRequestHandlerInterface {
 	public readonly string $method;
-	public readonly RoutePattern $pattern;
+	protected RoutePattern $pattern;
 
 	/**
 	 * @param string $method HTTP method.
@@ -61,6 +70,23 @@ class Route {
 		return new static('GET', $pattern, $handler);
 	}
 
+	public function handle(PsrServerRequestInterface $request, PsrContainerInterface $container = null): PsrResponseInterface {
+		$this->pattern->compile();
+		$this->pattern->match($request);
+
+		$values = $this->pattern->getMatches();
+		$handler = $this->toCallable();
+		$arguments = Arguments::fromCallable($handler, $values);
+		$definition = new Definition($handler, $arguments->toArray());
+
+		return $definition->resolve($container);
+	}
+
+	public function matches(PsrServerRequestInterface $request) {
+		$this->pattern->compile();
+		return $this->pattern->match($request);
+	}
+
 	static public function patch(string $pattern, mixed $handler): static {
 		return new static('PATCH', $pattern, $handler);
 	}
@@ -83,7 +109,7 @@ class Route {
 					return [$controller, $action];
 				}
 			} else if (\class_exists($handler)) {
-				if (\is_a($handler, ResponseInterface::class))  {
+				if (\is_a($handler, PsrResponseInterface::class))  {
 					return [new $handler(), 'handle'];
 				}
 			}

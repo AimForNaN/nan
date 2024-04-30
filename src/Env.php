@@ -48,10 +48,10 @@ class Env {
 	/**
 	 * Register an alias key for an environment variable.
 	 *
-	 * @param string $original Original key.
 	 * @param string $alias Alias key.
+	 * @param string $original Original key.
 	 */
-	public function registerAlias(string $original, string $alias): void {
+	public function registerAlias(string $alias, string $original): void {
 		$this->aliases[$alias] = $original;
 	}
 }

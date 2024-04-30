@@ -21,7 +21,7 @@ describe('App', function () {
 		$container = new Container(new Definitions([
 			(new Definition(Env::class, ['.']))->setShared(),
 			(new Definition(Request::class, ['GET', '/']))->setShared(),
-			(new Definition(Response::class, ['GET', '/']))->setShared(),
+			(new Definition(Response::class, [200]))->setAlias(ResponseInterface::class)->setShared(),
 		]));
 		$routes = new Routes([
 			Route::get('/', function (Env $env, ServerRequestInterface $req, ResponseInterface $rsp) {

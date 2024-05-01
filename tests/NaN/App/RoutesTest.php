@@ -7,21 +7,24 @@ use NaN\App\{
 
 describe('Routes', function () {
 	test('Adding routes', function () {
-		$routes = new Routes();
-		$routes[] = new Route('GET', '/', function () {});
+		$routes = new Routes([
+			new Route('GET', '/', function () {}),
+		]);
 		expect($routes)->toHaveLength(1);
 	});
 
 	test('Adding non-route', function () {
-		$routes = new Routes();
-		$routes[] = ['GET', '/', function () {}];
-	})->throws(Exception::class);
+		$routes = new Routes([
+			['GET', '/', function () {}],
+		]);
+		expect($routes)->toHaveLength(0);
+	});
 
 	test('Get routes', function () {
 		$routes = new Routes();
 		$routes[] = new Route('GET', '/', function () {});
 
-		$get = $routes['GET'];
+		$get = $routes->getByMethod('GET');
 		expect($get)->toHaveLength(1);
 	});
 });

@@ -14,7 +14,7 @@ class TypedCollection extends Collection {
 	 */
 	public function __construct(
 		protected array $data = [],
-		private string $type = null,
+		private string $type = '',
 	) {
 		parent::__construct($data);
 	}
@@ -26,7 +26,7 @@ class TypedCollection extends Collection {
 	}
 
 	public function checkType(mixed $item): bool {
-		if (!$this->type) {
+		if (empty($this->type)) {
 			return true;
 		}
 

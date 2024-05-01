@@ -9,7 +9,7 @@ interface CollectionInterface extends \ArrayAccess, \Countable, \IteratorAggrega
 
 	public function find(callable $fn): mixed;
 
-	public function map(callable $fn): CollectionInterface;
+	public function map(callable $fn): array;
 
 	public function some(callable $fn): bool;
 

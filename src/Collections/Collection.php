@@ -48,7 +48,7 @@ class Collection implements CollectionInterface {
 		return new \ArrayIterator($this->data);
 	}
 
-	public function map(callable $fn): CollectionInterface {
+	public function map(callable $fn): array {
 		$data = [];
 		$it = $this->getIterator();
 		
@@ -56,9 +56,7 @@ class Collection implements CollectionInterface {
 			$data[$key] = $fn($val, $it);
 		}
 
-		$ret = clone $this;
-		$ret->data = $data;
-		return $ret;
+		return $data;
 	}
 
 	public function offsetExists(mixed $offset): bool {

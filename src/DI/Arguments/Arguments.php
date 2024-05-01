@@ -100,7 +100,7 @@ class Arguments extends \NaN\Collections\TypedCollection {
 		}, $values));
 	}
 
-	public function resolve(PsrContainerInterface $container): static {
+	public function resolve(PsrContainerInterface $container): array {
 		return $this->map(fn(ArgumentInterface $argument) => $argument->resolve($container));
 	}
 }

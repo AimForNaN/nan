@@ -51,7 +51,7 @@ class App implements \ArrayAccess, PsrRequestHandlerInterface {
 
 	public function match(PsrServerRequestInterface $request): ?Route {
 		$method = \strtoupper($request->getMethod());
-		$routes = $this->routes[$method];
+		$routes = $this->routes->getByMethod($method);
 
 		foreach ($routes as $route) {
 			if ($route->matches($request)) {

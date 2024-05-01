@@ -12,21 +12,13 @@ class Routes extends \NaN\Collections\TypedCollection {
 	/**
 	 * Get routes by method.
 	 *
-	 * @param string $offset HTTP method.
+	 * @param string $method HTTP method.
 	 *
 	 * @return \Traversable
 	 */
-	public function offsetGet(mixed $offset): mixed {
-		return new \CallbackFilterIterator(new \ArrayIterator($this->data), function (Route $route) use ($offset) {
-			return $route->method === $offset;
+	public function getByMethod(string $method): \Traversable {
+		return new \CallbackFilterIterator(new \ArrayIterator($this->data), function (Route $route) use ($method) {
+			return $route->method === $method;
 		});
-	}
-
-	/**
-	 * Ignores offset.
-	 */
-	public function offsetSet(mixed $offset, mixed $value): void {
-		$this->assertType($value);
-		$this->data[] = $value;
 	}
 }

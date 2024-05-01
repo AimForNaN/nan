@@ -4,26 +4,32 @@ namespace NaN\Collections;
 
 /**
  * For the sake of performance,
- *  type-checking doesn't occur until iterated or when adding elements.
+ *  type-checking doesn't occur until iterated.
+ *  If type is null, all elements are permitted.
  */
 class TypedCollection extends Collection {
 	/**
+	 * @param array $data
 	 * @param string $type Fully-qualified class (e.g. MyClass::class) or function name (e.g. 'is_string').
 	 */
 	public function __construct(
-		protected array $data,
-		private string $type,
+		protected array $data = [],
+		private string $type = null,
 	) {
-		parent::__construct($this->filter([$this, 'checkType'])->toArray());
+		parent::__construct($data);
 	}
 
-	protected function assertType(mixed $item) {
+	public function assertType(mixed $item) {
 		if (!$this->checkType($item)) {
 			throw new \InvalidArgumentException();
 		}
 	}
 
-	protected function checkType(mixed $item): bool {
+	public function checkType(mixed $item): bool {
+		if (!$this->type) {
+			return true;
+		}
+
 		if (\is_callable($this->type)) {
 			$callable = $this->type;
 			return $callable($item);
@@ -32,8 +38,7 @@ class TypedCollection extends Collection {
 		return \is_a($item, $this->type);
 	}
 
-	public function offsetSet(mixed $offset, mixed $value): void {
-		$this->assertType($value);
-		parent::offsetSet($offset, $value);
+	public function getIterator(): \Traversable {
+		return new \CallbackFilterIterator(new \ArrayIterator($this->data), [$this, 'checkType']);
 	}
 }

@@ -9,28 +9,24 @@ use NaN\{
 	DI\Container,
 	DI\Definition,
 	DI\Definitions,
-	Env,
 };
 use Psr\Http\{
 	Message\ResponseInterface,
-	Message\ServerRequestInterface,
 };
 
 describe('App', function () {
 	test('Route dependency injection', function () {
 		$container = new Container(new Definitions([
-			(new Definition(Env::class, ['.']))->setShared(),
 			(new Definition(Request::class, ['GET', '/']))->setShared(),
 			(new Definition(Response::class, [200]))->setAlias(ResponseInterface::class)->setShared(),
 		]));
 		$routes = new Routes([
-			Route::get('/', function (Env $env, ServerRequestInterface $req, ResponseInterface $rsp) {
-				return $rsp;
+			Route::get('/', function (App $app) {
+				return $app[ResponseInterface::class];
 			}),
 		]);
 		$app = new App($container, $routes);
 
-		expect($container->has(Env::class))->toBeTrue();
 		expect($container->has(Request::class))->toBeTrue();
 		expect($container->has(Response::class))->toBeTrue();
 

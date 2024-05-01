@@ -2,7 +2,7 @@
 
 namespace NaN\App;
 
-use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\ServerRequestInterface as PsrServerRequestInterface;
 
 class RoutePattern {
 	private array $groups = [];
@@ -45,9 +45,15 @@ class RoutePattern {
 		return $this->matches;
 	}
 
-	public function match(ServerRequestInterface $request): bool {
+	public function match(PsrServerRequestInterface $request): bool {
 		$this->matches = [];
 		$path = $request->getUri()->getPath();
+
+		// Static match!
+		if ($this->pattern === $path) {
+			return true;
+		}
+
 		$ret = \preg_match($this->regex, $path, $matches);
 
 		foreach ($this->groups as $name) {

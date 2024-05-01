@@ -78,9 +78,6 @@ class App implements \ArrayAccess, PsrRequestHandlerInterface {
 		throw new \RuntimeException('Cannot unset a service!');
 	}
 
-	/**
-	 * @todo Do something about request service!
-	 */
 	public function run() {
 		$req = new Request('GET', $_SERVER['PATH_INFO'] ?? '/', getallheaders());
 		try {

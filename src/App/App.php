@@ -79,7 +79,7 @@ class App implements \ArrayAccess, PsrRequestHandlerInterface {
 	}
 
 	public function run() {
-		$req = new Request('GET', $_SERVER['PATH_INFO'] ?? '/', getallheaders());
+		$req = new Request($_SERVER['REQUEST_METHOD'], $_SERVER['PATH_INFO'] ?? '/', getallheaders());
 		try {
 			$rsp = $this->handle($req);
 		} catch (\Throwable $th) {

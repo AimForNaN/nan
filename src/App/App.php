@@ -3,7 +3,6 @@
 namespace NaN\App;
 
 use NaN\DI\{
-	Arguments\Arguments,
 	Container,
 	Definition,
 	Definitions,
@@ -15,19 +14,11 @@ use Psr\Http\{
 	Server\RequestHandlerInterface as PsrRequestHandlerInterface,
 };
 
-class App implements PsrRequestHandlerInterface {
+class App implements \ArrayAccess, PsrRequestHandlerInterface {
 	public function __construct(
 		protected PsrContainerInterface $services,
 		protected Routes $routes,
 	) {
-	}
-
-	public function __get(string $name) {
-		return $this->services->get($name);
-	}
-
-	public function __isset($name): bool {
-		return $this->services->has($name);
 	}
 
 	protected function assertResponseInterface(PsrResponseInterface $rsp) {}
@@ -69,6 +60,22 @@ class App implements PsrRequestHandlerInterface {
 		}
 
 		return null;
+	}
+
+	public function offsetExists(mixed $offset): bool {
+		return $this->services->has($offset);
+	}
+
+	public function offsetGet(mixed $offset): mixed {
+		return $this->services->get($offset);
+	}
+
+	public function offsetSet(mixed $offset, mixed $value): void {
+		throw new \RuntimeException('Services are to be defined in the constructor!');
+	}
+
+	public function offsetUnset(mixed $offset): void {
+		throw new \RuntimeException('Cannot unset a service!');
 	}
 
 	/**

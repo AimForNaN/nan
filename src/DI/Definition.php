@@ -41,12 +41,8 @@ class Definition implements DefinitionInterface {
 			return true;
 		}
 
-		if (\is_a($this->alias, $alias)) {
-			return true;
-		}
-
-		if (\is_a($this->concrete, $alias)) {
-			return true;
+		if (\is_object($this->concrete)) {
+			return \get_class($this->concrete) === $alias;
 		}
 
 		return false;

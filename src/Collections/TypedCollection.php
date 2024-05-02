@@ -41,4 +41,10 @@ class TypedCollection extends Collection {
 	public function getIterator(): \Traversable {
 		return new \CallbackFilterIterator(new \ArrayIterator($this->data), [$this, 'checkType']);
 	}
+
+	public function offsetGet(mixed $offset): mixed {
+		$item = parent::offsetGet($offset);
+		$this->assertType($item);
+		return $item;
+	}
 }

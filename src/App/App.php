@@ -80,15 +80,7 @@ class App implements \ArrayAccess, PsrRequestHandlerInterface {
 
 	public function run() {
 		$req = new Request($_SERVER['REQUEST_METHOD'], $_SERVER['PATH_INFO'] ?? '/', getallheaders());
-		try {
-			$rsp = $this->handle($req);
-		} catch (\Throwable $th) {
-			if ($this->services->has('logger')) {
-				$logger = $this->services->get('logger');
-				$logger->error($th->getMessage());
-			}
-			$rsp = new Response(500);
-		}
+		$rsp = $this->handle($req);
 		Response::send($rsp);
 	}
 }

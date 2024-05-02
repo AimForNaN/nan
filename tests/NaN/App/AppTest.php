@@ -16,10 +16,10 @@ use Psr\Http\{
 
 describe('App', function () {
 	test('Route dependency injection', function () {
-		$container = new Container(new Definitions([
-			(new Definition(Request::class, ['GET', '/']))->setShared(),
+		$definitions = new Definitions([
 			(new Definition(Response::class, [200]))->setAlias(ResponseInterface::class)->setShared(),
-		]));
+		]);
+		$container = new Container($definitions);
 		$routes = new Routes([
 			Route::get('/', function (App $app) {
 				return $app[ResponseInterface::class];
@@ -27,10 +27,9 @@ describe('App', function () {
 		]);
 		$app = new App($container, $routes);
 
-		expect($container->has(Request::class))->toBeTrue();
-		expect($container->has(Response::class))->toBeTrue();
+		expect($container->has(ResponseInterface::class))->toBeTrue();
 
-		$rsp = $app->handle($container->get(Request::class));
+		$rsp = $app->handle(new Request('GET', '/'));
 		expect($rsp)->toBeInstanceOf(Response::class);
 	});
 });

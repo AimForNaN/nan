@@ -41,10 +41,6 @@ class Definition implements DefinitionInterface {
 			return true;
 		}
 
-		if (\is_object($this->concrete)) {
-			return \get_class($this->concrete) === $alias;
-		}
-
 		return false;
 	}
 

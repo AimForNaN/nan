@@ -27,7 +27,7 @@ class App implements \ArrayAccess, PsrRequestHandlerInterface {
 
 	public function handle(PsrServerRequestInterface $request): PsrResponseInterface {
 		$container = new Container(new Definitions([
-			new Definition($this),
+			(new Definition($this))->setAlias(App::class),
 			(new Definition($request))->setAlias(PsrServerRequestInterface::class),
 		]));
 

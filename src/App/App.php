@@ -78,6 +78,10 @@ class App implements \ArrayAccess, PsrRequestHandlerInterface {
 		throw new \RuntimeException('Cannot unset a service!');
 	}
 
+	/**
+	 * Exceptions and errors should be handled on a global level
+	 *  (e.g. register_shutdown_function, set_error_handler, set_exception_handler, etc).
+	 */
 	public function run() {
 		$req = new Request($_SERVER['REQUEST_METHOD'], $_SERVER['PATH_INFO'] ?? '/', getallheaders());
 		$rsp = $this->handle($req);

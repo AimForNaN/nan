@@ -2,9 +2,7 @@
 
 namespace NaN\DI;
 
-use Psr\Container\ContainerInterface as PsrContainerInterface;
-
-class Definitions extends \NaN\Collections\TypedCollection implements PsrContainerInterface {
+class Definitions extends \NaN\Collections\TypedCollection {
 	public function __construct(
 		protected array $data = [],
 	) {

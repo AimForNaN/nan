@@ -48,6 +48,10 @@ class Collection implements CollectionInterface {
 		return new \ArrayIterator($this->data);
 	}
 
+	public function implode(string $delimiter) {
+		return \implode($delimiter, $this->data);
+	}
+
 	public function map(callable $fn): array {
 		$data = [];
 		$it = $this->getIterator();
@@ -77,6 +81,16 @@ class Collection implements CollectionInterface {
 
 	public function offsetUnset(mixed $offset): void {
 		unset($this->data[$offset]);
+	}
+
+	public function reduce(callable $fn, mixed $ret = null): mixed {
+		$it = $this->getIterator();
+
+		foreach ($it as $key => $val) {
+			$ret = $fn($ret, $val, $key, $it);
+		}
+
+		return $ret;
 	}
 
 	public function some(callable $fn): bool {

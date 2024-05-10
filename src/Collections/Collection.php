@@ -16,8 +16,8 @@ class Collection implements CollectionInterface {
 	}
 
 	public function every(callable $fn): bool {
-		foreach ($this->getIterator() as $value) {
-			if (!$fn($value)) {
+		foreach ($this->getIterator() as $key => $val) {
+			if (!$fn($val, $key)) {
 				return false;
 			}
 		}
@@ -36,8 +36,8 @@ class Collection implements CollectionInterface {
 	}
 
 	public function find(callable $fn): mixed {
-		foreach ($this->getIterator() as $val) {
-			if ($fn($val)) {
+		foreach ($this->getIterator() as $key => $val) {
+			if ($fn($val, $key)) {
 				return $val;
 			}
 		}
@@ -57,7 +57,7 @@ class Collection implements CollectionInterface {
 		$it = $this->getIterator();
 		
 		foreach ($it as $key => $val) {
-			$data[$key] = $fn($val, $it);
+			$data[$key] = $fn($val, $key, $it);
 		}
 
 		return $data;
@@ -94,8 +94,8 @@ class Collection implements CollectionInterface {
 	}
 
 	public function some(callable $fn): bool {
-		foreach ($this->getIterator() as $value) {
-			if ($fn($value)) {
+		foreach ($this->getIterator() as $key => $val) {
+			if ($fn($val, $key)) {
 				return true;
 			}
 		}

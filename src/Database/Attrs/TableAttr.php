@@ -6,7 +6,7 @@ namespace NaN\Database\Attrs;
 class TableAttr {
 	public function __construct(
 		public readonly string $name,
-		public readonly string $database,
+		public readonly ?string $database = null,
 	) {
 	}
 }

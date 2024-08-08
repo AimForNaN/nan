@@ -3,7 +3,9 @@
 namespace NaN\Database\Query\Statements\Clauses;
 
 class SelectClause extends \NaN\Collections\Collection implements ClauseInterface {
-	public function addColumn(string $column, string $alias = null): static {
+	private bool $distinct = false;
+
+	public function addColumn(string $column, ?string $alias = null): static {
 		$this->data[] = [
 			'expr' => 'column',
 			'alias' => $alias,
@@ -31,6 +33,15 @@ class SelectClause extends \NaN\Collections\Collection implements ClauseInterfac
 		return $this;
 	}
 
+	public function allColumns(): static {
+		return $this->addColumn('*');
+	}
+
+	public function distinct(): static {
+		$this->distinct = true;
+		return $this;
+	}
+
 	public function getBindings(): array {
 		return [];
 	}
@@ -43,8 +54,8 @@ class SelectClause extends \NaN\Collections\Collection implements ClauseInterfac
 		throw new \BadMethodCallException('Setting value through array accessor is not supported!');
 	}
 
-	public function render(bool $prepared = false, bool $distinct = false): string {
-		return 'SELECT ' . \implode(', ', $this->map(function ($item) {
+	public function render(bool $prepared = false): string {
+		return 'SELECT ' . ($this->distinct ? 'DISTINCT ' : '') . \implode(', ', $this->map(function ($item) {
 			\extract($item);
 
 			switch ($expr) {

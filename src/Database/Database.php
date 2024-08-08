@@ -2,13 +2,6 @@
 
 namespace NaN\Database;
 
-use NaN\Database\Query\Statements\{
-	Clauses\FromClause,
-	Clauses\SelectClause,
-	PullInterface,
-	StatementInterface,
-};
-
 class Database implements DatabaseInterface {
 	public function __construct(
 		private Drivers\DriverInterface $driver,
@@ -16,15 +9,7 @@ class Database implements DatabaseInterface {
 		$driver->openConnection();
 	}
 
-	protected function applyClassAttributes(StatementInterface $statement, string $class) {
-		if ($statement instanceof PullInterface) {
-			$statement->from(function (FromClause $from) use ($class) {
-				$from->addTableFromClass($class);
-			});
-		}
-	}
-
-	public function exec(string $query, array $bindings): \PDOStatement | false {
+	public function execRaw(string $query, array $bindings): \PDOStatement | false {
 		if (empty($bindings)) {
 			throw new \InvalidArgumentException('Cannot provide empty bindings! Run query() instead if not using prepared statements!');
 		}
@@ -46,52 +31,35 @@ class Database implements DatabaseInterface {
 		return $this->driver->exec(fn(\PDO $db) => $db->lastInsertId());
 	}
 
-	public function patch(string $class, callable $fn): DelegateInterface {
+	public function patch(callable $fn): DelegateInterface {
 		$builder = $this->driver->createQueryBuilder();
 		$query = $builder->createPatch();
-
-		$this->applyClassAttributes($query, $class);
 		$fn($query);
-
 		return new Delegate($this, $query);
 	}
 
-	public function pull(string $class, callable $fn): Delegate {
+	public function pull(callable $fn): Delegate {
 		$builder = $this->driver->createQueryBuilder();
 		$query = $builder->createPull();
-
-		$this->applyClassAttributes($query, $class);
-
-		$fn($query->select(function (SelectClause $select) {
-			$select->addColumn('*');
-		}));
-
+		$fn($query);
 		return new Delegate($this, $query);
 	}
 
-	public function purge(string $class, callable $fn): DelegateInterface {
+	public function purge(callable $fn): DelegateInterface {
 		$builder = $this->driver->createQueryBuilder();
 		$query = $builder->createPurge();
-
-		$this->applyClassAttributes($query, $class);
-
 		$fn($query);
-
 		return new Delegate($this, $query);
 	}
 
-	public function push(string $class, callable $fn): DelegateInterface {
+	public function push(callable $fn): DelegateInterface {
 		$builder = $this->driver->createQueryBuilder();
 		$query = $builder->createPush();
-
-		$this->applyClassAttributes($query, $class);
-
 		$fn($query);
-
 		return new Delegate($this, $query);
 	}
 
-	public function query(string $query): \PDOStatement | false {
+	public function queryRaw(string $query): \PDOStatement | false {
 		return $this->driver->exec(function (\PDO $db) use ($query) {
 			return $db->query($query);
 		});

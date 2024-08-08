@@ -33,7 +33,7 @@ class FromClause extends \NaN\Collections\Collection implements ClauseInterface 
 		return $this;
 	}
 
-	public function addTableFromClass(string $class, string $alias = null): static {
+	public function addTableFromClass($class, string $alias = null): static {
 		$table = $this->getTableFromClass($class);
 		$this->addTable($table->name, $table->database, $alias);
 		return $this;
@@ -41,6 +41,10 @@ class FromClause extends \NaN\Collections\Collection implements ClauseInterface 
 
 	public function getBindings(): array {
 		return $this->reduce(function ($ret, $item) {
+			/**
+			 * @var Array $bindings
+			 * @var \NaN\Database\Query\Statements\StatementInterface $query
+			 */
 			\extract($item);
 
 			switch ($expr) {
@@ -77,6 +81,12 @@ class FromClause extends \NaN\Collections\Collection implements ClauseInterface 
 
 	public function render(bool $prepared = false): string {
 		return 'FROM ' . \implode(', ', \array_filter($this->map(function ($column) {
+			/**
+			 * @var string $alias
+			 * @var string $database
+			 * @var \NaN\Database\Query\Statements\StatementInterface $query
+			 * @var string $table
+			 */
 			\extract($column);
 
 			switch ($expr) {
@@ -99,7 +109,7 @@ class FromClause extends \NaN\Collections\Collection implements ClauseInterface 
 			}
 
 			// Raw expression!
-			return $query ?? null;
+			return $query ?? '';
 		})));
 	}
 }

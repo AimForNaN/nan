@@ -3,6 +3,16 @@
 namespace NaN\Database\Query\Statements\Clauses;
 
 class WhereClause extends \NaN\Collections\Collection implements ClauseInterface {
+	/**
+	 * Add where expression.
+	 *
+	 * @param ?string $delimiter AND, OR... Use null for first where expression.
+	 * @param string $column
+	 * @param string $operator =, >=, <=, IN...
+	 * @param mixed $value
+	 *
+	 * @return static
+	 */
 	public function addColumn(?string $delimiter, string $column, string $operator, mixed $value): static {
 		$this->data[] = [
 			'expr' => 'condition',
@@ -14,6 +24,22 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 		return $this;
 	}
 
+	public function andColumn(string $column, string $operator, mixed $value): static {
+		return $this->addColumn('AND', $column, $operator, $value);
+	}
+
+	public function orColumn(string $column, string $operator, mixed $value): static {
+		return $this->addColumn('OR', $column, $operator, $value);
+	}
+
+	/**
+	 * Add sub where clause.
+	 *
+	 * @param ?string $delimiter AND, OR...
+	 * @param callable $fn
+	 *
+	 * @return static
+	 */
 	public function addGroup(?string $delimiter, callable $fn): static {
 		$where_group = new static();
 		$this->data[] = [
@@ -27,6 +53,23 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 		return $this;
 	}
 
+	public function andGroup(callable $fn): static {
+		return $this->addGroup('AND', $fn);
+	}
+
+	public function orGroup(callable $fn): static {
+		return $this->addGroup('OR', $fn);
+	}
+
+	/**
+	 * Add raw where expression.
+	 *
+	 * @param ?string $delimiter AND, OR... Use null for first where expression.
+	 * @param string $condition Where expression.
+	 * @param array [$bindings] Values if performing a prepared statement.
+	 *
+	 * @return static
+	 */
 	public function addRaw(?string $delimiter, string $condition, array $bindings = []): static {
 		$this->data[] = [
 			'expr' => 'raw',
@@ -37,12 +80,25 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 		return $this;
 	}
 
+	public function andRaw(string $condition, array $bindings): static {
+		return $this->addRaw('AND', $condition, $bindings);
+	}
+
+	public function orRaw(string $condition, array $bindings): static {
+		return $this->addRaw('OR', $condition, $bindings);
+	}
+
 	static public function generatePlaceHolders(int $count): string {
 		return \implode(', ', \array_fill(0, $count, '?'));
 	}
 
 	public function getBindings(): array {
 		return $this->reduce(function ($ret, $item) {
+			/**
+			 * @var string $expr
+			 * @var WhereClause $group
+			 * @var mixed $value
+			 */
 			\extract($item);
 
 			switch ($expr) {
@@ -69,6 +125,13 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 
 	public function render(bool $prepared = false): string {
 		return 'WHERE ' . $this->reduce(function ($ret, $item) {
+			/**
+			 * @var string $condition
+			 * @var string $delimiter
+			 * @var string $expr
+			 * @var WhereClause $group
+			 * @var mixed $value
+			 */
 			\extract($item);
 
 			if ($delimiter) {

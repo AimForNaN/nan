@@ -4,61 +4,57 @@ namespace NaN\Database;
 
 interface DatabaseInterface {
 	/**
-	 * Use only for prepared statements!
+	 * Use only for raw prepared statements!
 	 *
 	 * @param string $query Query string.
 	 * @param array $bindings Bindings for prepared statement; cannot be empty!
 	 *
 	 * @throws \InvalidArgumentException
 	 */
-	public function exec(string $query, array $bindings): \PDOStatement | false;
+	public function execRaw(string $query, array $bindings): \PDOStatement | false;
 
 	/**
 	 * Prepare patch query.
 	 *
 	 * Update statement equivalent.
 	 *
-	 * @param string $class Fully-qualified class name.
 	 * @param callable $fn Query-builder callback.
 	 */
-	public function patch(string $class, callable $fn): DelegateInterface;
+	public function patch(callable $fn): DelegateInterface;
 
 	/**
 	 * Prepare pull query.
 	 *
 	 * Select statement equivalent.
 	 *
-	 * @param string $class Fully-qualified class name.
 	 * @param callable $fn Query-builder callback.
 	 */
-	public function pull(string $class, callable $fn): DelegateInterface;
+	public function pull(callable $fn): DelegateInterface;
 
 	/**
 	 * Prepare purge query.
 	 *
 	 * Delete statement equivalent.
 	 *
-	 * @param string $class Fully-qualified class name.
 	 * @param callable $fn Query-builder callback.
 	 */
-	public function purge(string $class, callable $fn): DelegateInterface;
+	public function purge(callable $fn): DelegateInterface;
 
 	/**
 	 * Prepare push query.
 	 *
 	 * Insert statement equivalent.
 	 *
-	 * @param string $class Fully-qualified class name.
 	 * @param callable $fn Query-builder callback.
 	 */
-	public function push(string $class, callable $fn): DelegateInterface;
+	public function push(callable $fn): DelegateInterface;
 
 	/**
-	 * Perform simple query.
+	 * Perform simple raw query.
 	 *
 	 * @param string $query Unfiltered query string.
 	 */
-	public function query(string $query): \PDOStatement | false;
+	public function queryRaw(string $query): \PDOStatement | false;
 
 	/**
 	 * Perform a transaction.

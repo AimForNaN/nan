@@ -12,14 +12,14 @@ class Delegate implements DelegateInterface {
 	}
 
 	public function exec(): \PDOStatement | false {
-		return $this->db->exec(
+		return $this->db->execRaw(
 			$this->statement->render(true),
 			$this->statement->getBindings(),
 		);
 	}
 
 	public function query(): \PDOStatement | false {
-		return $this->db->query(
+		return $this->db->queryRaw(
 			$this->statement->render(),
 		);
 	}

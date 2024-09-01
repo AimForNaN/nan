@@ -15,9 +15,7 @@ describe('Database', function () {
 
 		$result = $db->raw('SELECT `name` FROM `sqlite_master` WHERE type="table" AND name="test";');
 		expect($result)->toBeInstanceOf(\PDOStatement::class);
-
-		$result = [...$result];
-		expect($result)->toHaveCount(1);
+		expect([...$result])->toHaveCount(1);
 
 		$db->push(function (PushInterface $push) {
 			$push->push([
@@ -31,5 +29,8 @@ describe('Database', function () {
 		});
 
 		expect($results)->toBeInstanceOf(\PDOStatement::class);
+
+		$result = $results->fetch();
+		expect($result['id'])->toBe(255);
 	});
 });

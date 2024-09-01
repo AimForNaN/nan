@@ -111,18 +111,7 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 
 			switch ($expr) {
 				case 'condition':
-					$ret .= "$column $operator ";
-
-					if ($prepared) {
-						if (\is_array($value)) {
-							$ret .= '(' . static::generatePlaceHolders(\count($value)) . ')';
-						} else {
-							$ret .= '?';
-						}
-					} else {
-						$ret .= $this->renderValue($value, $prepared);
-					}
-
+					$ret .= "$column $operator " . $this->renderValue($value, $prepared);
 					break;
 				case 'group':
 					$ret .= '(' . $group->render($prepared) . ')';
@@ -136,7 +125,7 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 	public function renderValue(mixed $value, bool $prepared = false): string {
 		switch (gettype($value)) {
 			case 'array':
-				return '(' . \array_map([$this, 'renderValue'], $value) . ')';
+				return '(' . \implode(', ', \array_map(fn($v) => $this->renderValue($v, $prepared), $value)) . ')';
 			case 'string':
 				return $prepared ? '?' : '"' . $value . '"';
 		}

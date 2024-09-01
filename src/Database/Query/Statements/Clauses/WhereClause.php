@@ -61,33 +61,6 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 		return $this->addGroup('OR', $fn);
 	}
 
-	/**
-	 * Add raw where expression.
-	 *
-	 * @param ?string $delimiter AND, OR... Use null for first where expression.
-	 * @param string $condition Where expression.
-	 * @param array [$bindings] Values if performing a prepared statement.
-	 *
-	 * @return static
-	 */
-	public function addRaw(?string $delimiter, string $condition, array $bindings = []): static {
-		$this->data[] = [
-			'expr' => 'raw',
-			'delimiter' => $delimiter,
-			'bindings' => $bindings,
-			'condition' => $condition,
-		];
-		return $this;
-	}
-
-	public function andRaw(string $condition, array $bindings): static {
-		return $this->addRaw('AND', $condition, $bindings);
-	}
-
-	public function orRaw(string $condition, array $bindings): static {
-		return $this->addRaw('OR', $condition, $bindings);
-	}
-
 	static public function generatePlaceHolders(int $count): string {
 		return \implode(', ', \array_fill(0, $count, '?'));
 	}
@@ -107,8 +80,6 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 					break;
 				case 'group':
 					return \array_merge($ret, $group->getBindings());
-				case 'raw':
-					return \array_merge($ret, $bindings);
 			}
 
 			return $ret;
@@ -124,7 +95,7 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 	}
 
 	public function render(bool $prepared = false): string {
-		return 'WHERE ' . $this->reduce(function ($ret, $item) {
+		return 'WHERE ' . $this->reduce(function ($ret, $item) use ($prepared) {
 			/**
 			 * @var string $condition
 			 * @var string $delimiter
@@ -149,15 +120,12 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 							$ret .= '?';
 						}
 					} else {
-						$ret .= $this->renderValue($value);
+						$ret .= $this->renderValue($value, $prepared);
 					}
 
 					break;
 				case 'group':
 					$ret .= '(' . $group->render($prepared) . ')';
-					break;
-				case 'raw':
-					$ret .= $condition;
 					break;
 			}
 
@@ -165,14 +133,14 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 		}, '');
 	}
 	
-	public function renderValue(mixed $value): string {
+	public function renderValue(mixed $value, bool $prepared = false): string {
 		switch (gettype($value)) {
 			case 'array':
 				return '(' . \array_map([$this, 'renderValue'], $value) . ')';
 			case 'string':
-				return '"' . $value . '"';
+				return $prepared ? '?' : '"' . $value . '"';
 		}
 
-		return (string)$value;
+		return $prepared ? '?' : (string)$value;
 	}
 }

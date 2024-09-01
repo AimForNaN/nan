@@ -5,8 +5,8 @@ namespace NaN\Database\Drivers\Sqlite;
 use NaN\Database\{
 	Drivers\DriverInterface,
 	Drivers\DriverPdoTrait,
+	Query\Builder,
 	Query\BuilderInterface,
-	Query\SqliteBuilder,
 };
 
 class Driver implements DriverInterface, \ArrayAccess {
@@ -22,6 +22,6 @@ class Driver implements DriverInterface, \ArrayAccess {
 	}
 
 	public function createQueryBuilder(): BuilderInterface {
-		return new SqliteBuilder();
+		return new Builder();
 	}
 }

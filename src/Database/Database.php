@@ -9,59 +9,53 @@ class Database implements DatabaseInterface {
 		$driver->openConnection();
 	}
 
-	public function execRaw(string $query, array $bindings): \PDOStatement | false {
-		if (empty($bindings)) {
-			throw new \InvalidArgumentException('Cannot provide empty bindings! Run query() instead if not using prepared statements!');
-		}
-
-		return $this->driver->exec(function (\PDO $db) use ($query, $bindings) {
-			$stmt = $db->prepare($query);
-
-			if ($stmt instanceof \PDOStatement) {
-				$stmt->execute($bindings);
-				// $stmt->fetchAll();
-				return $stmt;
-			}
-
-			return false;
-		});
+	public function exec($statement): \PDOStatement | false {
+		$bindings = $statement->getBindings();
+		return $this->raw(
+			$statement->render(!empty($bindings)),
+			$bindings,
+		);
 	}
 
 	public function getLastInsertId(): string | false {
 		return $this->driver->exec(fn(\PDO $db) => $db->lastInsertId());
 	}
 
-	public function patch(callable $fn): DelegateInterface {
-		$builder = $this->driver->createQueryBuilder();
-		$query = $builder->createPatch();
-		$fn($query);
-		return new Delegate($this, $query);
-	}
-
-	public function pull(callable $fn): Delegate {
+	public function pull(callable $fn): \PDOStatement | false {
 		$builder = $this->driver->createQueryBuilder();
 		$query = $builder->createPull();
 		$fn($query);
-		return new Delegate($this, $query);
+		return $this->exec($query);
 	}
 
-	public function purge(callable $fn): DelegateInterface {
+	public function purge(callable $fn): \PDOStatement | false {
 		$builder = $this->driver->createQueryBuilder();
 		$query = $builder->createPurge();
 		$fn($query);
-		return new Delegate($this, $query);
+		return $this->exec($query);
 	}
 
-	public function push(callable $fn): DelegateInterface {
+	public function push(callable $fn): \PDOStatement | false {
 		$builder = $this->driver->createQueryBuilder();
 		$query = $builder->createPush();
 		$fn($query);
-		return new Delegate($this, $query);
+		return $this->exec($query);
 	}
 
-	public function queryRaw(string $query): \PDOStatement | false {
-		return $this->driver->exec(function (\PDO $db) use ($query) {
-			return $db->query($query);
+	public function raw(string $query, array $bindings = []): \PDOStatement | false {
+		return $this->driver->exec(function (\PDO $db) use ($query, $bindings) {
+			if (empty($bindings)) {
+				return $db->query($query);
+			}
+
+			$stmt = $db->prepare($query);
+
+			if ($stmt instanceof \PDOStatement) {
+				$stmt->execute($bindings);
+				return $stmt;
+			}
+
+			return false;
 		});
 	}
 

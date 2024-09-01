@@ -6,15 +6,6 @@ use NaN\Database\Attrs\TableAttr;
 use NaN\Database\Query\Statements\PullInterface;
 
 class FromClause extends \NaN\Collections\Collection implements ClauseInterface {
-	public function addRawQuery(string $query, array $bindings = []): static {
-		$this->data[] = [
-			'expr' => 'raw',
-			'bindings' => $bindings,
-			'query' =>  $query,
-		];
-		return $this;
-	}
-
 	public function addSubQuery(PullInterface $query): static {
 		$this->data[] = [
 			'expr' => 'query',
@@ -34,7 +25,7 @@ class FromClause extends \NaN\Collections\Collection implements ClauseInterface 
 	}
 
 	public function addTableFromClass($class, string $alias = null): static {
-		$table = $this->getTableFromClass($class);
+		$table = TableAttr::fromClass($class);
 		$this->addTable($table->name, $table->database, $alias);
 		return $this;
 	}
@@ -50,25 +41,10 @@ class FromClause extends \NaN\Collections\Collection implements ClauseInterface 
 			switch ($expr) {
 				case 'query':
 					return \array_merge($ret, $query->getBindings());
-					break;
-				case 'raw':
-					return \array_merge($ret, $bindings);
-					break;
 			}
 
 			return $ret;
 		}, []);
-	}
-
-	public function getTableFromClass(string $class): TableAttr {
-		$ref = new \ReflectionClass($class);
-		[$table] = $ref->getAttributes(TableAttr::class);
-
-		if ($table instanceof \ReflectionAttribute) {
-			$table = $table->newInstance();
-		}
-
-		return $table;
 	}
 
 	public function offsetGet(mixed $offset): mixed {
@@ -108,8 +84,7 @@ class FromClause extends \NaN\Collections\Collection implements ClauseInterface 
 					return $ret;
 			}
 
-			// Raw expression!
-			return $query ?? '';
+			return '';
 		})));
 	}
 }

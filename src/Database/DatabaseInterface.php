@@ -4,32 +4,13 @@ namespace NaN\Database;
 
 interface DatabaseInterface {
 	/**
-	 * Use only for raw prepared statements!
-	 *
-	 * @param string $query Query string.
-	 * @param array $bindings Bindings for prepared statement; cannot be empty!
-	 *
-	 * @throws \InvalidArgumentException
-	 */
-	public function execRaw(string $query, array $bindings): \PDOStatement | false;
-
-	/**
-	 * Prepare patch query.
-	 *
-	 * Update statement equivalent.
-	 *
-	 * @param callable $fn Query-builder callback.
-	 */
-	public function patch(callable $fn): DelegateInterface;
-
-	/**
 	 * Prepare pull query.
 	 *
 	 * Select statement equivalent.
 	 *
 	 * @param callable $fn Query-builder callback.
 	 */
-	public function pull(callable $fn): DelegateInterface;
+	public function pull(callable $fn): \PDOStatement | false;
 
 	/**
 	 * Prepare purge query.
@@ -38,23 +19,26 @@ interface DatabaseInterface {
 	 *
 	 * @param callable $fn Query-builder callback.
 	 */
-	public function purge(callable $fn): DelegateInterface;
+	public function purge(callable $fn): \PDOStatement | false;
 
 	/**
 	 * Prepare push query.
 	 *
-	 * Insert statement equivalent.
+	 * Insert and Update statement equivalent.
 	 *
 	 * @param callable $fn Query-builder callback.
 	 */
-	public function push(callable $fn): DelegateInterface;
+	public function push(callable $fn): \PDOStatement | false;
 
 	/**
-	 * Perform simple raw query.
+	 * Perform raw query.
+	 *
+	 * If `$bindings` is not empty, will use a prepared statement.
 	 *
 	 * @param string $query Unfiltered query string.
+	 * @param array [$bindings] Bindings for prepared statement.
 	 */
-	public function queryRaw(string $query): \PDOStatement | false;
+	public function raw(string $query, array $bindings = []): \PDOStatement | false;
 
 	/**
 	 * Perform a transaction.

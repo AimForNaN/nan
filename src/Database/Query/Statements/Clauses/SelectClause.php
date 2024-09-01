@@ -25,15 +25,7 @@ class SelectClause extends \NaN\Collections\Collection implements ClauseInterfac
 		return $this;
 	}
 
-	public function addRaw(string $column): static {
-		$this->data[] = [
-			'expr' => 'raw',
-			'column' => $column,
-		];
-		return $this;
-	}
-
-	public function allColumns(): static {
+	public function addAllColumns(): static {
 		return $this->addColumn('*');
 	}
 
@@ -65,7 +57,6 @@ class SelectClause extends \NaN\Collections\Collection implements ClauseInterfac
 					}
 			}
 
-			// Raw expression!
 			return $column;
 		}));
 	}

@@ -3,9 +3,6 @@
 namespace NaN\Database\Query;
 
 class Builder implements BuilderInterface {
-	public function createPatch() {
-	}
-
 	public function createPull(): Statements\PullInterface {
 		return new Statements\Pull();
 	}
@@ -13,6 +10,7 @@ class Builder implements BuilderInterface {
 	public function createPurge() {
 	}
 
-	public function createPush() {
+	public function createPush(): Statements\PushInterface {
+		return new Statements\Push();
 	}
 }

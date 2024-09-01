@@ -3,17 +3,7 @@
 namespace NaN\Database\Query\Statements\Clauses;
 
 class OrderByClause implements ClauseInterface {
-	private array $ascending = [];
-	private array $descending = [];
-
-	public function asc(string ...$columns): ClauseInterface {
-		$this->ascending = $columns;
-		return $this;
-	}
-
-	public function desc(string ...$columns): ClauseInterface {
-		$this->descending = $columns;
-		return $this;
+	public function __construct(private array $columns) {
 	}
 
 	public function getBindings(): array {
@@ -23,12 +13,8 @@ class OrderByClause implements ClauseInterface {
 	public function render(bool $prepared = false): string {
 		$columns = [];
 
-		if (!empty($this->ascending)) {
-			$columns[] = \implode(', ', $this->ascending) . ' ASC';
-		}
-
-		if (!empty($this->descending)) {
-			$columns[] = \implode(', ', $this->descending) . ' DESC';
+		foreach ($this->columns as $column => $order) {
+			$columns[] = "$column $order";
 		}
 
 		return 'ORDER BY ' . \implode(', ', $columns);

@@ -32,6 +32,18 @@ describe('Statements', function () {
 		$pull->whereLessThanEquals('id', 255);
 		expect($pull->render())->toBe('SELECT id FROM test WHERE id <= 255');
 		expect($pull->render(true))->toBe('SELECT id FROM test WHERE id <= ?');
+
+		$pull->groupBy(['id']);
+		expect($pull->render())->toBe('SELECT id FROM test WHERE id <= 255 GROUP BY id');
+
+		$pull->limit(1);
+		expect($pull->render())->toBe('SELECT id FROM test WHERE id <= 255 GROUP BY id LIMIT 1');
+
+		$pull->limit(1, 1);
+		expect($pull->render())->toBe('SELECT id FROM test WHERE id <= 255 GROUP BY id LIMIT 1, 1');
+
+		$pull->orderBy(['id' => 'desc', 'test' => 'asc']);
+		expect($pull->render())->toBe('SELECT id FROM test WHERE id <= 255 GROUP BY id ORDER BY id desc, test asc LIMIT 1, 1');
 	});
 
 	test('Push', function () {

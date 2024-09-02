@@ -3,6 +3,8 @@
 namespace NaN\Database\Query\Statements;
 
 interface PullInterface extends StatementInterface {
+	public function first(): PullInterface;
+
 	public function from(string $table, string $database = null): PullInterface;
 
 	public function fromClass($class): PullInterface;
@@ -11,13 +13,15 @@ interface PullInterface extends StatementInterface {
 
 	public function groupBy(array $columns): PullInterface;
 
+	public function last(string $column): PullInterface;
+
 	public function limit(int $limit, int $offset = 0): PullInterface;
 
 	public function orderBy(array $order): PullInterface;
 
-	public function select(array $columns, bool $distinct = false): PullInterface;
+	public function pull(array $columns, bool $distinct = false): PullInterface;
 
-	public function selectAll(bool $distinct = false): PullInterface;
+	public function pullAll(bool $distinct = false): PullInterface;
 
 	public function where(callable $fn): PullInterface;
 

@@ -5,7 +5,7 @@ namespace NaN\Database\Query\Statements;
 interface PushInterface extends StatementInterface {
 	public function into(string $table, string $database = null): PushInterface;
 
-	public function push(array $columns): PushInterface;
+	public function push(iterable $columns): PushInterface;
 
 	public function where(callable $fn): PushInterface;
 

@@ -23,7 +23,7 @@ describe('Database', function () {
 			])->into('test');
 		});
 		$results = $db->pull(function (PullInterface $pull) {
-			$pull->select([
+			$pull->pull([
 				'id',
 			])->from('test');
 		});

@@ -14,6 +14,11 @@ use NaN\Database\Query\Statements\Clauses\{
 class Pull implements PullInterface {
 	use StatementTrait;
 
+	public function first(): PullInterface {
+		$this->limit(1);
+		return $this;
+	}
+
 	public function from(string $table, string $database = null): PullInterface {
 		$from_clause = new FromClause();
 		$from_clause->addTable($table, $database);
@@ -39,6 +44,12 @@ class Pull implements PullInterface {
 		return $this->setGroupBy($group_by_clause);
 	}
 
+	public function last(string $column): PullInterface {
+		$this->orderBy([$column => 'desc']);
+		$this->limit(1);
+		return $this;
+	}
+
 	public function limit(int $limit, int $offset = 0): PullInterface {
 		$limit_clause = new LimitClause($limit, $offset);
 		return $this->setLimit($limit_clause);
@@ -49,7 +60,7 @@ class Pull implements PullInterface {
 		return $this->setOrderBy($order_by_clause);
 	}
 
-	public function select(array $columns, bool $distinct = false): PullInterface {
+	public function pull(array $columns, bool $distinct = false): PullInterface {
 		$select_clause = new SelectClause();
 		$select_clause->addColumns($columns);
 
@@ -60,7 +71,7 @@ class Pull implements PullInterface {
 		return $this->setSelect($select_clause);
 	}
 
-	public function selectAll(bool $distinct = false): PullInterface {
+	public function pullAll(bool $distinct = false): PullInterface {
 		$select_clause = new SelectClause();
 		$select_clause->addAllColumns();
 

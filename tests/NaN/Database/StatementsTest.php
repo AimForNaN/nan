@@ -8,7 +8,7 @@ use NaN\Database\Query\Statements\{
 describe('Statements', function () {
 	test('Pull', function () {
 		$pull = new Pull();
-		$pull->select(['id'])->from('test')->whereEquals('id', 255);
+		$pull->pull(['id'])->from('test')->whereEquals('id', 255);
 
 		expect($pull->render())->toBe('SELECT id FROM test WHERE id = 255');
 		expect($pull->render(true))->toBe('SELECT id FROM test WHERE id = ?');

@@ -3,25 +3,30 @@
 namespace NaN\Database\Query\Statements\Clauses;
 
 class InsertValuesClause implements ClauseInterface {
-	private array $columns = [];
-	private array $values = [];
-
-	public function __construct(array $columns) {
-		foreach ($columns as $key => $val) {
-			$this->columns[] = $key;
-			$this->values[] = $val;
-		}
+	public function __construct(protected iterable $columns) {
 	}
 
 	public function getBindings(): array {
-		return $this->values;
+		return \iterator_to_array($this->columns, false);
+	}
+
+	static public function generatePlaceHolders(int $count): string {
+		return \implode(', ', \array_fill(0, $count, '?'));
 	}
 
 	public function render(bool $prepared = false): string {
-		return '(' . \implode(',', $this->columns) . ') VALUES (' . $this->renderValues($prepared) . ')';
+		$columns = [];
+		$values = [];
+
+		foreach ($this->columns as $column => $value) {
+			$columns[] = $column;
+			$values[] = $value;
+		}
+
+		return '(' . \implode(',', $columns) . ') VALUES (' . static::renderValues($values, $prepared) . ')';
 	}
 
-	public function renderValue(mixed $value): string {
+	static public function renderValue(mixed $value): string {
 		switch (gettype($value)) {
 			case 'string':
 				return '"' . $value . '"';
@@ -30,17 +35,17 @@ class InsertValuesClause implements ClauseInterface {
 		return (string)$value;
 	}
 
-	public function renderValues(bool $prepared = false): string {
+	static public function renderValues(iterable $values, bool $prepared = false): string {
 		$args = [];
 
-		foreach ($this->values as $value) {
-			$args[] = $prepared ? '?' : $this->renderValue($value);
+		foreach ($values as $value) {
+			$args[] = $prepared ? '?' : static::renderValue($value);
 		}
 
 		return \implode(', ', $args);
 	}
 
 	public function toUpdateValues(): UpdateValuesClause {
-		return new UpdateValuesClause(\array_combine($this->columns, $this->values));
+		return new UpdateValuesClause($this->columns);
 	}
 }

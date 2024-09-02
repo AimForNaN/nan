@@ -3,6 +3,10 @@
 namespace NaN\Database\Query\Statements\Clauses;
 
 class WhereClause extends \NaN\Collections\Collection implements ClauseInterface {
+	public function __invoke(string $column, string $operator, mixed $value) {
+		$this->addColumn(null, $column, $operator, $value);
+	}
+
 	/**
 	 * Add where expression.
 	 *
@@ -14,7 +18,7 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 	 * @return static
 	 */
 	public function addColumn(?string $delimiter, string $column, string $operator, mixed $value): static {
-		$this->data[] = [
+		$this->data[$delimiter ? \count($this->data) : 0] = [
 			'expr' => 'condition',
 			'delimiter' => $delimiter,
 			'column' => $column,
@@ -22,14 +26,6 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 			'value' => $value,
 		];
 		return $this;
-	}
-
-	public function andColumn(string $column, string $operator, mixed $value): static {
-		return $this->addColumn('AND', $column, $operator, $value);
-	}
-
-	public function orColumn(string $column, string $operator, mixed $value): static {
-		return $this->addColumn('OR', $column, $operator, $value);
 	}
 
 	/**
@@ -42,7 +38,7 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 	 */
 	public function addGroup(?string $delimiter, callable $fn): static {
 		$where_group = new static();
-		$this->data[] = [
+		$this->data[$delimiter ? \count($this->data) : 0] = [
 			'expr' => 'group',
 			'delimiter' => $delimiter,
 			'group' => $where_group,
@@ -53,16 +49,23 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 		return $this;
 	}
 
-	public function andGroup(callable $fn): static {
-		return $this->addGroup('AND', $fn);
-	}
+	/**
+	 * Add AND where expression.
+	 *
+	 * @param callable|string $column
+	 * @param string $operator =, >=, <=, IN...
+	 * @param mixed $value
+	 *
+	 * @return static
+	 *
+	 * @see addColumn()
+	 */
+	public function and(callable|string $column, string $operator, mixed $value): static {
+		if (\is_callable($column)) {
+			return $this->addGroup('AND', $column);
+		}
 
-	public function orGroup(callable $fn): static {
-		return $this->addGroup('OR', $fn);
-	}
-
-	static public function generatePlaceHolders(int $count): string {
-		return \implode(', ', \array_fill(0, $count, '?'));
+		return $this->addColumn('AND', $column, $operator, $value);
 	}
 
 	public function getBindings(): array {
@@ -92,6 +95,25 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 
 	public function offsetSet(mixed $offset, mixed $value): void {
 		throw new \BadMethodCallException('Setting value through array accessor is not supported!');
+	}
+
+	/**
+	 * Add OR where expression.
+	 *
+	 * @param callable|string $column
+	 * @param string $operator =, >=, <=, IN...
+	 * @param mixed $value
+	 *
+	 * @return static
+	 *
+	 * @see addColumn()
+	 */
+	public function or(callable|string $column, string $operator, mixed $value): static {
+		if (\is_callable($column)) {
+			return $this->addGroup('OR', $column);
+		}
+
+		return $this->addColumn('OR', $column, $operator, $value);
 	}
 
 	public function render(bool $prepared = false): string {

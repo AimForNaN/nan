@@ -5,6 +5,10 @@ namespace NaN\Database\Query\Statements\Clauses;
 class SelectClause extends \NaN\Collections\Collection implements ClauseInterface {
 	private bool $distinct = false;
 
+	public function __invoke(array $columns) {
+		$this->addColumns($columns);
+	}
+
 	public function addColumn(string $column, ?string $alias = null): static {
 		$this->data[] = [
 			'expr' => 'column',

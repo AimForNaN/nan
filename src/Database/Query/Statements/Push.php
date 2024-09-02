@@ -16,7 +16,7 @@ class Push implements PushInterface {
 		return $this;
 	}
 
-	public function push(array $columns): PushInterface {
+	public function push(iterable $columns): PushInterface {
 		$this->query[1] = new InsertValuesClause($columns);
 		return $this;
 	}

@@ -14,6 +14,12 @@ class LimitClause implements ClauseInterface {
 	}
 
 	public function render(bool $prepared = false): string {
-		return \sprintf('LIMIT %d, %d', $this->limit, $this->offset);
+		$ret = 'LIMIT ' . $this->limit;
+
+		if ($this->offset) {
+			$ret .= ', ' . $this->offset;
+		}
+
+		return $ret;
 	}
 }

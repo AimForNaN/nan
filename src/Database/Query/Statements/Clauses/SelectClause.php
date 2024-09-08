@@ -9,7 +9,7 @@ class SelectClause extends \NaN\Collections\Collection implements ClauseInterfac
 		$this->addColumns($columns);
 	}
 
-	public function addColumn(string $column, ?string $alias = null): static {
+	public function addColumn(string $column, string $alias = ''): static {
 		$this->data[] = [
 			'expr' => 'column',
 			'alias' => $alias,
@@ -56,7 +56,7 @@ class SelectClause extends \NaN\Collections\Collection implements ClauseInterfac
 
 			switch ($expr) {
 				case 'column':
-					if ($alias) {
+					if (!empty($alias)) {
 						return "$column AS $alias";
 					}
 			}

@@ -4,7 +4,7 @@ namespace NaN\Database\Query\Statements\Clauses;
 
 class UpdateValuesClause extends InsertValuesClause {
 	public function render(bool $prepared = false): string {
-		return 'SET (' . static::renderValues($this->columns, $prepared) . ')';
+		return 'SET ' . static::renderValues($this->columns, $prepared);
 	}
 
 	static public function renderValues(iterable $values, bool $prepared = false): string {

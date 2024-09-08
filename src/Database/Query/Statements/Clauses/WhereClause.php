@@ -3,8 +3,9 @@
 namespace NaN\Database\Query\Statements\Clauses;
 
 class WhereClause extends \NaN\Collections\Collection implements ClauseInterface {
-	public function __invoke(string $column, string $operator, mixed $value) {
+	public function __invoke(string $column, string $operator, mixed $value): static {
 		$this->addColumn(null, $column, $operator, $value);
+		return $this;
 	}
 
 	/**
@@ -32,11 +33,11 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 	 * Add sub where clause.
 	 *
 	 * @param ?string $delimiter AND, OR...
-	 * @param callable $fn
+	 * @param Closure $fn
 	 *
 	 * @return static
 	 */
-	public function addGroup(?string $delimiter, callable $fn): static {
+	public function addGroup(?string $delimiter, \Closure $fn): static {
 		$where_group = new static();
 		$this->data[$delimiter ? \count($this->data) : 0] = [
 			'expr' => 'group',
@@ -52,7 +53,7 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 	/**
 	 * Add AND where expression.
 	 *
-	 * @param callable|string $column
+	 * @param Closure|string $column
 	 * @param string $operator =, >=, <=, IN...
 	 * @param mixed $value
 	 *
@@ -60,8 +61,8 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 	 *
 	 * @see addColumn()
 	 */
-	public function and(callable|string $column, string $operator, mixed $value): static {
-		if (\is_callable($column)) {
+	public function and(\Closure|string $column, string $operator = null, mixed $value = null): static {
+		if ($column instanceof \Closure) {
 			return $this->addGroup('AND', $column);
 		}
 
@@ -100,7 +101,7 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 	/**
 	 * Add OR where expression.
 	 *
-	 * @param callable|string $column
+	 * @param Closure|string $column
 	 * @param string $operator =, >=, <=, IN...
 	 * @param mixed $value
 	 *
@@ -108,8 +109,8 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 	 *
 	 * @see addColumn()
 	 */
-	public function or(callable|string $column, string $operator, mixed $value): static {
-		if (\is_callable($column)) {
+	public function or(\Closure|string $column, string $operator = null, mixed $value = null): static {
+		if ($column instanceof \Closure) {
 			return $this->addGroup('OR', $column);
 		}
 
@@ -136,7 +137,7 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 					$ret .= "$column $operator " . $this->renderValue($value, $prepared);
 					break;
 				case 'group':
-					$ret .= '(' . $group->render($prepared) . ')';
+					$ret .= '(' . \str_replace('WHERE ', '', $group->render($prepared)) . ')';
 					break;
 			}
 

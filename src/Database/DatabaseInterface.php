@@ -4,7 +4,16 @@ namespace NaN\Database;
 
 interface DatabaseInterface {
 	/**
-	 * Prepare pull query.
+	 * Perform patch query.
+	 *
+	 * Update statement equivalent.
+	 *
+	 * @param callable $fn Query-builder callback.
+	 */
+	public function patch(callable $fn): \PDOStatement | false;
+
+	/**
+	 * Perform pull query.
 	 *
 	 * Select statement equivalent.
 	 *
@@ -13,7 +22,7 @@ interface DatabaseInterface {
 	public function pull(callable $fn): \PDOStatement | false;
 
 	/**
-	 * Prepare purge query.
+	 * Perform purge query.
 	 *
 	 * Delete statement equivalent.
 	 *
@@ -22,9 +31,9 @@ interface DatabaseInterface {
 	public function purge(callable $fn): \PDOStatement | false;
 
 	/**
-	 * Prepare push query.
+	 * Perform push query.
 	 *
-	 * Insert and Update statement equivalent.
+	 * Insert statement equivalent.
 	 *
 	 * @param callable $fn Query-builder callback.
 	 */

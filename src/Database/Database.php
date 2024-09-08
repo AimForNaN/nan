@@ -21,24 +21,39 @@ class Database implements DatabaseInterface {
 		return $this->driver->exec(fn(\PDO $db) => $db->lastInsertId());
 	}
 
+	public function patch(callable $fn): \PDOStatement | false {
+		$builder = $this->driver->createQueryBuilder();
+		$query = $builder->createPatch();
+
+		$fn($query);
+
+		return $this->exec($query);
+	}
+
 	public function pull(callable $fn): \PDOStatement | false {
 		$builder = $this->driver->createQueryBuilder();
 		$query = $builder->createPull();
+
 		$fn($query);
+
 		return $this->exec($query);
 	}
 
 	public function purge(callable $fn): \PDOStatement | false {
 		$builder = $this->driver->createQueryBuilder();
 		$query = $builder->createPurge();
+
 		$fn($query);
+
 		return $this->exec($query);
 	}
 
 	public function push(callable $fn): \PDOStatement | false {
 		$builder = $this->driver->createQueryBuilder();
 		$query = $builder->createPush();
+
 		$fn($query);
+
 		return $this->exec($query);
 	}
 
@@ -51,7 +66,10 @@ class Database implements DatabaseInterface {
 			$stmt = $db->prepare($query);
 
 			if ($stmt instanceof \PDOStatement) {
-				$stmt->execute($bindings);
+				if (!$stmt->execute($bindings)) {
+					return false;
+				}
+
 				return $stmt;
 			}
 

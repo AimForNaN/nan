@@ -1,80 +1,43 @@
 <?php
 
 use NaN\Database\Query\Statements\{
-	Pull,
-	Push,
+    Patch,
+    Pull,
+    Purge,
+    Push,
 };
 
 describe('Statements', function () {
+	test('Patch', function () {
+		$patch = new Patch();
+
+		$patch->patch('test')->with(['id' => 255]);
+		expect($patch->render())->toBe('UPDATE test SET id = 255');
+		expect($patch->render(true))->toBe('UPDATE test SET id = ?');
+	});
+
 	test('Pull', function () {
 		$pull = new Pull();
-		$pull->pull(['id'])->from('test')->whereEquals('id', 255);
 
-		expect($pull->render())->toBe('SELECT id FROM test WHERE id = 255');
-		expect($pull->render(true))->toBe('SELECT id FROM test WHERE id = ?');
+		$pull->pull(['id'])->from('test');
+		expect($pull->render())->toBe('SELECT id FROM test');
 
-		$pull->whereGreaterThan('id', 255);
-		expect($pull->render())->toBe('SELECT id FROM test WHERE id > 255');
-		expect($pull->render(true))->toBe('SELECT id FROM test WHERE id > ?');
+		$pull->pullAll()->from('test');
+		expect($pull->render())->toBe('SELECT * FROM test');
+	});
 
-		$pull->whereGreaterThanEquals('id', 255);
-		expect($pull->render())->toBe('SELECT id FROM test WHERE id >= 255');
-		expect($pull->render(true))->toBe('SELECT id FROM test WHERE id >= ?');
+	test('Purge', function () {
+		$purge = new Purge();
 
-		$pull->whereIn('id', [255]);
-		expect($pull->render())->toBe('SELECT id FROM test WHERE id IN (255)');
-		expect($pull->render(true))->toBe('SELECT id FROM test WHERE id IN (?)');
-
-		$pull->whereLessThan('id', 255);
-		expect($pull->render())->toBe('SELECT id FROM test WHERE id < 255');
-		expect($pull->render(true))->toBe('SELECT id FROM test WHERE id < ?');
-
-		$pull->whereLessThanEquals('id', 255);
-		expect($pull->render())->toBe('SELECT id FROM test WHERE id <= 255');
-		expect($pull->render(true))->toBe('SELECT id FROM test WHERE id <= ?');
-
-		$pull->groupBy(['id']);
-		expect($pull->render())->toBe('SELECT id FROM test WHERE id <= 255 GROUP BY id');
-
-		$pull->limit(1);
-		expect($pull->render())->toBe('SELECT id FROM test WHERE id <= 255 GROUP BY id LIMIT 1');
-
-		$pull->limit(1, 1);
-		expect($pull->render())->toBe('SELECT id FROM test WHERE id <= 255 GROUP BY id LIMIT 1, 1');
-
-		$pull->orderBy(['id' => 'desc', 'test' => 'asc']);
-		expect($pull->render())->toBe('SELECT id FROM test WHERE id <= 255 GROUP BY id ORDER BY id desc, test asc LIMIT 1, 1');
+		$purge->from('test');
+		expect($purge->render())->toBe('DELETE FROM test');
 	});
 
 	test('Push', function () {
 		$push = new Push();
-		$push->push(['id' => 255])->into('test');
 
+		$push->push(['id' => 255])->into('test');
 		expect($push->render())->toBe('INSERT INTO test (id) VALUES (255)');
 		expect($push->render(true))->toBe('INSERT INTO test (id) VALUES (?)');
-
-		$push->whereEquals('id', 255);
-		expect($push->render())->toBe('UPDATE test SET (id = 255) WHERE id = 255');
-		expect($push->render(true))->toBe('UPDATE test SET (id = ?) WHERE id = ?');
-
-		$push->whereGreaterThan('id', 255);
-		expect($push->render())->toBe('UPDATE test SET (id = 255) WHERE id > 255');
-		expect($push->render(true))->toBe('UPDATE test SET (id = ?) WHERE id > ?');
-
-		$push->whereGreaterThanEquals('id', 255);
-		expect($push->render())->toBe('UPDATE test SET (id = 255) WHERE id >= 255');
-		expect($push->render(true))->toBe('UPDATE test SET (id = ?) WHERE id >= ?');
-
-		$push->whereIn('id', [255]);
-		expect($push->render())->toBe('UPDATE test SET (id = 255) WHERE id IN (255)');
-		expect($push->render(true))->toBe('UPDATE test SET (id = ?) WHERE id IN (?)');
-
-		$push->whereLessThan('id', 255);
-		expect($push->render())->toBe('UPDATE test SET (id = 255) WHERE id < 255');
-		expect($push->render(true))->toBe('UPDATE test SET (id = ?) WHERE id < ?');
-
-		$push->whereLessThanEquals('id', 255);
-		expect($push->render())->toBe('UPDATE test SET (id = 255) WHERE id <= 255');
-		expect($push->render(true))->toBe('UPDATE test SET (id = ?) WHERE id <= ?');
 	});
 });

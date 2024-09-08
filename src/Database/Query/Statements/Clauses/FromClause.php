@@ -2,11 +2,10 @@
 
 namespace NaN\Database\Query\Statements\Clauses;
 
-use NaN\Database\Attrs\TableAttr;
-use NaN\Database\Query\Statements\PullInterface;
+use NaN\Database\Query\Statements\StatementInterface;
 
 class FromClause extends \NaN\Collections\Collection implements ClauseInterface {
-	public function addSubQuery(PullInterface $query): static {
+	public function addSubQuery(StatementInterface $query): static {
 		$this->data[] = [
 			'expr' => 'query',
 			'query' => $query,
@@ -14,7 +13,7 @@ class FromClause extends \NaN\Collections\Collection implements ClauseInterface 
 		return $this;
 	}
 
-	public function addTable(string $table, ?string $database = null, ?string $alias = null): static {
+	public function addTable(string $table, string $database = null, string $alias = null): static {
 		$this->data[] = [
 			'expr' => 'table',
 			'alias' => $alias,
@@ -25,8 +24,7 @@ class FromClause extends \NaN\Collections\Collection implements ClauseInterface 
 	}
 
 	public function addTableFromClass($class, string $alias = null): static {
-		$table = TableAttr::fromClass($class);
-		$this->addTable($table->name, $table->database, $alias);
+		$this->addTable($class::table(), $class::database(), $alias);
 		return $this;
 	}
 
@@ -67,11 +65,11 @@ class FromClause extends \NaN\Collections\Collection implements ClauseInterface 
 
 			switch ($expr) {
 				case 'query':
-					return $query->render($prepared);
+					return '(' . $query->render($prepared) . ')';
 				case 'table':
 					$ret = '';
 
-					if ($database) {
+					if (!empty($database)) {
 						$ret .= $database . '.';
 					}
 

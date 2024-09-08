@@ -4,7 +4,7 @@ namespace NaN\Database\Query\Statements\Clauses;
 
 class LimitClause implements ClauseInterface {
 	public function __construct(
-		public readonly int $limit,
+		public readonly int $limit = 1,
 		public readonly int $offset = 0,
 	) {
 	}

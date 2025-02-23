@@ -1,6 +1,6 @@
 <?php
 
-namespace NaN\App;
+namespace NaN\Http;
 
 use GuzzleHttp\Psr7\Utils;
 use Psr\Http\Message\ResponseInterface;
@@ -18,7 +18,7 @@ class Response extends \GuzzleHttp\Psr7\Response {
 
 		static::sendHeaders($rsp);
 
-		if ($rsp->getStatusCode() !== 204) {
+		if ($status !== 204) {
 			static::sendBody($rsp);
 		}
 	}

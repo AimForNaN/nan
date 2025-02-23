@@ -2,12 +2,18 @@
 
 namespace NaN\Database\Query\Statements;
 
-use NaN\Database\Query\Statements\Clauses\{
-    DeleteClause,
-    FromClause,
-    LimitClause,
-    OrderByClause,
-    WhereClause,
+use NaN\Database\Query\Statements\{
+	Clauses\DeleteClause,
+	Clauses\FromClause,
+	Clauses\LimitClause,
+	Clauses\OrderByClause,
+	Clauses\WhereClause,
+	Clauses\Traits\FromClauseTrait,
+	Clauses\Traits\LimitClauseTrait,
+	Clauses\Traits\OrderByTrait,
+	Clauses\Traits\WhereClauseTrait,
+	Interfaces\PurgeInterface,
+	Traits\StatementTrait,
 };
 
 class Purge implements PurgeInterface {

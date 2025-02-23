@@ -2,11 +2,15 @@
 
 namespace NaN\Database\Query\Statements;
 
-use NaN\Database\Query\Statements\Clauses\{
-	LimitClause,
-	UpdateClause,
-	UpdateValuesClause,
-    WhereClause,
+use NaN\Database\Query\Statements\{
+	Clauses\LimitClause,
+	Clauses\UpdateClause,
+	Clauses\UpdateValuesClause,
+	Clauses\WhereClause,
+	Clauses\Traits\LimitClauseTrait,
+	Clauses\Traits\WhereClauseTrait,
+	Interfaces\PatchInterface,
+	Traits\StatementTrait,
 };
 
 class Patch implements PatchInterface {

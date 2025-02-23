@@ -2,13 +2,20 @@
 
 namespace NaN\Database\Query\Statements;
 
-use NaN\Database\Query\Statements\Clauses\{
-	FromClause,
-	GroupByClause,
-	LimitClause,
-	OrderByClause,
-	SelectClause,
-	WhereClause,
+use NaN\Database\Query\Statements\{
+	Clauses\FromClause,
+	Clauses\GroupByClause,
+	Clauses\LimitClause,
+	Clauses\OrderByClause,
+	Clauses\SelectClause,
+	Clauses\WhereClause,
+	Clauses\Traits\FromClauseTrait,
+	Clauses\Traits\GroupByTrait,
+	Clauses\Traits\LimitClauseTrait,
+	Clauses\Traits\OrderByTrait,
+	Clauses\Traits\WhereClauseTrait,
+	Interfaces\PullInterface,
+	Traits\StatementTrait,
 };
 
 class Pull implements PullInterface {
@@ -30,20 +37,9 @@ class Pull implements PullInterface {
 		return $this;
 	}
 
-	public function pull(array $columns, bool $distinct = false): static {
+	public function pull(array $columns = ['*'], bool $distinct = false): static {
 		$select_clause = new SelectClause();
 		$select_clause->addColumns($columns);
-
-		if ($distinct) {
-			$select_clause->distinct();
-		}
-
-		return $this->setSelect($select_clause);
-	}
-
-	public function pullAll(bool $distinct = false): static {
-		$select_clause = new SelectClause();
-		$select_clause->addAllColumns();
 
 		if ($distinct) {
 			$select_clause->distinct();

@@ -25,14 +25,8 @@ class Collection implements CollectionInterface {
 		return true;
 	}
 
-	public function filter(callable $filter): CollectionInterface {
-		$data = new \CallbackFilterIterator($this->getIterator(), $filter);
-		$data = \iterator_to_array($data);
-
-		$ret = clone $this;
-		$ret->data = $data;
-
-		return $ret;
+	public function filter(callable $filter): \Traversable {
+		return new \CallbackFilterIterator($this->getIterator(), $filter);
 	}
 
 	public function find(callable $fn): mixed {

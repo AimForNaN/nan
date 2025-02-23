@@ -2,6 +2,8 @@
 
 namespace NaN\Database\Query\Statements\Clauses;
 
+use NaN\Database\Query\Statements\Clauses\Interfaces\ClauseInterface;
+
 class DeleteClause implements ClauseInterface {
 	public function getBindings(): array {
 		return [];

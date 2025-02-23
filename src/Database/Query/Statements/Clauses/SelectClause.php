@@ -2,6 +2,8 @@
 
 namespace NaN\Database\Query\Statements\Clauses;
 
+use NaN\Database\Query\Statements\Clauses\Interfaces\ClauseInterface;
+
 class SelectClause extends \NaN\Collections\Collection implements ClauseInterface {
 	private bool $distinct = false;
 
@@ -27,10 +29,6 @@ class SelectClause extends \NaN\Collections\Collection implements ClauseInterfac
 			}
 		}
 		return $this;
-	}
-
-	public function addAllColumns(): static {
-		return $this->addColumn('*');
 	}
 
 	public function distinct(): static {

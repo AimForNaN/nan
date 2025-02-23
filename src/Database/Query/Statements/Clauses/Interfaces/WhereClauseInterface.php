@@ -1,13 +1,13 @@
 <?php
 
-namespace NaN\Database\Query\Statements;
+namespace NaN\Database\Query\Statements\Clauses\Interfaces;
 
 use NaN\Database\Query\Statements\Clauses\WhereClause;
 
 interface WhereClauseInterface {
 	public function setWhere(WhereClause $where_clause): static;
 
-	public function where(callable $fn): static;
+	public function where(\Closure $fn): static;
 
 	public function whereEquals(string $column, mixed $value): static;
 

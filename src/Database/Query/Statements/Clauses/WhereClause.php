@@ -2,6 +2,8 @@
 
 namespace NaN\Database\Query\Statements\Clauses;
 
+use NaN\Database\Query\Statements\Clauses\Interfaces\ClauseInterface;
+
 class WhereClause extends \NaN\Collections\Collection implements ClauseInterface {
 	public function __invoke(string $column, string $operator, mixed $value): static {
 		$this->addColumn(null, $column, $operator, $value);
@@ -18,7 +20,7 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 	 *
 	 * @return static
 	 */
-	public function addColumn(?string $delimiter, string $column, string $operator, mixed $value): static {
+	protected function addColumn(?string $delimiter, string $column, string $operator, mixed $value): static {
 		$this->data[$delimiter ? \count($this->data) : 0] = [
 			'expr' => 'condition',
 			'delimiter' => $delimiter,
@@ -37,7 +39,7 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 	 *
 	 * @return static
 	 */
-	public function addGroup(?string $delimiter, \Closure $fn): static {
+	protected function addGroup(?string $delimiter, \Closure $fn): static {
 		$where_group = new static();
 		$this->data[$delimiter ? \count($this->data) : 0] = [
 			'expr' => 'group',

@@ -5,7 +5,7 @@ namespace NaN\Collections;
 interface CollectionInterface extends \ArrayAccess, \Countable, \IteratorAggregate {
 	public function every(callable $fn): bool;
 
-	public function filter(callable $filter): CollectionInterface;
+	public function filter(callable $filter): \Traversable;
 
 	public function find(callable $fn): mixed;
 

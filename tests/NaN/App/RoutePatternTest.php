@@ -1,16 +1,19 @@
 <?php
 
-use NaN\App\Request;
-use NaN\App\RoutePattern;
+use NaN\App\Router\RoutePattern;
+use NaN\Http\Request;
 
 describe('Route patterns', function () {
 	test('Basic matches', function () {
+		$request = new Request('GET', '/');
 		$pattern = new RoutePattern('/');
 		expect($pattern->compile())->toBe('#^/$#i');
+		expect($pattern->match($request))->toBeTrue();
 
+		$request = new Request('GET', '/test');
 		$pattern = new RoutePattern('/test');
-		expect($pattern->compile());
 		expect($pattern->compile())->toBe('#^/test$#i');
+		expect($pattern->match($request))->toBeTrue();
 	});
 
 	test('Variable matches', function () {

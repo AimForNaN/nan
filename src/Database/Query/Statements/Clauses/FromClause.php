@@ -2,7 +2,8 @@
 
 namespace NaN\Database\Query\Statements\Clauses;
 
-use NaN\Database\Query\Statements\StatementInterface;
+use NaN\Database\Query\Statements\Clauses\Interfaces\ClauseInterface;
+use NaN\Database\Query\Statements\Interfaces\StatementInterface;
 
 class FromClause extends \NaN\Collections\Collection implements ClauseInterface {
 	public function addSubQuery(StatementInterface $query): static {
@@ -58,7 +59,7 @@ class FromClause extends \NaN\Collections\Collection implements ClauseInterface 
 			/**
 			 * @var string $alias
 			 * @var string $database
-			 * @var \NaN\Database\Query\Statements\StatementInterface $query
+			 * @var \NaN\Database\Query\Statements\Interfaces\StatementInterface $query
 			 * @var string $table
 			 */
 			\extract($column);

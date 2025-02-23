@@ -1,16 +1,14 @@
 <?php
 
-namespace NaN\Database\Query\Statements;
+namespace NaN\Database\Query\Statements\Traits;
 
-use NaN\Database\Query\Statements\Clauses\{
-	ClauseInterface,
-};
+use NaN\Database\Query\Statements\Clauses\Interfaces\ClauseInterface;
 
 trait StatementTrait {
 	private array $query = [];
 
 	public function getBindings(): array {
-		return \array_reduce($this->query, function (Array $ret, ClauseInterface $stmt): Array {
+		return \array_reduce($this->query, function (array $ret, ClauseInterface $stmt): array {
 			return \array_merge($ret, $stmt->getBindings());
 		}, []);
 	}

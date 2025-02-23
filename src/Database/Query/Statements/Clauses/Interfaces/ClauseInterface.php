@@ -1,8 +1,8 @@
 <?php
 
-namespace NaN\Database\Query\Statements;
+namespace NaN\Database\Query\Statements\Clauses\Interfaces;
 
-interface StatementInterface {
+interface ClauseInterface {
 	public function getBindings(): array;
 
 	public function render(bool $prepared = false): string;

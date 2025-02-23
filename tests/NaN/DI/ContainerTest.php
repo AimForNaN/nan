@@ -1,13 +1,13 @@
 <?php
 
-use NaN\App\Request;
 use NaN\DI\{
 	Container,
 	Definition,
 	Definitions,
+	Exceptions\NotFoundException,
 };
-use NaN\DI\Exceptions\NotFoundException;
 use NaN\Env;
+use NaN\Http\Request;
 
 describe('Dependency Injection: Container', function () {
 	test('Basic resolution', function () {

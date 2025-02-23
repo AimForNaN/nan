@@ -5,10 +5,10 @@ use Monolog\{
 	Logger,
 };
 use NaN\{
-	App\Request,
 	DI\Container,
 	DI\Definition,
 	DI\Definitions,
+	Http\Request,
 };
 
 describe('Dependency Injection: Definition', function () {

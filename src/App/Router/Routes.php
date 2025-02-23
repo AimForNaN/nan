@@ -1,6 +1,6 @@
 <?php
 
-namespace NaN\App;
+namespace NaN\App\Router;
 
 class Routes extends \NaN\Collections\TypedCollection {
 	public function __construct(
@@ -17,7 +17,7 @@ class Routes extends \NaN\Collections\TypedCollection {
 	 * @return \Traversable
 	 */
 	public function getByMethod(string $method): \Traversable {
-		return new \CallbackFilterIterator(new \ArrayIterator($this->data), function (Route $route) use ($method) {
+		return $this->filter(function (Route $route) use ($method) {
 			return $route->method === $method;
 		});
 	}

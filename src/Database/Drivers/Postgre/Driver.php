@@ -1,7 +1,6 @@
-
 <?php
 
-namespace NaN\Database\Drivers\MySql;
+namespace NaN\Database\Drivers\Postgre;
 
 use NaN\Database\{
 	Drivers\DriverInterface,

@@ -2,14 +2,13 @@
 
 use NaN\{
 	App\App,
-	App\Request,
-	App\Response,
-	App\Route,
-	App\Routes,
+	App\Router\Route,
+	App\Router\Routes,
 	DI\Container,
 	DI\Definition,
 	DI\Definitions,
-};
+	Http\Request,
+	Http\Response};
 use Psr\Http\{
 	Message\ResponseInterface,
 };
@@ -21,7 +20,7 @@ describe('App', function () {
 		]);
 		$container = new Container($definitions);
 		$routes = new Routes([
-			Route::get('/', function (App $app) {
+			Route::get('/{id}', function ($id, App $app) {
 				return $app[ResponseInterface::class];
 			}),
 		]);
@@ -29,7 +28,7 @@ describe('App', function () {
 
 		expect($container->has(ResponseInterface::class))->toBeTrue();
 
-		$rsp = $app->handle(new Request('GET', '/'));
+		$rsp = $app->handle(new Request('GET', '/1'));
 		expect($rsp)->toBeInstanceOf(Response::class);
 	});
 });

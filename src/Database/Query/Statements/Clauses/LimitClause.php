@@ -2,6 +2,8 @@
 
 namespace NaN\Database\Query\Statements\Clauses;
 
+use NaN\Database\Query\Statements\Clauses\Interfaces\ClauseInterface;
+
 class LimitClause implements ClauseInterface {
 	public function __construct(
 		public readonly int $limit = 1,

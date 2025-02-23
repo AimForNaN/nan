@@ -1,0 +1,78 @@
+<?php
+
+namespace NaN\App\Router;
+
+use Psr\Http\Message\ServerRequestInterface as PsrServerRequestInterface;
+
+class RoutePattern {
+	private array $groups = [];
+	private bool $has_parameters = false;
+	private array $matches = [];
+	private string $regex = '';
+
+	public function __construct(
+		private string $pattern,
+	) {
+	}
+
+	public function compile(): string {
+		if (!empty($this->regex)) {
+			return $this->regex;
+		}
+
+		if ($this->has_parameters = static::hasParameters($this->pattern)) {
+			if (preg_match_all('#\{([a-zA-Z]{1}[\w]+)\}#', $this->pattern, $matches)) {
+				[$matches, $groups] = $matches;
+				$this->groups = $groups;
+				$this->regex = $this->pattern;
+
+
+				$replacements = [];
+				foreach ($groups as $group) {
+					$replacements['{' . $group . '}'] = '(?P<' . $group . '>[^/]+)';
+				}
+
+				$replacement = \strtr($this->regex, $replacements);
+				return $this->regex = "#^{$replacement}$#i";
+			}
+		}
+		
+		return $this->regex = "#^{$this->pattern}$#i";
+	}
+
+	public function getGroups(): array {
+		return $this->groups;
+	}
+
+	public function getMatches(): array {
+		return $this->matches;
+	}
+
+	static public function hasParameters(string $pattern): bool {
+		return \strpos($pattern, '{') !== false;
+	}
+
+	public function match(PsrServerRequestInterface $request): bool {
+		$this->matches = [];
+		$path = $request->getUri()->getPath();
+
+		// Static match!
+		if ($this->pattern === $path) {
+			return true;
+		}
+
+		if (!$this->has_parameters) {
+			return false;
+		}
+
+		$ret = \preg_match($this->regex, $path, $matches);
+
+		if (\count($matches)) {
+			foreach ($this->groups as $name) {
+				$this->matches[$name] = $matches[$name];
+			}
+		}
+
+		return (bool)$ret;
+	}
+}

@@ -2,7 +2,7 @@
 
 namespace NaN\Database\Query\Statements\Clauses;
 
-use NaN\Database\Query\Statements\Clauses\ClauseInterface;
+use NaN\Database\Query\Statements\Clauses\Interfaces\ClauseInterface;
 
 class UpdateClause implements ClauseInterface {
 	public function __construct(

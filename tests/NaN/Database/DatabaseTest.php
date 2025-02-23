@@ -2,7 +2,7 @@
 
 use NaN\Database\Database;
 use NaN\Database\Drivers\Sqlite\Driver;
-use NaN\Database\Query\Statements\{
+use NaN\Database\Query\Statements\Interfaces\{
 	PullInterface,
 	PushInterface,
 };

@@ -1,6 +1,6 @@
 <?php
 
-namespace NaN\App;
+namespace NaN\App\Router;
 
 use NaN\DI\{
 	Arguments\Arguments,

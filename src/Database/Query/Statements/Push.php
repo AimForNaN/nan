@@ -2,10 +2,13 @@
 
 namespace NaN\Database\Query\Statements;
 
-use NaN\Database\Query\Statements\Clauses\{
-	InsertClause,
-	InsertValuesClause,
-    WhereClause,
+use NaN\Database\Query\Statements\{
+	Clauses\InsertClause,
+	Clauses\InsertValuesClause,
+	Clauses\WhereClause,
+	Clauses\Traits\WhereClauseTrait,
+	Interfaces\PushInterface,
+	Traits\StatementTrait,
 };
 
 class Push implements PushInterface {

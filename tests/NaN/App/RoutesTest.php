@@ -1,6 +1,6 @@
 <?php
 
-use NaN\App\{
+use NaN\App\Router\{
 	Route,
 	Routes,
 };

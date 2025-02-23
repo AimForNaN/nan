@@ -2,12 +2,19 @@
 
 namespace NaN\Database\Query;
 
+use NaN\Database\Query\Statements\Interfaces\{
+	PatchInterface,
+	PullInterface,
+	PurgeInterface,
+	PushInterface,
+};
+
 interface BuilderInterface {
-	public function createPatch(): Statements\PatchInterface;
+	public function createPatch(): PatchInterface;
 
-	public function createPull(): Statements\PullInterface;
+	public function createPull(): PullInterface;
 
-	public function createPurge(): Statements\PurgeInterface;
+	public function createPurge(): PurgeInterface;
 
-	public function createPush(): Statements\PushInterface;
+	public function createPush(): PushInterface;
 }

@@ -19,11 +19,11 @@ describe('Statements', function () {
 	test('Pull', function () {
 		$pull = new Pull();
 
+		$pull->pull()->from('test');
+		expect($pull->render())->toBe('SELECT * FROM test');
+
 		$pull->pull(['id'])->from('test');
 		expect($pull->render())->toBe('SELECT id FROM test');
-
-		$pull->pullAll()->from('test');
-		expect($pull->render())->toBe('SELECT * FROM test');
 	});
 
 	test('Purge', function () {

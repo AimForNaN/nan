@@ -19,7 +19,8 @@
 	},
 	"require-dev": {
 		"monolog/monolog": "^3.6",
-		"pestphp/pest": "^2.34"
+		"pestphp/pest": "^2.34",
+		"phpbench/phpbench": "^1.3"
 	},
 	"config": {
 		"allow-plugins": {
@@ -27,6 +28,7 @@
 		}
 	},
 	"scripts": {
+		"benchmark": "phpbench run benchmarks --report=benchmark",
 		"test": "pest"
 	}
 }

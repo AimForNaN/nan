@@ -6,7 +6,7 @@ use NaN\Database\Query\Statements\Clauses\Interfaces\ClauseInterface;
 
 class WhereClause extends \NaN\Collections\Collection implements ClauseInterface {
 	public function __invoke(string $column, string $operator, mixed $value): static {
-		$this->addColumn(null, $column, $operator, $value);
+		$this->_addColumn(null, $column, $operator, $value);
 		return $this;
 	}
 
@@ -20,7 +20,7 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 	 *
 	 * @return static
 	 */
-	protected function addColumn(?string $delimiter, string $column, string $operator, mixed $value): static {
+	protected function _addColumn(?string $delimiter, string $column, string $operator, mixed $value): static {
 		$this->data[$delimiter ? \count($this->data) : 0] = [
 			'expr' => 'condition',
 			'delimiter' => $delimiter,
@@ -39,7 +39,7 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 	 *
 	 * @return static
 	 */
-	protected function addGroup(?string $delimiter, \Closure $fn): static {
+	protected function _addGroup(?string $delimiter, \Closure $fn): static {
 		$where_group = new static();
 		$this->data[$delimiter ? \count($this->data) : 0] = [
 			'expr' => 'group',
@@ -61,14 +61,14 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 	 *
 	 * @return static
 	 *
-	 * @see addColumn()
+	 * @see _addColumn()
 	 */
-	public function and(\Closure|string $column, string $operator = null, mixed $value = null): static {
+	public function and(\Closure|string $column, ?string $operator = null, mixed $value = null): static {
 		if ($column instanceof \Closure) {
-			return $this->addGroup('AND', $column);
+			return $this->_addGroup('AND', $column);
 		}
 
-		return $this->addColumn('AND', $column, $operator, $value);
+		return $this->_addColumn('AND', $column, $operator, $value);
 	}
 
 	public function getBindings(): array {
@@ -109,14 +109,14 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 	 *
 	 * @return static
 	 *
-	 * @see addColumn()
+	 * @see _addColumn()
 	 */
-	public function or(\Closure|string $column, string $operator = null, mixed $value = null): static {
+	public function or(\Closure|string $column, ?string $operator = null, mixed $value = null): static {
 		if ($column instanceof \Closure) {
-			return $this->addGroup('OR', $column);
+			return $this->_addGroup('OR', $column);
 		}
 
-		return $this->addColumn('OR', $column, $operator, $value);
+		return $this->_addColumn('OR', $column, $operator, $value);
 	}
 
 	public function render(bool $prepared = false): string {

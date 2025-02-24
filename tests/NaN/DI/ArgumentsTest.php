@@ -1,8 +1,10 @@
 <?php
 
-use NaN\DI\Arguments\Arguments;
-use NaN\DI\Container;
-use NaN\DI\Definitions;
+use NaN\DI\{
+	Arguments,
+	Container,
+	Definitions,
+};
 
 describe('Dependency Injection: Arguments', function () {
 	test('Basic resolution', function () {

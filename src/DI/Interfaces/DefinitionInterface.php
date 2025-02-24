@@ -1,6 +1,6 @@
 <?php
 
-namespace NaN\DI;
+namespace NaN\DI\Interfaces;
 
 use Psr\Container\ContainerInterface as PsrContainerInterface;
 

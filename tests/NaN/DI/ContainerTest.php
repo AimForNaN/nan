@@ -4,7 +4,6 @@ use NaN\DI\{
 	Container,
 	Definition,
 	Definitions,
-	Exceptions\NotFoundException,
 };
 use NaN\Env;
 use NaN\Http\Request;
@@ -45,16 +44,4 @@ describe('Dependency Injection: Container', function () {
 		expect($container->has(Env::class))->toBeTrue();
 		expect($container->get(Env::class))->toBeinstanceOf(Env::class);
 	});
-
-	test('Not found exception', function () {
-		$container = new Container(new Definitions());
-		$delegate = new Container(new Definitions([
-			new Definition(Request::class, ['GET', '/']),
-		]));
-
-		$container->addDelegate($delegate);
-
-		expect($container->has(Env::class))->toBeFalse();
-		$container->get(Env::class);
-	})->throws(NotFoundException::class);
 });

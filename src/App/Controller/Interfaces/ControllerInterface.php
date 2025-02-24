@@ -1,21 +1,13 @@
 <?php
 
-namespace NaN\App;
+namespace NaN\App\Controller\Interfaces;
 
-use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\{
+	ResponseInterface as PsrResponseInterface,
+	ServerRequestInterface as PsrServerRequestInterface,
+};
+use Psr\Http\Server\RequestHandlerInterface as PsrRequestHandlerInterface;
 
-interface ControllerInterface {
-	static public function delete(): ResponseInterface;
-
-	static public function get(): ResponseInterface;
-
-	static public function head(): ResponseInterface;
-
-	static public function options(): ResponseInterface;
-
-	static public function patch(): ResponseInterface;
-
-	static public function post(): ResponseInterface;
-
-	static public function put(): ResponseInterface;
+interface ControllerInterface extends PsrRequestHandlerInterface {
+	public function handle(PsrServerRequestInterface $request): PsrResponseInterface;
 }

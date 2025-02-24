@@ -1,7 +1,8 @@
 <?php
 
-namespace NaN\DI\Arguments;
+namespace NaN\DI;
 
+use NaN\DI\Interfaces\ArgumentInterface;
 use Psr\Container\{
 	ContainerExceptionInterface as PsrContainerExceptionInterface,
 	ContainerInterface as PsrContainerInterface

@@ -2,6 +2,8 @@
 
 namespace NaN\Database;
 
+use NaN\Database\Query\Statements\Interfaces\StatementInterface;
+
 class Database implements DatabaseInterface {
 	public function __construct(
 		private Drivers\DriverInterface $driver,
@@ -9,7 +11,7 @@ class Database implements DatabaseInterface {
 		$driver->openConnection();
 	}
 
-	public function exec($statement): \PDOStatement | false {
+	public function exec(StatementInterface $statement): \PDOStatement | false {
 		$bindings = $statement->getBindings();
 		return $this->raw(
 			$statement->render(!empty($bindings)),

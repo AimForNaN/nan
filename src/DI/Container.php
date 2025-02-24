@@ -2,8 +2,12 @@
 
 namespace NaN\DI;
 
-use Psr\Container\ContainerExceptionInterface as PsrContainerExceptionInterface;
-use Psr\Container\ContainerInterface as PsrContainerInterface;
+use NaN\DI\Interfaces\ContainerInterface;
+use Psr\Container\{
+	ContainerExceptionInterface as PsrContainerExceptionInterface,
+	ContainerInterface as PsrContainerInterface,
+};
+use NaN\DI\Interfaces\DefinitionInterface;
 
 class Container implements ContainerInterface {
 	protected array $delegates = [];

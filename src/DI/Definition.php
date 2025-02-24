@@ -2,7 +2,7 @@
 
 namespace NaN\DI;
 
-use NaN\DI\Arguments\Arguments;
+use NaN\DI\Interfaces\DefinitionInterface;
 use Psr\Container\ContainerInterface as PsrContainerInterface;
 
 class Definition implements DefinitionInterface {
@@ -89,6 +89,9 @@ class Definition implements DefinitionInterface {
 		return $this;
 	}
 
+	/**
+	 * Whether to treat it like a singleton!
+	 */
 	public function setShared(bool $shared = true): DefinitionInterface {
 		$this->shared = $shared;
 		return $this;

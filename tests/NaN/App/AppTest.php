@@ -1,30 +1,36 @@
 <?php
 
-use NaN\{
-	App\App,
-	App\Router\Route,
-	App\Router\Routes,
-	DI\Container,
-	DI\Definition,
-	DI\Definitions,
-	Http\Request,
-	Http\Response};
+use NaN\App\App;
+use NaN\App\Router\{
+	Route,
+	Router,
+};
+use NaN\DI\{
+	Container,
+	Definition,
+	Definitions,
+};
+use NaN\Http\{
+	Request,
+	Response,
+};
 use Psr\Http\{
 	Message\ResponseInterface,
 };
 
 describe('App', function () {
 	test('Route dependency injection', function () {
-		$definitions = new Definitions([
-			(new Definition(Response::class, [200]))->setAlias(ResponseInterface::class)->setShared(),
-		]);
-		$container = new Container($definitions);
-		$routes = new Routes([
+		$routes = new Router([
 			Route::get('/{id}', function ($id, App $app) {
 				return $app[ResponseInterface::class];
 			}),
 		]);
-		$app = new App($container, $routes);
+		$definitions = new Definitions([
+			(new Definition(Response::class, [200]))->setAlias(ResponseInterface::class)->setShared(),
+			(new Definition($routes))->setAlias('router')->setShared(),
+		]);
+		$container = new Container($definitions);
+		$app = new App($container);
 
 		expect($container->has(ResponseInterface::class))->toBeTrue();
 

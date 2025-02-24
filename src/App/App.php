@@ -2,64 +2,48 @@
 
 namespace NaN\App;
 
-use NaN\DI\{
-	Container,
-	Definition,
-	Definitions,
+use NaN\Http\{
+    Request,
+    Response,
 };
 use Psr\Container\ContainerInterface as PsrContainerInterface;
-use Psr\Http\{
-    Message\ResponseInterface as PsrResponseInterface,
-	Message\ServerRequestInterface as PsrServerRequestInterface,
-	Server\RequestHandlerInterface as PsrRequestHandlerInterface,
+use Psr\Http\Message\{
+	ResponseInterface as PsrResponseInterface,
+	ServerRequestInterface as PsrServerRequestInterface,
 };
+use Psr\Http\Server\{
+	MiddlewareInterface as PsrMiddlewareInterface,
+	RequestHandlerInterface as PsrRequestHandlerInterface,
+};
+use Psr\Log\LoggerInterface as PsrLoggerInterface;
 
+/**
+ * @property ?PsrLoggerInterface $logger
+ */
 class App implements \ArrayAccess, PsrRequestHandlerInterface {
+	protected Middleware $middleware;
+
 	public function __construct(
 		protected PsrContainerInterface $services,
-		protected Routes $routes,
 	) {
+		$this->middleware = new Middleware();
 	}
 
-	protected function assertResponseInterface(PsrResponseInterface $rsp) {}
-
-	protected function assertRoute(Route $route) {}
+	public function __get(string $name) {
+		return $this->services->get($name);
+	}
 
 	public function handle(PsrServerRequestInterface $request): PsrResponseInterface {
-		$container = new Container(new Definitions([
-			(new Definition($this))->setAlias(App::class),
-			(new Definition($request))->setAlias(PsrServerRequestInterface::class),
-		]));
-
-		$route = $this->match($request);
-		$this->assertRoute($route);
-
-		$rsp = $route->handle($request, $container);
-		$this->assertResponseInterface($rsp);
-
-		switch ($request->getMethod()) {
-			case 'HEAD':
-				return new Response(204, $rsp->getHeaders());
-			case 'OPTIONS':
-				return new Response(204, headers: [
-					'Allow' => $route->method,
-				]);
-		}
-
-		return $rsp;
-	}
-
-	public function match(PsrServerRequestInterface $request): ?Route {
-		$method = \strtoupper($request->getMethod());
-		$routes = $this->routes->getByMethod($method);
-
-		foreach ($routes as $route) {
-			if ($route->matches($request)) {
-				return $route;
+		try {
+			return $this->middleware->handle($request, $this);
+		} catch (\Exception $exception) {
+			if ($this->services->has('logger')) {
+				$logger = $this->services->get('logger');
+				$logger->error($exception->getMessage());
 			}
 		}
 
-		return null;
+		return new Response(500);
 	}
 
 	public function offsetExists(mixed $offset): bool {
@@ -83,8 +67,12 @@ class App implements \ArrayAccess, PsrRequestHandlerInterface {
 	 *  (e.g. register_shutdown_function, set_error_handler, set_exception_handler, etc).
 	 */
 	public function run() {
-		$req = new Request($_SERVER['REQUEST_METHOD'], $_SERVER['PATH_INFO'] ?? '/', getallheaders());
+		$req = Request::fromGlobals();
 		$rsp = $this->handle($req);
 		Response::send($rsp);
+	}
+
+	public function use(PsrMiddlewareInterface $middleware) {
+		$this->middleware[] = $middleware;
 	}
 }

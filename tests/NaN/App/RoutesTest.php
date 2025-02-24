@@ -21,10 +21,20 @@ describe('Routes', function () {
 	});
 
 	test('Get routes', function () {
-		$routes = new Routes();
-		$routes[] = new Route('GET', '/', function () {});
+		$routes = new Routes([
+			new Route('GET', '/', function () {}),
+		]);
 
 		$get = $routes->getByMethod('GET');
 		expect($get)->toHaveLength(1);
+	});
+
+	test('Get named route', function () {
+		$routes = new Routes([
+			'home' => new Route('GET', '/', function () {}),
+		]);
+
+		$get = $routes['home'];
+		expect($get)->toBeInstanceOf(Route::class);
 	});
 });

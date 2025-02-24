@@ -4,11 +4,13 @@ use Monolog\{
 	Handler\ErrorLogHandler,
 	Logger,
 };
-use NaN\{
-	DI\Container,
-	DI\Definition,
-	DI\Definitions,
-	Http\Request,
+use NaN\DI\{
+	Container,
+	Definition,
+	Definitions,
+};
+use NaN\Http\{
+	Request,
 };
 
 describe('Dependency Injection: Definition', function () {

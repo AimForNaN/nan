@@ -17,7 +17,7 @@ class Definition implements DefinitionInterface {
 	) {
 	}
 
-	public function addMethodCall(string $method, array $args): DefinitionInterface {
+	public function addMethodCall(string $method, array $args = []): DefinitionInterface {
 		$this->method_calls[] = [
 			'arguments' => $args,
 			'method' =>  $method,

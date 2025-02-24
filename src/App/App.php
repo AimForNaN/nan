@@ -15,11 +15,7 @@ use Psr\Http\Server\{
 	MiddlewareInterface as PsrMiddlewareInterface,
 	RequestHandlerInterface as PsrRequestHandlerInterface,
 };
-use Psr\Log\LoggerInterface as PsrLoggerInterface;
 
-/**
- * @property ?PsrLoggerInterface $logger
- */
 class App implements \ArrayAccess, PsrRequestHandlerInterface {
 	protected Middleware $middleware;
 
@@ -34,16 +30,7 @@ class App implements \ArrayAccess, PsrRequestHandlerInterface {
 	}
 
 	public function handle(PsrServerRequestInterface $request): PsrResponseInterface {
-		try {
-			return $this->middleware->handle($request, $this);
-		} catch (\Exception $exception) {
-			if ($this->services->has('logger')) {
-				$logger = $this->services->get('logger');
-				$logger->error($exception->getMessage());
-			}
-		}
-
-		return new Response(500);
+		return $this->middleware->handle($request, $this);
 	}
 
 	public function offsetExists(mixed $offset): bool {

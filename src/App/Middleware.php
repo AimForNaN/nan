@@ -23,8 +23,8 @@ class Middleware extends \SplDoublyLinkedList implements PsrMiddlewareInterface,
 			return new Response(404);
 		}
 
-		$this->next();
 		$middleware = $this->current();
+		$this->next();
 
 		return $middleware->process($request, $handler, $app);
 	}

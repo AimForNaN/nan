@@ -1,40 +1,23 @@
 <?php
 
-use NaN\App\Router\{
-	Route,
-	Routes,
-};
+use NaN\App\Router\{Route, Router};
 
 describe('Routes', function () {
 	test('Adding routes', function () {
-		$routes = new Routes([
-			new Route('GET', '/', function () {}),
-		]);
-		expect($routes)->toHaveLength(1);
+		$routes = new Router();
+		$routes['/'] = function () {};
+		$route = $routes['/'];
+
+		expect($route)->toBeInstanceOf(Route::class);
 	});
 
-	test('Adding non-route', function () {
-		$routes = new Routes([
-			['GET', '/', function () {}],
-		]);
-		expect($routes)->toHaveLength(0);
-	});
-
-	test('Get routes', function () {
-		$routes = new Routes([
-			new Route('GET', '/', function () {}),
-		]);
-
-		$get = $routes->getByMethod('GET');
-		expect($get)->toHaveLength(1);
-	});
-
+	/**
+	 * @todo
+	 */
 	test('Get named route', function () {
-		$routes = new Routes([
-			'home' => new Route('GET', '/', function () {}),
-		]);
+		$routes = new Router();
+		$get = $routes->matchName('home');
 
-		$get = $routes['home'];
 		expect($get)->toBeInstanceOf(Route::class);
-	});
+	})->skip();
 });

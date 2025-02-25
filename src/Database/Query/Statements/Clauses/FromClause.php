@@ -14,7 +14,7 @@ class FromClause extends \NaN\Collections\Collection implements ClauseInterface 
 		return $this;
 	}
 
-	public function addTable(string $table, ?string $database = null, string $alias = null): static {
+	public function addTable(string $table, ?string $database = null, ?string $alias = null): static {
 		$this->data[] = [
 			'expr' => 'table',
 			'alias' => $alias,

@@ -6,13 +6,16 @@ use NaN\DI\{
 	Definitions,
 };
 use NaN\Env;
-use NaN\Http\Request;
+use NaN\Http\{
+	Request,
+	Response,
+};
 
 describe('Dependency Injection: Container', function () {
 	test('Basic resolution', function () {
 		$container = new Container(new Definitions([
-			(new Definition(1))->setAlias('one'),
-			(new Definition('test'))->setAlias('test'),
+			'one' => new Definition(1),
+			'test' => new Definition('test'),
 		]));
 
 		$one = $container->get('one');
@@ -31,6 +34,18 @@ describe('Dependency Injection: Container', function () {
 		expect($request)->toBeinstanceOf(Request::class);
 		expect($request->getMethod())->toBe('GET');
 		expect($request->getUri()->getPath())->toBe('/');
+	});
+
+	test('Concrete resolution', function () {
+		$response = new Response();
+		$container = new Container(new Definitions([
+			new Definition($response),
+		]));
+
+		expect($container->has(Response::class))->toBeTrue();
+		$response = $container->get(Response::class);
+		expect($response)->toBeinstanceOf(Response::class);
+		expect($response)->toBe($container->get(Response::class));
 	});
 
 	test('Delegate', function () {

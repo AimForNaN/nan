@@ -28,7 +28,7 @@ describe('Dependency Injection: Definition', function () {
 
 	test('Method calls', function () {
 		$container = new Container(new Definitions([
-			(new Definition(Logger::class, ['dev_log']))->setAlias('logger')->addMethodCall('pushHandler', [ErrorLogHandler::class])->setShared(),
+			'logger' => (new Definition(Logger::class, ['dev_log']))->addMethodCall('pushHandler', [ErrorLogHandler::class])->setShared(),
 			(new Definition(ErrorLogHandler::class)),
 		]));
 

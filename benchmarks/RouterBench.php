@@ -68,11 +68,38 @@ class RouterBench {
 	 * @Iterations(20)
 	 * @Revs(10)
 	 */
+	public function benchParamNanRouterInsertArray(): Router {
+		$routes = [
+			':path' => '/',
+			'param' => [
+				':path' => '/param',
+			],
+		];
+
+		for ($x = 0; $x < 1000; $x++) {
+			$routes['param'][$x] = [
+				':path' => '/param/' . $x,
+				'{id}' => [
+					':path' => '/param/' . $x . '/{id}',
+					':handler' => function () {
+						return new Response(200);
+					},
+				],
+			];
+		}
+
+		return Router::fromArray($routes);
+	}
+
+	/**
+	 * @Iterations(20)
+	 * @Revs(10)
+	 */
 	public function benchStaticNanRoutesArrayInsert(): array {
 		$routes = [];
 
 		for ($x = 0; $x < 1000; $x++) {
-			$routes[] = new Route('/param/' . $x . '/{id}', function ($id) {
+			$routes[] = new Route('/param/' . $x . '/1', function ($id) {
 				return new Response(200);
 			});
 		}
@@ -94,7 +121,7 @@ class RouterBench {
 		for ($x = 0; $x < 1000; $x++) {
 			$route = new Route();
 			$param_route[$x] = $route;
-			$route['{id}'] = new Route(null, function ($id) {
+			$route['1'] = new Route(null, function ($id) {
 				return new Response(200);
 			});
 		}
@@ -110,12 +137,39 @@ class RouterBench {
 		$router = new Router();
 
 		for ($x = 0; $x < 1000; $x++) {
-			$router['/param/' . $x . '/{id}'] = function ($id) {
+			$router['/param/' . $x . '/1'] = function ($id) {
 				return new Response(200);
 			};
 		}
 
 		return $router;
+	}
+
+	/**
+	 * @Iterations(20)
+	 * @Revs(10)
+	 */
+	public function benchStaticNanRouterInsertArray(): Router {
+		$routes = [
+			':path' => '/',
+			'param' => [
+				':path' => '/param',
+			],
+		];
+
+		for ($x = 0; $x < 1000; $x++) {
+			$routes['param'][$x] = [
+				':path' => '/param/' . $x,
+				'1' => [
+					':path' => '/param/' . $x . '/1',
+					':handler' => function () {
+						return new Response(200);
+					},
+				],
+			];
+		}
+
+		return Router::fromArray($routes);
 	}
 
 	/**

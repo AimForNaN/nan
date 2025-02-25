@@ -2,11 +2,11 @@
 
 use NaN\App\Router\{Route, Router};
 
-describe('Routes', function () {
-	test('Adding routes', function () {
+describe('Router', function () {
+	test('Adding routes (index)', function () {
 		$routes = new Router();
-		$routes['/'] = function () {};
-		$route = $routes['/'];
+		$routes['/nested/route'] = function () {};
+		$route = $routes['/nested/route'];
 
 		expect($route)->toBeInstanceOf(Route::class);
 	});

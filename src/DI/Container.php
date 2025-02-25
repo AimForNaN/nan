@@ -13,7 +13,7 @@ class Container implements ContainerInterface {
 	protected array $delegates = [];
 
 	public function __construct(
-		protected Definitions $definitions,
+		protected Definitions $definitions = new Definitions(),
 	) {
 	}
 

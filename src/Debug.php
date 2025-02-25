@@ -7,7 +7,7 @@ class Debug {
 		\error_reporting(0);
 	}
 
-	static public function on(int $level = null) {
-		\error_reporting($level ?: \E_ALL);
+	static public function on(int $level = \E_ALL) {
+		\error_reporting($level);
 	}
 }

@@ -2,6 +2,7 @@
 
 namespace NaN\App;
 
+use NaN\DI\Container;
 use NaN\Http\{
     Request,
     Response,
@@ -17,12 +18,11 @@ use Psr\Http\Server\{
 };
 
 class App implements \ArrayAccess, PsrRequestHandlerInterface {
-	protected Middleware $middleware;
 
 	public function __construct(
-		protected PsrContainerInterface $services,
+		protected PsrContainerInterface $services = new Container(),
+		protected Middleware $middleware = new Middleware(),
 	) {
-		$this->middleware = new Middleware();
 	}
 
 	public function __get(string $name) {
@@ -59,7 +59,8 @@ class App implements \ArrayAccess, PsrRequestHandlerInterface {
 		Response::send($rsp);
 	}
 
-	public function use(PsrMiddlewareInterface $middleware) {
+	public function use(PsrMiddlewareInterface $middleware): static {
 		$this->middleware[] = $middleware;
+		return $this;
 	}
 }

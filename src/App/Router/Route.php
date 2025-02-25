@@ -3,6 +3,7 @@
 namespace NaN\App\Router;
 
 use NaN\App\Controller\Interfaces\ControllerInterface;
+use NaN\Http\Response;
 use Psr\Http\Message\{
 	ResponseInterface as PsrResponseInterface,
 	ServerRequestInterface as PsrServerRequestInterface,
@@ -12,7 +13,7 @@ class Route implements \ArrayAccess {
 	protected array $children = [];
 
 	public function __construct(
-		protected ?string $path,
+		protected ?string $path = null,
 		protected mixed $handler = null,
 	) {
 	}
@@ -21,14 +22,23 @@ class Route implements \ArrayAccess {
 		return $this->path;
 	}
 
+	public function insert(string $part, Route $route): static {
+		$this->children[$part] = $route;
+		return $this;
+	}
+
 	public function isValid(): bool {
 		return \is_callable($this->handler) || \is_a($this->handler, ControllerInterface::class);
 	}
 
-	public function matches(PsrServerRequestInterface $request): bool {
+	public function matches(string $path): bool {
 		$pattern = new RoutePattern($this->path);
 		$pattern->compile();
-		return $pattern->matchesRequest($request);
+		return $pattern->matches($path);
+	}
+
+	public function matchesRequest(PsrServerRequestInterface $request): bool {
+		return $this->matches($request->getUri()->getPath());
 	}
 
 	public function offsetExists(mixed $offset): bool {
@@ -53,7 +63,7 @@ class Route implements \ArrayAccess {
 	}
 
 	public function offsetSet(mixed $offset, mixed $value): void {
-		$this->children[$offset] = $value;
+		$this->insert($offset, $value);
 	}
 
 	public function offsetUnset(mixed $offset): void {
@@ -64,18 +74,17 @@ class Route implements \ArrayAccess {
 		$this->handler = $handler;
 	}
 
-	public function toCallable(): callable {
+	public function toCallable(PsrServerRequestInterface $request): callable {
 		$handler = $this->handler;
 		if (!\is_callable($handler)) {
-			if (\is_array($handler)) {
-				[$controller, $action] = $handler;
-				if (\is_string($controller)) {
-					$controller = new $controller();
-					return [$controller, $action];
-				}
-			} else if (\is_a($handler, PsrResponseInterface::class))  {
-				return [new $handler(), 'handle'];
+			if (\is_a($handler, PsrResponseInterface::class))  {
+				$method = $request->getMethod();
+				return [new $handler(), \strtoupper($method)];
 			}
+
+			$handler = function () {
+				return new Response(501);
+			};
 		}
 		return $handler(...);
 	}

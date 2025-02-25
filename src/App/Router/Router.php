@@ -15,10 +15,9 @@ use Psr\Http\Server\{
 };
 
 class Router implements \ArrayAccess, PsrMiddlewareInterface {
-	protected Route $root;
-
-	public function __construct() {
-		$this->root = new Route(null);
+	public function __construct(
+		protected Route $root = new Route(),
+	) {
 	}
 
 	public function insert(string $path, mixed $handler): Route {
@@ -87,7 +86,7 @@ class Router implements \ArrayAccess, PsrMiddlewareInterface {
 		$pattern->matchesRequest($request);
 
 		$values = $pattern->getMatches();
-		$route_handler = $route->toCallable();
+		$route_handler = $route->toCallable($request);
 		$arguments = Arguments::fromCallable($route_handler, $values);
 		$definition = new Definition($route_handler, $arguments->toArray());
 

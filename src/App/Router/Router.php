@@ -27,13 +27,16 @@ class Router implements \ArrayAccess, PsrMiddlewareInterface {
 
 	public function insert(string $path, mixed $handler): Route {
 		$parts = $this->parsePath($path);
-
 		$parent = $this->root;
+		$route_path = null;
+
 		foreach ($parts as $part) {
+			$route_path .= '/' . $part;
+
 			if (isset($parent[$part])) {
 				$parent = $parent[$part];
 			} else {
-				$route = new Route($part);
+				$route = new Route($route_path);
 				$parent[$part] = $route;
 				$parent = $route;
 			}

@@ -52,9 +52,8 @@ class RoutePattern {
 		return \strpos($pattern, '{') !== false;
 	}
 
-	public function match(PsrServerRequestInterface $request): bool {
+	public function matches(string $path): bool {
 		$this->matches = [];
-		$path = $request->getUri()->getPath();
 
 		// Static match!
 		if ($this->pattern === $path) {
@@ -74,5 +73,10 @@ class RoutePattern {
 		}
 
 		return (bool)$ret;
+	}
+
+	public function matchesRequest(PsrServerRequestInterface $request): bool {
+		$path = $request->getUri()->getPath();
+		return $this->matches($path);
 	}
 }

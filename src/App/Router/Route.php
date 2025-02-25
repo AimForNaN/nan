@@ -2,101 +2,66 @@
 
 namespace NaN\App\Router;
 
-use NaN\DI\{
-	Arguments\Arguments,
-	Definition,
-};
-use Psr\Container\ContainerInterface as PsrContainerInterface;
-use Psr\Http\{
-	Message\ResponseInterface as PsrResponseInterface,
-	Message\ServerRequestInterface as PsrServerRequestInterface,
-	Server\RequestHandlerInterface as PsrRequestHandlerInterface,
+use NaN\App\Controller\Interfaces\ControllerInterface;
+use Psr\Http\Message\{
+	ResponseInterface as PsrResponseInterface,
+	ServerRequestInterface as PsrServerRequestInterface,
 };
 
-class Route implements PsrRequestHandlerInterface {
-	public readonly string $method;
-	protected RoutePattern $pattern;
+class Route implements \ArrayAccess {
+	protected array $children = [];
 
-	/**
-	 * @param string $method HTTP method.
-	 * @param string $pattern URL pattern.
-	 * @param mixed $handler Fully-qualified class name or callable.
-	 */
 	public function __construct(
-		string $method,
-		string $pattern,
-		private mixed $handler,
+		protected ?string $path,
+		protected mixed $handler = null,
 	) {
-		$this->method = \strtoupper($method);
-		$this->pattern = new RoutePattern($pattern);
 	}
 
-	static public function all(string $pattern, mixed $handler): array {
-		if (\is_a($handler, ControllerInterface::class)) {
-			$handler = [$handler, 'handle'];
+	public function getPath(): ?string {
+		return $this->path;
+	}
+
+	public function isValid(): bool {
+		return \is_callable($this->handler) || \is_a($this->handler, ControllerInterface::class);
+	}
+
+	public function matches(PsrServerRequestInterface $request): bool {
+		$pattern = new RoutePattern($this->path);
+		$pattern->compile();
+		return $pattern->matchesRequest($request);
+	}
+
+	public function offsetExists(mixed $offset): bool {
+		return (bool)$this->offsetGet($offset);
+	}
+
+	public function offsetGet(mixed $offset): mixed {
+		if (isset($this->children[$offset])) {
+			return $this->children[$offset];
 		}
 
-		return [
-			new static('DELETE', $pattern, $handler),
-			new static('GET', $pattern, $handler),
-			new static('PATCH', $pattern, $handler),
-			new static('POST', $pattern, $handler),
-			new static('PUT', $pattern, $handler),
-		];
-	}
-	
-	static public function controller(string $pattern, mixed $controller): array {
-		if (!\is_a($controller, ControllerInterface::class)) {
-			throw new \InvalidArgumentException();
+		foreach ($this->children as $path => $child) {
+			$pattern = new RoutePattern($path);
+			$pattern->compile();
+
+			if ($pattern->matches($offset)) {
+				return $child;
+			}
 		}
 
-		if ($pattern[0] !== '/') {
-		}
-
-		return [
-			new static('DELETE', $pattern, [$controller, 'remove']),
-			new static('GET', $pattern, [$controller, 'index']),
-			new static('PATCH', $pattern, [$controller, 'update']),
-			new static('POST', $pattern, [$controller, 'create']),
-			new static('PUT', $pattern, [$controller, 'replace']),
-		];
+		return null;
 	}
 
-	static public function delete(string $pattern, mixed $handler): static {
-		return new static('DELETE', $pattern, $handler);
+	public function offsetSet(mixed $offset, mixed $value): void {
+		$this->children[$offset] = $value;
 	}
 
-	static public function get(string $pattern, mixed $handler): static {
-		return new static('GET', $pattern, $handler);
+	public function offsetUnset(mixed $offset): void {
+		unset($this->children[$offset]);
 	}
 
-	public function handle(PsrServerRequestInterface $request, PsrContainerInterface $container = null): PsrResponseInterface {
-		$this->pattern->compile();
-		$this->pattern->match($request);
-
-		$values = $this->pattern->getMatches();
-		$handler = $this->toCallable();
-		$arguments = Arguments::fromCallable($handler, $values);
-		$definition = new Definition($handler, $arguments->toArray());
-
-		return $definition->resolve($container);
-	}
-
-	public function matches(PsrServerRequestInterface $request) {
-		$this->pattern->compile();
-		return $this->pattern->match($request);
-	}
-
-	static public function patch(string $pattern, mixed $handler): static {
-		return new static('PATCH', $pattern, $handler);
-	}
-
-	static public function post(string $pattern, mixed $handler): static {
-		return new static('POST', $pattern, $handler);
-	}
-
-	static public function put(string $pattern, mixed $handler): static {
-		return new static('PUT', $pattern, $handler);
+	public function setHandler(mixed $handler): void {
+		$this->handler = $handler;
 	}
 
 	public function toCallable(): callable {
@@ -108,12 +73,22 @@ class Route implements PsrRequestHandlerInterface {
 					$controller = new $controller();
 					return [$controller, $action];
 				}
-			} else if (\class_exists($handler)) {
-				if (\is_a($handler, PsrResponseInterface::class))  {
-					return [new $handler(), 'handle'];
-				}
+			} else if (\is_a($handler, PsrResponseInterface::class))  {
+				return [new $handler(), 'handle'];
 			}
-		} 
+		}
 		return $handler(...);
+	}
+
+	public function withHandler(mixed $handler): static {
+		$route = clone $this;
+		$route->handler = $handler;
+		return $route;
+	}
+
+	public function withPath(string $path): static {
+		$route = clone $this;
+		$route->path = $path;
+		return $route;
 	}
 }

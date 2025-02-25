@@ -18,6 +18,20 @@ class Route implements \ArrayAccess {
 	) {
 	}
 
+	static public function fromArray(array $routes): static {
+		$path = $routes[':path'] ?? null;
+		$handler = $routes[':handler'] ?? null;
+		$route = new static($path, $handler);
+		unset($routes[':path']);
+		unset($routes[':handler']);
+
+		foreach ($routes as $part => $route_struct) {
+			$route->insert($part, static::fromArray($route_struct));
+		}
+
+		return $route;
+	}
+
 	public function getPath(): ?string {
 		return $this->path;
 	}

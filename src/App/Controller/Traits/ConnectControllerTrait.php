@@ -7,6 +7,6 @@ use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 
 trait ConnectControllerTrait {
 	public function connect(): PsrResponseInterface {
-		return new Response(404);
+		return new Response(501);
 	}
 }

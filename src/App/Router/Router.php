@@ -89,7 +89,7 @@ class Router implements \ArrayAccess, PsrMiddlewareInterface {
 			return $response->withStatus(404);
 		}
 
-		$pattern = new RoutePattern($route->getPath());
+		$pattern = new RoutePattern($route->path);
 		$pattern->compile();
 		$pattern->matchesRequest($request);
 

@@ -10,8 +10,8 @@ class Route implements \ArrayAccess {
 	protected array $children = [];
 
 	public function __construct(
-		protected ?string $path = null,
-		protected mixed $handler = null,
+		public ?string $path = null,
+		public mixed $handler = null,
 	) {
 	}
 
@@ -27,10 +27,6 @@ class Route implements \ArrayAccess {
 		}
 
 		return $route;
-	}
-
-	public function getPath(): ?string {
-		return $this->path;
 	}
 
 	public function insert(string $part, Route $route): static {
@@ -79,10 +75,6 @@ class Route implements \ArrayAccess {
 
 	public function offsetUnset(mixed $offset): void {
 		unset($this->children[$offset]);
-	}
-
-	public function setHandler(mixed $handler): void {
-		$this->handler = $handler;
 	}
 
 	public function toCallable(PsrServerRequestInterface $request): callable {

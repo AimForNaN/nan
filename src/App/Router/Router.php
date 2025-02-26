@@ -99,9 +99,9 @@ class Router implements \ArrayAccess, PsrMiddlewareInterface {
 		$definition = new Definition($route_handler, $arguments->toArray());
 
 		$container = new Container(new Definitions([
-			(new Definition($app))->setAlias(App::class)->setShared(),
-			(new Definition($request))->setAlias(PsrServerRequestInterface::class)->setShared(),
-			(new Definition($response))->setAlias(PsrResponseInterface::class)->setShared(),
+			(new Definition($app)),
+			(new Definition($request)),
+			(new Definition($response)),
 		]));
 
 		return $definition->resolve($container);

@@ -89,8 +89,13 @@ class Route implements \ArrayAccess {
 		$handler = $this->handler;
 		if (!\is_callable($handler)) {
 			if (\is_subclass_of($handler, ControllerInterface::class))  {
+				$handler = new $handler();
+				$allowed_methods = $handler->getAllowedMethods();
 				$method = $request->getMethod();
-				return \Closure::fromCallable([new $handler(), \strtoupper($method)]);
+
+				if ($allowed_methods[$method] ?? false) {
+					return \Closure::fromCallable([$handler, \strtolower($method)]);
+				}
 			}
 
 			$handler = function () {

@@ -27,24 +27,24 @@ class Router implements \ArrayAccess, PsrMiddlewareInterface {
 
 	public function insert(string $path, mixed $handler): Route {
 		$parts = $this->parsePath($path);
-		$parent = $this->root;
+		$current = $this->root;
 		$route_path = null;
 
 		foreach ($parts as $part) {
 			$route_path .= '/' . $part;
 
-			if (isset($parent[$part])) {
-				$parent = $parent[$part];
+			if (isset($current[$part])) {
+				$current = $current[$part];
 			} else {
 				$route = new Route($route_path);
-				$parent[$part] = $route;
-				$parent = $route;
+				$current[$part] = $route;
+				$current = $route;
 			}
 		}
 
-		$parent->setHandler($handler);
+		$current->handler = $handler;
 
-		return $parent;
+		return $current;
 	}
 
 	public function match(string $path): ?Route {

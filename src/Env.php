@@ -5,8 +5,9 @@ namespace NaN;
 /**
  * Manange environment variables.
  */
-class Env {
-	protected array $env = [];
+final class Env {
+	static protected array $env = [];
+	static protected array $aliases = [];
 	/** @var string $root Default directory of .env file. */
 
 	/**
@@ -14,35 +15,24 @@ class Env {
 	 *
 	 * @param string $dir Directory of .env file.
 	 */
-	public function __construct(
-		string $dir = '.',
-		protected array $aliases = [],
-	) {
-		$this->load($dir);
-	}
+	private function __construct() {}
 
 	/**
 	 * Get environment variable.
 	 *
 	 * @param string $key Environment variable key.
+	 * @param string $fallback Fallback value (defaults to null).
 	 *
-	 * @return string Environment variable value.
+	 * @return ?string Environment variable value or fallback.
 	 */
-	public function __get(string $key): string {
-		$key = $this->aliases[$key] ?? $key;
-		return $this->env[$key] ?? $_ENV[$key] ?? $_SERVER[$key];
+	static public function get(string $key, ?string $fallback = null): ?string {
+		$key = static::$aliases[$key] ?? $key;
+		return static::$env[$key] ?? $_ENV[$key] ?? $_SERVER[$key] ?? $fallback;
 	}
 
-	/**
-	 * @see Env::__get()
-	 */
-	public function __invoke(string $key): string {
-		return $this->__get($key);
-	}
-
-	protected function load(string $dir): void {
-		$env = \Dotenv\Dotenv::createImmutable($dir);
-		$this->env = $env->safeLoad();
+	static public function load(?string $dir = null): void {
+		$env = \Dotenv\Dotenv::createImmutable($dir ?? $_SERVER['DOCUMENT_ROOT']);
+		static::$env = $env->safeLoad();
 	}
 
 	/**
@@ -51,8 +41,8 @@ class Env {
 	 * @param string $alias Alias key.
 	 * @param string $original Original key.
 	 */
-	public function registerAlias(string $alias, string $original): void {
-		$this->aliases[$alias] = $original;
+	static public function registerAlias(string $alias, string $original): void {
+		static::$aliases[$alias] = $original;
 	}
 }
 

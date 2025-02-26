@@ -2,12 +2,6 @@
 
 namespace NaN\App\Controller\Traits;
 
-use NaN\App\App;
-use NaN\DI\{
-	Container,
-	Definition,
-	Definitions,
-};
 use NaN\App\Controller\Interfaces\{
 	ConnectControllerInterface,
 	DeleteControllerInterface,
@@ -18,12 +12,6 @@ use NaN\App\Controller\Interfaces\{
 	PostControllerInterface,
 	PutControllerInterface,
 	TraceControllerInterface,
-};
-use NaN\Http\Request;
-use NaN\Http\Response;
-use Psr\Http\Message\{
-	ResponseInterface as PsrResponseInterface,
-	ServerRequestInterface as PsrServerRequestInterface,
 };
 
 trait ControllerTrait {
@@ -67,27 +55,5 @@ trait ControllerTrait {
 		}
 
 		return $allowed_methods;
-	}
-
-	public function handle(PsrServerRequestInterface $request, ?App $app = null): PsrResponseInterface {
-		$allowed_methods = $this->getAllowedMethods();
-		$method = $request->getMethod();
-
-		if (!\in_array($method, $allowed_methods, true)) {
-			return new Response(405);
-		}
-
-		$definitions = new Definitions([
-			(new Definition($request))->setAlias(Request::class)->setShared(),
-		]);
-
-		if ($app) {
-			$definitions[] = (new Definition($app))->setAlias(App::class)->setShared();
-		}
-
-		$container = new Container($definitions);
-		$definition = (new Definition($this))->addMethodCall(\strtolower($method));
-
-		return $definition->resolve($container);
 	}
 }

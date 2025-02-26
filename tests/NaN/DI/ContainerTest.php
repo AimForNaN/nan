@@ -1,5 +1,6 @@
 <?php
 
+use \NaN\App\TemplateEngine;
 use NaN\DI\{
 	Container,
 	Definition,
@@ -51,12 +52,12 @@ describe('Dependency Injection: Container', function () {
 	test('Delegate', function () {
 		$container = new Container(new Definitions());
 		$delegate = new Container(new Definitions([
-			new Definition(Env::class, ['.']),
+			new Definition(TemplateEngine::class),
 		]));
 
 		$container->addDelegate($delegate);
 
-		expect($container->has(Env::class))->toBeTrue();
-		expect($container->get(Env::class))->toBeinstanceOf(Env::class);
+		expect($container->has(TemplateEngine::class))->toBeTrue();
+		expect($container->get(TemplateEngine::class))->toBeinstanceOf(TemplateEngine::class);
 	});
 });

@@ -1,7 +1,12 @@
 <?php
 
 use NaN\App\App;
-use NaN\App\Router\Router;
+use NaN\App\Controller\Interfaces\{
+	ControllerInterface,
+	GetControllerInterface,
+};
+use NaN\App\Controller\Traits\ControllerTrait;
+use NaN\App\Router\{Route, Router};
 use NaN\Http\Request;
 use Psr\Http\Message\{
 	ResponseInterface as PsrResponseInterface,
@@ -33,6 +38,25 @@ describe('App', function () {
 		$app->use($routes);
 
 		$rsp = $app->handle(new Request('GET', '/1'));
+		expect($rsp)->toBeInstanceOf(PsrResponseInterface::class);
+		expect($rsp->getStatusCode())->toBe(200);
+	});
+
+	test('Controllers', function () {
+		class TestController implements ControllerInterface, GetControllerInterface {
+			use ControllerTrait;
+
+			public function get(?PsrResponseInterface $rsp = null): PsrResponseInterface {
+				return $rsp;
+			}
+		}
+
+		$routes = new Router(new Route('/', TestController::class));
+
+		$app = new App();
+		$app->use($routes);
+
+		$rsp = $app->handle(new Request('GET', '/'));
 		expect($rsp)->toBeInstanceOf(PsrResponseInterface::class);
 		expect($rsp->getStatusCode())->toBe(200);
 	});

@@ -4,10 +4,7 @@ namespace NaN\App\Router;
 
 use NaN\App\Controller\Interfaces\ControllerInterface;
 use NaN\Http\Response;
-use Psr\Http\Message\{
-	ResponseInterface as PsrResponseInterface,
-	ServerRequestInterface as PsrServerRequestInterface,
-};
+use Psr\Http\Message\ServerRequestInterface as PsrServerRequestInterface;
 
 class Route implements \ArrayAccess {
 	protected array $children = [];
@@ -91,9 +88,9 @@ class Route implements \ArrayAccess {
 	public function toCallable(PsrServerRequestInterface $request): callable {
 		$handler = $this->handler;
 		if (!\is_callable($handler)) {
-			if (\is_a($handler, PsrResponseInterface::class))  {
+			if (\is_subclass_of($handler, ControllerInterface::class))  {
 				$method = $request->getMethod();
-				return [new $handler(), \strtoupper($method)];
+				return \Closure::fromCallable([new $handler(), \strtoupper($method)]);
 			}
 
 			$handler = function () {

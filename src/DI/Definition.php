@@ -41,6 +41,7 @@ class Definition implements DefinitionInterface {
 			return true;
 		}
 
+		// TODO: Think of use-case that might contradict this!
 		if (\is_object($this->concrete) && \is_a($this->concrete, $alias)) {
 			return true;
 		}

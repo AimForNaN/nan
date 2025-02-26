@@ -9,7 +9,7 @@ use Psr\Container\{
 };
 use NaN\DI\Interfaces\DefinitionInterface;
 
-class Container implements ContainerInterface {
+class Container implements \ArrayAccess, ContainerInterface {
 	protected array $delegates = [];
 
 	public function __construct(
@@ -51,5 +51,21 @@ class Container implements ContainerInterface {
 		}
 
 		return false;
+	}
+
+	public function offsetExists(mixed $offset): bool {
+		return $this->has($offset);
+	}
+
+	public function offsetGet(mixed $offset): mixed {
+		return $this->get($offset);
+	}
+
+	public function offsetSet(mixed $offset, mixed $value): void {
+		$this->definitions[$offset] = $value;
+	}
+
+	public function offsetUnset(mixed $offset): void {
+		$this->definitions->offsetUnset($offset);
 	}
 }

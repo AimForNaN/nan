@@ -42,11 +42,11 @@ class App implements \ArrayAccess, PsrRequestHandlerInterface {
 	}
 
 	public function offsetSet(mixed $offset, mixed $value): void {
-		throw new \RuntimeException('Services are to be defined in the constructor!');
+		$this->services->offsetSet($offset, $value);
 	}
 
 	public function offsetUnset(mixed $offset): void {
-		throw new \RuntimeException('Cannot unset a service!');
+		$this->services->offsetUnset($offset);
 	}
 
 	/**

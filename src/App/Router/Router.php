@@ -33,13 +33,12 @@ class Router implements \ArrayAccess, PsrMiddlewareInterface {
 		foreach ($parts as $part) {
 			$route_path .= '/' . $part;
 
-			if (isset($current[$part])) {
-				$current = $current[$part];
-			} else {
+			if (!isset($current[$part])) {
 				$route = new Route($route_path);
 				$current[$part] = $route;
-				$current = $route;
 			}
+
+			$current = $current[$part];
 		}
 
 		$current->handler = $handler;
@@ -54,9 +53,9 @@ class Router implements \ArrayAccess, PsrMiddlewareInterface {
 		foreach ($parts as $part) {
 			if (!isset($parent[$part])) {
 				return null;
-			} else {
-				$parent = $parent[$part];
 			}
+
+			$parent = $parent[$part];
 		}
 
 		return $parent;

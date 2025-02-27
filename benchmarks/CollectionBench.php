@@ -11,7 +11,7 @@ class CollectionBench {
 		}
 	}
 
-	public function benchFunction() {
+	public function benchCollection() {
 		$collection = new Collection();
 
 		for ($i = 0; $i < 1000; $i++) { 

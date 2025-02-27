@@ -38,6 +38,23 @@ class Route implements \ArrayAccess {
 		return \is_callable($this->handler) || \is_a($this->handler, ControllerInterface::class);
 	}
 
+	public function match(string $part): ?Route {
+		if (isset($this->children[$part])) {
+			return $this->children[$part];
+		}
+
+		foreach ($this->children as $path => $child) {
+			$pattern = new RoutePattern($path);
+			$pattern->compile();
+
+			if ($pattern->matches($part)) {
+				return $child;
+			}
+		}
+
+		return null;
+	}
+
 	public function matches(string $path): bool {
 		$pattern = new RoutePattern($this->path);
 		$pattern->compile();
@@ -49,24 +66,11 @@ class Route implements \ArrayAccess {
 	}
 
 	public function offsetExists(mixed $offset): bool {
-		return (bool)$this->offsetGet($offset);
+		return isset($this->children[$offset]);
 	}
 
 	public function offsetGet(mixed $offset): mixed {
-		if (isset($this->children[$offset])) {
-			return $this->children[$offset];
-		}
-
-		foreach ($this->children as $path => $child) {
-			$pattern = new RoutePattern($path);
-			$pattern->compile();
-
-			if ($pattern->matches($offset)) {
-				return $child;
-			}
-		}
-
-		return null;
+		return $this->children[$offset] ?? null;
 	}
 
 	public function offsetSet(mixed $offset, mixed $value): void {

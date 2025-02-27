@@ -51,11 +51,13 @@ class Router implements \ArrayAccess, PsrMiddlewareInterface {
 
 		$parent = $this->root;
 		foreach ($parts as $part) {
-			if (!isset($parent[$part])) {
+			$match = $parent->match($part);
+
+			if (!$match) {
 				return null;
 			}
 
-			$parent = $parent[$part];
+			$parent = $match;
 		}
 
 		return $parent;

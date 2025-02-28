@@ -9,11 +9,9 @@ interface DefinitionInterface {
 
 	public function addMethodCalls(array $method_calls): DefinitionInterface;
 
-	public function is(string $alias): bool;
+	public function is(string $id): bool;
 
 	public function resolve(PsrContainerInterface $container): mixed;
-
-	public function setAlias(string $alias): DefinitionInterface;
 
 	public function setShared(bool $shared = true): DefinitionInterface;
 }

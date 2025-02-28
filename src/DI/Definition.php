@@ -32,17 +32,12 @@ class Definition implements DefinitionInterface {
 		return $this;
 	}
 
-	public function is(string $alias): bool {
-		if ($this->alias === $alias) {
+	public function is(string $id): bool {
+		if ($this->concrete === $id) {
 			return true;
 		}
 
-		if ($this->concrete === $alias) {
-			return true;
-		}
-
-		// TODO: Think of use-case that might contradict this!
-		if (\is_object($this->concrete) && \is_a($this->concrete, $alias)) {
+		if (\is_object($this->concrete) && \is_a($this->concrete, $id)) {
 			return true;
 		}
 
@@ -87,11 +82,6 @@ class Definition implements DefinitionInterface {
 		}
 
 		return $this->resolved;
-	}
-
-	public function setAlias(string $alias): DefinitionInterface {
-		$this->alias = $alias;
-		return $this;
 	}
 
 	/**

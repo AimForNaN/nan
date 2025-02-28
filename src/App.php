@@ -25,10 +25,6 @@ class App implements \ArrayAccess, PsrContainerInterface, PsrRequestHandlerInter
 	) {
 	}
 
-	public function __get(string $name) {
-		return $this->services->get($name);
-	}
-
 	public function get(string $id) {
 		return $this->services->get($id);
 	}

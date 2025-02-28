@@ -3,7 +3,6 @@ title: Your first application
 description: Introduction to your first application.
 sidebar:
   order: 2
-
 ---
 
 import {Card} from '@astrojs/starlight/components';
@@ -84,7 +83,6 @@ In a NaN application, routing is treated as middleware.
 Since all middleware must be registered with the application, a barebones application doesn't do much on its own.
 The NaN router is PSR-15 compatible and can be used anywhere that follows the same middleware standard.
 Each route will have access to its own parameters,
-	an instance of the NaN application from which it was called,
 	any services registered through the NaN application,
 	along with PSR-7-compatible request and response instances.
 
@@ -99,7 +97,6 @@ use \Psr\Http\Message\{
 $router['/'] = function (
 	Response $response,
 	Request $request,
-	App $app,
 	// parameters and services...
 ) {
 	return $response; // 200 status code by default!

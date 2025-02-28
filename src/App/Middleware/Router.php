@@ -99,16 +99,11 @@ class Router implements \ArrayAccess, PsrMiddlewareInterface {
 		$route_handler = $route->toCallable($request);
 		$arguments = Arguments::fromCallable($route_handler, $values);
 		$definition = new Definition($route_handler, $arguments->toArray());
-		$definitions = [
-			new Definition($request),
-			new Definition($response),
-		];
 
-		if ($app) {
-			$definitions[] = new Definition($app);
-		}
-
-		$container = new Container(new Definitions($definitions));
+		$container = new Container(new Definitions([
+			PsrServerRequestInterface::class => new Definition($request),
+			PsrResponseInterface::class => new Definition($response),
+		]));
 
 		if ($app) {
 			$container->addDelegate($app);

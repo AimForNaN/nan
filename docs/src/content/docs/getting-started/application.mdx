@@ -1,0 +1,108 @@
+---
+title: Your first application
+description: Introduction to your first application.
+sidebar:
+  order: 2
+
+---
+
+import {Card} from '@astrojs/starlight/components';
+
+<Card title={'Concept'}>
+	Request &#129106; Application &#129106; Middleware &#129106; Response
+</Card>
+
+The NaN application manages all services and middleware.
+Upon running the application, all request data will be passed on to the middleware in exchange for a response.
+The response will, therefrom, be processed to  be sent to the client.
+
+### NaN application
+
+At the core of every NaN application stands `NaN\App\App`.
+It is a PSR-15-compatible request handler with support for services and middleware.
+
+```php title="index.php"
+use NaN\App\App;
+
+$app = new App();
+
+$app->run();
+```
+
+### Application-level services
+
+Services can be conveniently and optionally registered through the `NaN\App\App` constructor.
+
+```php
+use NaN\DI\{Container, Definition, Definitions};
+
+$app = new App(new Container(new Definitions([
+	new Definition(CustomService::class),
+])));
+```
+
+Services can also be later registered through the array-access operator.
+
+```php
+$app[] = new Definition(CustomService::class);
+```
+
+An instance of the service can be retrieved through the same array-access operator.
+
+```php
+$second_service = $app[CustomService::class];
+```
+
+These services will be available only on an application level (or wherever the `Container` instance is used).
+As such, when working with routes they will only be retrievable through the `App` instance itself.
+Any service you want access to from your routes should be registered through the NaN application.
+
+### Application-level middleware
+
+Middleware can be conveniently and optionally registered through the `NaN\App\App` constructor.
+
+```php
+use NaN\App\Middleware;
+use NaN\App\Router\Router;
+
+$router = new Router();
+
+$app = new App($services, new Middleware([
+	$router,
+]));
+```
+
+Middleware can also be later registered through the traditional `use` method.
+
+```php
+$app->use($router);
+```
+
+##### Routing
+
+In a NaN application, routing is treated as middleware.
+Since all middleware must be registered with the application, a barebones application doesn't do much on its own.
+The NaN router is PSR-15 compatible and can be used anywhere that follows the same middleware standard.
+Each route will have access to its own parameters, an instance of the NaN application from which it was called, along with PSR-7-compatible request and response instances.
+
+Every route must return a PSR-7-compatible response.
+
+```php
+use \Psr\Http\Message\{
+	ResponseInterface as Response,
+	ServerRequestInterface as Request,
+};
+
+$router['/'] = function (
+	Response $response,
+	Request $request,
+	App $app,
+) {
+	return $response; // 200 status code by default!
+};
+```
+
+### Further learning
+
+While the examples on this page are sufficient to get you started, it's not necessarily the most efficient approach.
+You stand to gain from a deeper understanding of the system.

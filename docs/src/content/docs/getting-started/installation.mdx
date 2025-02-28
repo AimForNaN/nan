@@ -1,0 +1,32 @@
+---
+title: Installation
+description: Setting up the development environment.
+sidebar:
+  order: 1
+---
+
+### Requirements
+
+ - PHP 8.1 or greater.
+ - PDO extension.
+
+### Composer
+
+Because NaN is still experimental, you'll need to manually add the Git repository to your `composer.json` file.
+
+```json title="composer.json"
+{
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/AimForNaN/nan.git"
+        }
+    ]
+}
+```
+
+After which, you can install the NaN micro-framework with composer.
+
+```shell
+composer require AimForNaN/nan
+```

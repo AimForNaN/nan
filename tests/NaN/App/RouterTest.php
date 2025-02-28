@@ -1,6 +1,7 @@
 <?php
 
-use NaN\App\Router\{Route, Router};
+use NaN\App\Middleware\Router;
+use NaN\App\Middleware\Router\Route;
 
 describe('Router', function () {
 	test('Adding routes (index)', function () {

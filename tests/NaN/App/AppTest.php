@@ -6,7 +6,8 @@ use NaN\App\Controller\Interfaces\{
 	GetControllerInterface,
 };
 use NaN\App\Controller\Traits\ControllerTrait;
-use NaN\App\Router\{Route, Router};
+use NaN\App\Middleware\Router;
+use NaN\App\Middleware\Router\Route;
 use NaN\Http\Request;
 use Psr\Http\Message\{
 	ResponseInterface as PsrResponseInterface,

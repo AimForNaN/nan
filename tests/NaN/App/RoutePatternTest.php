@@ -1,6 +1,6 @@
 <?php
 
-use NaN\App\Router\RoutePattern;
+use NaN\App\Middleware\Router\RoutePattern;
 use NaN\Http\Request;
 
 describe('Route patterns', function () {

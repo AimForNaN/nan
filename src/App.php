@@ -18,8 +18,7 @@ use Psr\Http\Server\{
 	RequestHandlerInterface as PsrRequestHandlerInterface,
 };
 
-class App implements \ArrayAccess, PsrRequestHandlerInterface {
-
+class App implements \ArrayAccess, PsrContainerInterface, PsrRequestHandlerInterface {
 	public function __construct(
 		protected PsrContainerInterface $services = new Container(),
 		protected Middleware $middleware = new Middleware(),
@@ -30,8 +29,16 @@ class App implements \ArrayAccess, PsrRequestHandlerInterface {
 		return $this->services->get($name);
 	}
 
+	public function get(string $id) {
+		return $this->services->get($id);
+	}
+
 	public function handle(PsrServerRequestInterface $request): PsrResponseInterface {
 		return $this->middleware->handle($request, $this);
+	}
+
+	public function has(string $id): bool {
+		return $this->services->has($id);
 	}
 
 	public function offsetExists(mixed $offset): bool {

@@ -54,7 +54,7 @@ $second_service = $app[CustomService::class];
 ```
 
 These services will be available only on an application level (or wherever the `Container` instance is used).
-As such, when working with routes they will only be retrievable through the `App` instance itself.
+As such, the dependencies injected into the routes will come from the `App` instance that manages the route.
 Any service you want access to from your routes should be registered through the NaN application.
 
 ### Application-level middleware
@@ -83,7 +83,10 @@ $app->use($router);
 In a NaN application, routing is treated as middleware.
 Since all middleware must be registered with the application, a barebones application doesn't do much on its own.
 The NaN router is PSR-15 compatible and can be used anywhere that follows the same middleware standard.
-Each route will have access to its own parameters, an instance of the NaN application from which it was called, along with PSR-7-compatible request and response instances.
+Each route will have access to its own parameters,
+	an instance of the NaN application from which it was called,
+	any services registered through the NaN application,
+	along with PSR-7-compatible request and response instances.
 
 Every route must return a PSR-7-compatible response.
 
@@ -97,6 +100,7 @@ $router['/'] = function (
 	Response $response,
 	Request $request,
 	App $app,
+	// parameters and services...
 ) {
 	return $response; // 200 status code by default!
 };

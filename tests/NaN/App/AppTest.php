@@ -1,6 +1,6 @@
 <?php
 
-use NaN\App\App;
+use NaN\App;
 use NaN\App\Controller\Interfaces\{
 	ControllerInterface,
 	GetControllerInterface,

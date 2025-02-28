@@ -2,6 +2,7 @@
 
 namespace NaN\App;
 
+use NaN\App;
 use NaN\Http\Response;
 use Psr\Http\Message\{
 	ResponseInterface as PsrResponseInterface,

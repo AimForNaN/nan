@@ -1,7 +1,8 @@
 <?php
 
-namespace NaN\App;
+namespace NaN;
 
+use NaN\App\Middleware;
 use NaN\DI\Container;
 use NaN\Http\{
     Request,

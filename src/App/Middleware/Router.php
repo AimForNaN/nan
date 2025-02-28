@@ -2,7 +2,7 @@
 
 namespace NaN\App\Middleware;
 
-use NaN\App\App;
+use NaN\App;
 use NaN\App\Middleware\Router\{Route, RoutePattern};
 use NaN\DI\{Arguments, Container, Definition, Definitions};
 use NaN\Http\Response;

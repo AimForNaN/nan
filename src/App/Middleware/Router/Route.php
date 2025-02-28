@@ -14,20 +14,6 @@ class Route implements \ArrayAccess {
 	) {
 	}
 
-	static public function fromArray(array $routes): self {
-		$path = $routes[':path'] ?? null;
-		$handler = $routes[':handler'] ?? null;
-		$route = new self($path, $handler);
-		unset($routes[':path']);
-		unset($routes[':handler']);
-
-		foreach ($routes as $part => $route_struct) {
-			$route->insert($part, self::fromArray($route_struct));
-		}
-
-		return $route;
-	}
-
 	public function insert(string $part, Route $route): self {
 		$this->children[$part] = $route;
 		return $this;

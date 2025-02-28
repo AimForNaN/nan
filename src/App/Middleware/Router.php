@@ -21,11 +21,6 @@ class Router implements \ArrayAccess, PsrMiddlewareInterface {
 	) {
 	}
 
-	static public function fromArray(array $routes): static {
-		$router = new static(Route::fromArray($routes));
-		return $router;
-	}
-
 	public function insert(string $path, mixed $handler): Route {
 		$parts = $this->parsePath($path);
 		$current = $this->root;

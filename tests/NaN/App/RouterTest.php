@@ -13,32 +13,13 @@ describe('Router', function () {
 	});
 
 	test('Adding routes (manually)', function () {
-		$root = new Route('/');
-		$nested_route = new Route('/nested');
-		$nested_route_route = new Route('/nested/route', function () {});
-
-		$root->insert('nested', $nested_route);
-		$nested_route->insert('route', $nested_route_route);
+		$root = new Route('/', null, [
+			'nested' => new Route('/nested', null, [
+				'route' => new Route('/nested/route', function () {}),
+			]),
+		]);
 
 		$routes = new Router($root);
-		$route = $routes['/nested/route'];
-
-		expect($route)->toBeInstanceOf(Route::class);
-	});
-
-	test('Adding routes (array)', function () {
-		$routes = Router::fromArray([
-			':handler' => null,
-			':path' => '/',
-			'nested' => [
-				':handler' => null,
-				':path' => '/nested',
-				'route' => [
-					':handler' => function () {},
-					':path' => '/nested/route',
-				],
-			],
-		]);
 		$route = $routes['/nested/route'];
 
 		expect($route)->toBeInstanceOf(Route::class);

@@ -6,11 +6,7 @@ use NaN\DI\Interfaces\ArgumentInterface;
 use Psr\Container\ContainerInterface as PsrContainerInterface;
 
 class Arguments extends \NaN\Collections\TypedCollection {
-	public function __construct(
-		protected array $data = [],
-	) {
-		parent::__construct($data, Argument::class);
-	}
+	protected mixed $type = ArgumentInterface::class;
 
 	static protected function analyzeCallable(callable $callable): array {
 		$rf = new \ReflectionFunction($callable);

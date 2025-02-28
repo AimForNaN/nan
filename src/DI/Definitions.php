@@ -5,11 +5,7 @@ namespace NaN\DI;
 use NaN\DI\Interfaces\DefinitionInterface;
 
 class Definitions extends \NaN\Collections\TypedCollection {
-	public function __construct(
-		protected array $data = [],
-	) {
-		parent::__construct($data, Definition::class);
-	}
+	protected mixed $type = DefinitionInterface::class;
 
 	public function get(string $alias): ?DefinitionInterface {
 		if ($this->offsetExists($alias)) {

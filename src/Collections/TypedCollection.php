@@ -7,17 +7,8 @@ namespace NaN\Collections;
  *  type-checking doesn't occur until iterated.
  *  If type is null, all elements are permitted.
  */
-class TypedCollection extends Collection {
-	/**
-	 * @param array $data
-	 * @param string $type Fully-qualified class (e.g. MyClass::class) or function name (e.g. 'is_string').
-	 */
-	public function __construct(
-		protected array $data = [],
-		private string $type = '',
-	) {
-		parent::__construct($data);
-	}
+abstract class TypedCollection extends Collection {
+	protected mixed $type = '';
 
 	public function assertType(mixed $item) {
 		if (!$this->checkType($item)) {

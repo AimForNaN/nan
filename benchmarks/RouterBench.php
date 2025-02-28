@@ -1,9 +1,7 @@
 <?php
 
-use NaN\App\Router\{
-    Route,
-	Router,
-};
+use NaN\App\Middleware\Router;
+use NaN\App\Middleware\Router\Route;
 use NaN\Http\{
 	Request,
 	Response,

@@ -1,9 +1,7 @@
 <?php
 
-use NaN\App\App;
-use NaN\App\Router\{
-	Router,
-};
+use NaN\App;
+use NaN\App\Middleware\Router;
 use NaN\DI\{
 	Container,
 	Definition,

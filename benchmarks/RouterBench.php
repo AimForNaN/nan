@@ -13,6 +13,7 @@ class RouterBench {
 	/**
 	 * @Iterations(20)
 	 * @Revs(10)
+	 * @Warmup(1)
 	 */
 	public function benchParamNanRoutesArrayInsert(): array {
 		$routes = [];
@@ -29,6 +30,7 @@ class RouterBench {
 	/**
 	 * @Iterations(20)
 	 * @Revs(10)
+	 * @Warmup(1)
 	 */
 	public function benchParamNanRouterInsertManual(): Router {
 		$root = new Route();
@@ -51,6 +53,7 @@ class RouterBench {
 	/**
 	 * @Iterations(20)
 	 * @Revs(10)
+	 * @Warmup(1)
 	 */
 	public function benchParamNanRouterInsertIndex(): Router {
 		$router = new Router();
@@ -67,6 +70,7 @@ class RouterBench {
 	/**
 	 * @Iterations(20)
 	 * @Revs(10)
+	 * @Warmup(1)
 	 */
 	public function benchParamNanRouterInsertArray(): Router {
 		$routes = [
@@ -94,6 +98,7 @@ class RouterBench {
 	/**
 	 * @Iterations(20)
 	 * @Revs(10)
+	 * @Warmup(1)
 	 */
 	public function benchStaticNanRoutesArrayInsert(): array {
 		$routes = [];
@@ -110,6 +115,7 @@ class RouterBench {
 	/**
 	 * @Iterations(20)
 	 * @Revs(10)
+	 * @Warmup(1)
 	 */
 	public function benchStaticNanRouterInsertManual(): Router {
 		$root = new Route();
@@ -132,6 +138,7 @@ class RouterBench {
 	/**
 	 * @Iterations(20)
 	 * @Revs(10)
+	 * @Warmup(1)
 	 */
 	public function benchStaticNanRouterInsertIndex(): Router {
 		$router = new Router();
@@ -148,6 +155,7 @@ class RouterBench {
 	/**
 	 * @Iterations(20)
 	 * @Revs(10)
+	 * @Warmup(1)
 	 */
 	public function benchStaticNanRouterInsertArray(): Router {
 		$routes = [
@@ -175,6 +183,7 @@ class RouterBench {
 	/**
 	 * @Iterations(20)
 	 * @Revs(10)
+	 * @Warmup(1)
 	 */
 	public function benchParamNanRouterLookup() {
 		$router = $this->benchParamNanRouterInsertManual();
@@ -185,6 +194,7 @@ class RouterBench {
 	/**
 	 * @Iterations(20)
 	 * @Revs(10)
+	 * @Warmup(1)
 	 */
 	public function benchParamNanRoutesArrayLookup() {
 		$routes = $this->benchParamNanRoutesArrayInsert();
@@ -200,6 +210,7 @@ class RouterBench {
 	/**
 	 * @Iterations(20)
 	 * @Revs(10)
+	 * @Warmup(1)
 	 */
 	public function benchStaticNanRouterLookup() {
 		$router = $this->benchStaticNanRouterInsertManual();
@@ -210,6 +221,7 @@ class RouterBench {
 	/**
 	 * @Iterations(20)
 	 * @Revs(10)
+	 * @Warmup(1)
 	 */
 	public function benchStaticNanRoutesArrayLookup() {
 		$routes = $this->benchStaticNanRoutesArrayInsert();

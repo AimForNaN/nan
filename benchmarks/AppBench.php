@@ -14,6 +14,7 @@ class AppBench {
 	/**
 	 * @Iterations(10)
 	 * @Revs(10)
+	 * @Warmup(1)
 	 */
 	public function benchNanAppStartup() {
 		$_SERVER['REQUEST_METHOD'] = 'GET';

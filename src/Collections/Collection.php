@@ -62,7 +62,7 @@ class Collection implements CollectionInterface {
 	}
 
 	public function offsetGet(mixed $offset): mixed {
-		return $this->data[$offset];
+		return $this->data[$offset] ?? null;
 	}
 
 	public function offsetSet(mixed $offset, mixed $value): void {

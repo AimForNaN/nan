@@ -1,6 +1,6 @@
 <?php
 
-namespace NaN\App\Router;
+namespace NaN\App\Middleware\Router;
 
 use Psr\Http\Message\ServerRequestInterface as PsrServerRequestInterface;
 

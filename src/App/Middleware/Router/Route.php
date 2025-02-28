@@ -7,11 +7,10 @@ use NaN\Http\Response;
 use Psr\Http\Message\ServerRequestInterface as PsrServerRequestInterface;
 
 class Route implements \ArrayAccess {
-	protected array $children = [];
-
 	public function __construct(
 		public ?string $path = null,
 		public mixed $handler = null,
+		protected array $children = [],
 	) {
 	}
 

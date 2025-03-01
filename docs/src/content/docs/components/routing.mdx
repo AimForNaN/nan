@@ -3,3 +3,109 @@ title: Routing
 sidebar:
   order: 1
 ---
+
+Routing in NaN is managed by the `NaN\App\Middleware\Router` middleware.
+It adheres to the PSR-15 standard for middleware.
+
+```php
+use NaN\App\Middleware\Router;
+
+$router = new Router(Route $root);
+```
+
+Each route is presented by the `NaN\App\Middleware\Router\Route` class.
+
+```php
+use NaN\App\Middleware\Router\Route;
+
+$route = new Route(string $full_path, mixed $handler, array $children);
+```
+Routes are structured internally as a radix trie.
+As such, insertion can be potentially slow, with the benefit coming from its look-up time.
+(Of course, performance concerns become less relevant when using a [preload script](https://www.php.net/manual/en/opcache.preloading.php).)
+
+Each node of the radix trie represents a segment of the path.
+
+```http "<root>" "path" "to" "endpoint"
+<root> / path / to / endpoint
+```
+
+The root will always represent the top-level path `/`.
+
+##### Parameterized routes
+
+NaN routes support parameterized routes by surrounding segment parts with curly brackets.
+
+```php
+$router['/users/{id}'] = function ($id) {};
+```
+
+The parameters will be autowired (injected) into the router handler.
+
+:::caution[Warning]
+The handler parameter name must match the name provided in the route parameter.
+:::
+
+### Adding routes
+
+NaN provides multiple ways to construct the route trie.
+
+:::note
+Performance measurements are compared against one thousand routes.
+:::
+
+##### Array-access operator
+
+This is the slowest method, since all the work is done conveniently for you.
+It can perform **up to** six times slower than array insertion, depending on the length of the path and the number of paths registered.
+This, however, may not be a problem for your typical application.
+
+```php
+$router['/'] = function () {};
+$router['/account'] = function () {};
+$router['/account/logout'] = function () {};
+```
+
+##### Manually
+
+This is the fastest approach, since much of the work is offloaded to the programmer.
+It can perform **up to** 2 times slower than array insertion, depending on the length of the path and the number of paths registered.
+
+```php
+use NaN\App\Middleware\Router;
+use NaN\App\Middleware\Router\Route;
+
+$root = new Route('/', function () {}, [
+	'account' => new Route('/account', function () {}, [
+		'logout' => new Route('/account/logout', function () {}),
+	]),
+	'users' => new Route(children: [
+		'{id}' => new Route('/users/{id}', function ($id) {}),
+	]),
+]);
+$router = new Router($root);
+```
+
+Since the radix trie is constructed using path segments, the array keys of the children represent each path segment.
+The routes are the ones that hold the complete endpoint path.
+If a route does not intend to process the endpoint (i.e. does not provide a handler), then the path argument can be treated as optional.
+
+### Retrieving routes
+
+The simplest way to retrieve a route is through the array-access operator.
+This method supports parameterized routes.
+
+```php
+
+$router['/users/{id}'] = function ($id) {};
+
+// Parameterized!
+$route = $router['/users/foobar'];
+print($route->path); // "/users/{id}"
+
+// Static!
+$route = $router['/users/{id}'];
+print($route->path); // "/users/{id}"
+```
+
+Naturally, static routes will have the best performance, since there is no need to account for parameters.

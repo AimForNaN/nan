@@ -13,7 +13,7 @@ use NaN\App\Middleware\Router;
 $router = new Router(Route $root);
 ```
 
-Each route is presented by the `NaN\App\Middleware\Router\Route` class.
+Each route is represented by the `NaN\App\Middleware\Router\Route` class.
 
 ```php
 use NaN\App\Middleware\Router\Route;
@@ -40,10 +40,11 @@ NaN routes support parameterized routes by surrounding segment parts with curly 
 $router['/users/{id}'] = function ($id) {};
 ```
 
-The parameters will be autowired (injected) into the router handler.
+The parameters will be autowired (injected) into the route handler.
 
 :::caution[Warning]
 The handler parameter name must match the name provided in the route parameter.
+Since route parameters are autowired into their handlers, route parameter names should also adhere to the PHP variable naming requirements.
 :::
 
 ### Adding routes
@@ -97,15 +98,17 @@ This method supports parameterized routes.
 
 ```php
 
-$router['/users/{id}'] = function ($id) {};
+$router['/users/{user}'] = function ($user) {};
 
 // Parameterized!
 $route = $router['/users/foobar'];
-print($route->path); // "/users/{id}"
+print($route->path); // "/users/{user}"
 
 // Static!
-$route = $router['/users/{id}'];
-print($route->path); // "/users/{id}"
+$route = $router['/users/{user}'];
+print($route->path); // "/users/{user}"
 ```
 
-Naturally, static routes will have the best performance, since there is no need to account for parameters.
+Naturally, a radix trie performs best with static routes.
+When dealing with parameters, routes are treated on a FIFO basis.
+The programmer is tasked with the responsibility of correctly ordering the routes and avoiding duplicates.

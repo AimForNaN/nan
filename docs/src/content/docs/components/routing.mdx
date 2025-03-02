@@ -97,7 +97,6 @@ The simplest way to retrieve a route is through the array-access operator.
 This method supports parameterized routes.
 
 ```php
-
 $router['/users/{user}'] = function ($user) {};
 
 // Parameterized!
@@ -112,3 +111,93 @@ print($route->path); // "/users/{user}"
 Naturally, a radix trie performs best with static routes.
 When dealing with parameters, routes are treated on a FIFO basis.
 The programmer is tasked with the responsibility of correctly ordering the routes and avoiding duplicates.
+
+### Controllers
+
+The NaN router does not support specifying HTTP methods for functions or closures as handlers.
+This is by design.
+If you need fine-grained control over handling requests, you'll need to construct a NaN controller.
+NaN provides several interfaces and traits that you should be aware of.
+
+To create a controller you'll need to inherit from the `ControllerInterface` interface.
+This will require you to specify which HTTP methods your controller supports through the `getAllowedMethods` method.
+You must return an array where each key is an HTTP method that you support with a boolean value of `true`.
+The keys must be in uppercase form.
+Whatever HTTP method you plan on supporting must have an equivalent implementation, but in lowercase form.
+Each method must return a PSR-7-compatible response.
+
+```php
+use NaN\App\Controller\Interfaces\ControllerInterface;
+use Psr\Http\Message\ResponseInterface;
+
+class CustomController implements ControllerInterface {
+	public function getAllowedMethods(): array {
+		return [
+			'GET' => true,
+			'POST' => true,
+		];
+	}
+
+	public function get(): ResponseInterface {
+	}
+
+	public function post(): ResponseInterface {
+	}
+}
+
+$router['/'] = CustomController::class;
+```
+
+If you want the allowed methods to be automated for you, you'll want to make use of the `ControllerTrait` trait instead.
+Doing so will require you to make use of other controller interfaces for specifying which HTTP methods your controller supports.
+
+```php
+use NaN\App\Controller\Interfaces\{
+	ControllerInterface,
+	GetControllerInterface,
+	PostControllerInterface,
+};
+use NaN\App\Controller\Traits\ControllerTrait;
+
+class CustomController implements ControllerInterface, GetControllerInterface, PostControllerInterface {
+	use ControllerTrait;
+
+	public function get(): ResponseInterface {
+	}
+
+	public function post(): ResponseInterface {
+	}
+}
+```
+
+The NaN micro-framework provides interfaces for every known HTTP method.
+
+```php
+use NaN\App\Controller\Interfaces\{
+	ConnectControllerInterface,
+	DeleteControllerInterface,
+	GetControllerInterface,
+	HeadControllerInterface,
+	OptionsControllerInterface,
+	PatchControllerInterface,
+	PostControllerInterface,
+	PutControllerInterface,
+	TraceControllerInterface,
+};
+```
+
+##### Dependency injection
+
+Dependency injection will still function the same, with the exception that you must specify the parameters as optional.
+By making the parameters optional, you satisfy the interface inheritance requirements.
+
+```php
+class UsersController implements ControllerInterface, GetControllerInterface {
+	use ControllerTrait;
+
+	public function get($id = null): ResponseInterface {
+	}
+}
+
+$router['/users/{id}'] = UsersController::class;
+```

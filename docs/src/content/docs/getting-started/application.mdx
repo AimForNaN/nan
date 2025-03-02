@@ -49,7 +49,7 @@ $app[] = new Definition(CustomService::class);
 An instance of the service can be retrieved through the same array-access operator.
 
 ```php
-$second_service = $app[CustomService::class];
+$custom_service = $app[CustomService::class];
 ```
 
 These services will be available only on an application level (or wherever the `Container` instance is used).

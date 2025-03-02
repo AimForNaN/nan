@@ -1,7 +1,5 @@
 ---
 title: Routing
-sidebar:
-  order: 1
 ---
 
 Routing in NaN is managed by the `NaN\App\Middleware\Router` middleware.
@@ -70,7 +68,7 @@ $router['/account/logout'] = function () {};
 ##### Manually
 
 This is the fastest approach, since much of the work is offloaded to the programmer.
-It can perform **up to** 2 times slower than array insertion, depending on the length of the path and the number of paths registered.
+It can perform **up to** two times slower than array insertion, depending on the length of the path and the number of paths registered.
 
 ```php
 use NaN\App\Middleware\Router;
@@ -192,12 +190,12 @@ Dependency injection will still function the same, with the exception that you m
 By making the parameters optional, you satisfy the interface inheritance requirements.
 
 ```php
-class UsersController implements ControllerInterface, GetControllerInterface {
+class UserController implements ControllerInterface, GetControllerInterface {
 	use ControllerTrait;
 
 	public function get($id = null): ResponseInterface {
 	}
 }
 
-$router['/users/{id}'] = UsersController::class;
+$router['/users/{id}'] = UserController::class;
 ```

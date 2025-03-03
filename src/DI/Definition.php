@@ -6,30 +6,14 @@ use NaN\DI\Interfaces\DefinitionInterface;
 use Psr\Container\ContainerInterface as PsrContainerInterface;
 
 class Definition implements DefinitionInterface {
-	protected ?string $alias = null;
 	protected array $method_calls = [];
 	protected mixed $resolved = null;
-	protected bool $shared = false;
 
 	public function __construct(
 		protected mixed $concrete,
 		protected array $arguments = [],
+		protected bool $shared = false,
 	) {
-	}
-
-	public function addMethodCall(string $method, array $args = []): DefinitionInterface {
-		$this->method_calls[] = [
-			'arguments' => $args,
-			'method' =>  $method,
-		];
-		return $this;
-	}
-
-	public function addMethodCalls(array $method_calls): DefinitionInterface {
-		foreach ($method_calls as $method => $args) {
-			$this->addMethodCall($method, $args);
-		}
-		return $this;
 	}
 
 	public function is(string $id): bool {
@@ -82,13 +66,5 @@ class Definition implements DefinitionInterface {
 		}
 
 		return $this->resolved;
-	}
-
-	/**
-	 * Whether to treat it like a singleton!
-	 */
-	public function setShared(bool $shared = true): DefinitionInterface {
-		$this->shared = $shared;
-		return $this;
 	}
 }

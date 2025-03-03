@@ -28,11 +28,8 @@ class Container implements \ArrayAccess, ContainerInterface {
 		}
 
 		foreach ($this->delegates as $delegate) {
-			// No point in wasting time checking if it has it! 
-			try {
+			if ($delegate->has($id)) {
 				return $delegate->get($id);
-			} catch (PsrContainerExceptionInterface) {
-				continue;
 			}
 		}
 

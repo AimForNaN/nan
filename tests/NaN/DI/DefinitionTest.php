@@ -16,6 +16,7 @@ describe('Dependency Injection: Definition', function () {
 		$request = $definition->resolve();
 		expect($request)->toBeInstanceOf(Request::class);
 		expect($request->getMethod())->toBe('POST');
+		expect($request)->not()->toBe($definition->resolve());
 	});
 
 	test('Resolve closure', function () {
@@ -27,8 +28,34 @@ describe('Dependency Injection: Definition', function () {
 			expect($this)->toBeInstanceOf(Container::class);
 
 			return new class {};
-		}, [1, Request::class]);
+		}, [1]);
 
 		expect($definition->resolve($container))->toBeObject();
+	});
+
+	test('Resolve concrete value', function () {
+		$definition = new Definition(new Request('GET', '/'));
+
+		$request = $definition->resolve();
+		expect($request)->toBeInstanceOf(Request::class);
+		expect($request)->toBe($definition->resolve());
+	});
+
+	test('Resolve single instance class', function () {
+		$definition = new Definition(Request::class, ['GET', '/'], true);
+
+		$request = $definition->resolve();
+		expect($request)->toBeInstanceOf(Request::class);
+		expect($request)->toBe($definition->resolve());
+	});
+
+	test('Resolve single instance closure', function () {
+		$definition = new Definition(function () {
+			return new Request('GET', '/');
+		}, shared: true);
+
+		$request = $definition->resolve();
+		expect($request)->toBeInstanceOf(Request::class);
+		expect($request)->toBe($definition->resolve());
 	});
 });

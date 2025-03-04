@@ -17,7 +17,7 @@ use Psr\Http\Server\{
 
 class Router implements \ArrayAccess, PsrMiddlewareInterface {
 	public function __construct(
-		protected Route $root = new Route(),
+		protected Route $root = new Route('/'),
 	) {
 	}
 

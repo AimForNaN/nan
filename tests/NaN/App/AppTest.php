@@ -48,6 +48,9 @@ describe('App', function () {
 			use ControllerTrait;
 
 			public function get(?PsrResponseInterface $rsp = null): PsrResponseInterface {
+				expect($this)->toBeInstanceOf(TestController::class);
+				expect($rsp)->toBeInstanceOf(PsrResponseInterface::class);
+				$rsp->getBody()->write('good');
 				return $rsp;
 			}
 		}
@@ -58,7 +61,7 @@ describe('App', function () {
 		$app->use($routes);
 
 		$rsp = $app->handle(new Request('GET', '/'));
-		expect($rsp)->toBeInstanceOf(PsrResponseInterface::class);
+		expect($rsp->getBody()->getContents())->toBe('good');
 		expect($rsp->getStatusCode())->toBe(200);
 	});
 });

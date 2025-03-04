@@ -4,6 +4,8 @@ namespace NaN\App\Middleware\Router;
 
 use NaN\App\Controller\Interfaces\ControllerInterface;
 use NaN\DI\Arguments;
+use NaN\Http\Response;
+use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as PsrServerRequestInterface;
 
 class Route implements \ArrayAccess {
@@ -75,7 +77,7 @@ class Route implements \ArrayAccess {
 			$method = $request->getMethod();
 
 			if ($allowed_methods[$method] ?? false) {
-				return function () use ($handler, $method, $values) {
+				return function () use ($handler, $method, $values): PsrResponseInterface {
 					/** @var \NaN\DI\Container $this */
 					$method = \strtolower($method);
 					$callable = \Closure::fromCallable([$handler, $method]);
@@ -83,9 +85,13 @@ class Route implements \ArrayAccess {
 					return \call_user_func($callable, ...$arguments->resolve($this));
 				};
 			}
+
+			return function (): PsrResponseInterface {
+				return new Response(405);
+			};
 		}
 
-		return function () use ($handler, $values) {
+		return function () use ($handler, $values): PsrResponseInterface {
 			/** @var \NaN\DI\Container $this */
 			$arguments = Arguments::fromCallable($handler, $values);
 			return \call_user_func($handler, ...$arguments->resolve($this));

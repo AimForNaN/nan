@@ -30,7 +30,9 @@ describe('Dependency Injection: Definition', function () {
 			return new class {};
 		}, [1]);
 
-		expect($definition->resolve($container))->toBeObject();
+		$anon = $definition->resolve($container);
+		expect($anon)->toBeObject();
+		expect($anon)->not()->toBe($definition->resolve($container));
 	});
 
 	test('Resolve concrete value', function () {

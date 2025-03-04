@@ -15,7 +15,7 @@ use Psr\Http\Message\{
 describe('App', function () {
 	test('Route dependency injection (closure)', function () {
 		$routes = new Router();
-		$routes['/1'] = function (PsrResponseInterface $rsp) {
+		$routes['/'] = function (PsrResponseInterface $rsp) {
 			$rsp->getBody()->write('good');
 			return $rsp;
 		};
@@ -23,7 +23,7 @@ describe('App', function () {
 		$app = new App();
 		$app->use($routes);
 
-		$rsp = $app->handle(new Request('GET', '/1'));
+		$rsp = $app->handle(new Request('GET', '/'));
 		expect($rsp)->toBeInstanceOf(PsrResponseInterface::class);
 		expect($rsp->getStatusCode())->toBe(200);
 		expect((string)$rsp->getBody())->toBe('good');

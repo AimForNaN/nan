@@ -33,12 +33,11 @@ The root will always represent the top-level path `/`.
 ##### Parameterized routes
 
 NaN routes support parameterized routes by surrounding segment parts with curly brackets.
+The parameters will be autowired (injected) into the route handler.
 
 ```php
 $router['/users/{id}'] = function ($id) {};
 ```
-
-The parameters will be autowired (injected) into the route handler.
 
 :::caution[Warning]
 The handler parameter name must match the name provided in the route parameter.

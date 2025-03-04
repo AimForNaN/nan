@@ -2,3 +2,130 @@
 title: Dependency injection
 ---
 
+Dependency injection is a way of dynamically injecting arguments into a callable.
+In NaN, dependency injection is managed by the `NaN\DI\Container` class.
+It is PSR-11 compatible and is highly inspired by the PHP league's [container](https://container.thephpleague.com/4.x/) system, with some of the fat cut off and some adjustments made to help improve performance.
+
+### Adding entries
+
+You can conveniently and optionally add entries through the constructor.
+
+```php
+use NaN\DI\{Container, Definition, Definitions};
+
+$container = new Container(new Definitions([
+	SomeClassInterface::class => new Definition(SomeClass::class),
+]));
+```
+
+You can also use the array-access operator to add definitions to the container.
+
+```php
+$container[SomeClassInterface::class] = new Definition(SomeClass::class):
+```
+
+The array keys act as aliases.
+When aliases are provided, look-up time achieves a complexity of O(n), so long as delegates are not involved.
+If an alias is not provided, the system will loop through all definitions until it finds a matching definition.
+Without an alias it will only be able to match against a class that inherits from the hinted type on a FIFO basis.
+Therefore, for best performance and predictability, be sure to always provide an alias and type hint using only that alias.
+
+:::note
+
+While aliases do not necessarily need to be fully-qualified class names,
+	arbitrary aliases are only meaningful if you have direct access to the container instance since they can't be used for type hinting.
+
+:::
+
+### Retrieving entries
+
+As per the PSR-11 standard, entries can be retrieved through the `get` method.
+
+```php
+$entry = $container->get($alias);
+```
+
+You can also use the array-access operator to retrieve an entry.
+
+```php
+$entry = $container[$alias];
+```
+
+As per the PSR-11 standard, an exception will be thrown if an entry cannot be found.
+You can check if an entry exists before retrieving or simply catch the exception.
+
+```php
+if ($container->has($alias)) {
+	$entry = $container->get($alias);
+}
+```
+
+```php
+if (isset($container[$alias]) {
+	$entry = $container->get($alias);
+}
+```
+
+```php
+use Psr\Container\NotFoundExceptionInterface;
+
+try {
+	$entry = $container->get($alias);
+} catch (NotFoundExceptionInterface $ex) {
+	// ...
+}
+```
+
+### Delegates
+
+Delegates allow multiple containers to work together when retrieving entries.
+When a container cannot find a matching entry it will delegate the task to another container.
+Since there is no global store of containers, each container will store their own delegates.
+
+```php
+$first_container = new Container();
+
+$second_container = new Container(new Definitions([
+	SomeClass::class => new Definition(SomeClass::class),
+]));
+
+$first_container->addDelegate($second_container);
+
+// Will search $second_container if an entry can't be found!
+$first_container->get(SomeClass::class);
+```
+
+### Definitions
+
+##### Arguments
+
+Some class constructors have parameters that need to be filled.
+You can supply an array of arguments to be autowired into the class constructor.
+The arguments must be in the same order as the definition of the class constructor.
+Dependency injection will also work here, too, so long as a definition exists for the hinted types within the container.
+
+```php
+$container[SomeOtherClassInterface::class]
+	= new Definition(SomeOtherClass::class);
+
+$container[SomeClassInterface::class]
+	= new Definition(SomeClass::class, ['argument', SomeOtherClass::class]);
+```
+
+##### Factories
+
+Sometimes you need a little extra boilerplate than what can be provided through the `Definition` class.
+In such cases you can use a function to act as a factory.
+The relevant container can be accessed through `$this`.
+
+```php
+$container[SomeOtherClassInterface::class]
+	= new Definition(SomeOtherClass::class);
+
+$container[SomeClassInterface::class] = new Definition(function () {
+	/** @var \NaN\DI\Container $this */
+	$dependency = $this->get(SomeOtherClassInterface::class);
+	// Do some stuff...
+	return $some_class;
+}):
+```

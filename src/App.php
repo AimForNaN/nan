@@ -23,6 +23,7 @@ class App implements \ArrayAccess, PsrContainerInterface, PsrRequestHandlerInter
 		protected PsrContainerInterface $services = new Container(),
 		protected Middleware $middleware = new Middleware(),
 	) {
+		$this->services->addDelegate($this->middleware);
 	}
 
 	public function get(string $id) {

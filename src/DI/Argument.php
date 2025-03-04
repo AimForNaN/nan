@@ -20,7 +20,7 @@ class Argument implements ArgumentInterface {
 	) {
 	}
 
-	public function resolve(PsrContainerInterface $container): mixed {
+	public function resolve(?PsrContainerInterface $container = null): mixed {
 		if (\is_object($this->value)) {
 			return $this->value;
 		}
@@ -47,9 +47,10 @@ class Argument implements ArgumentInterface {
 				return $this->resolveString();
 		}
 
-		try {
-			return $container->get($this->type);
-		} catch (PsrContainerExceptionInterface) {
+		if ($container) {
+			if ($container->has($this->type)) {
+				return $container->get($this->type);
+			}
 		}
 
 		return $this->value;

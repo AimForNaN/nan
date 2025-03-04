@@ -91,9 +91,8 @@ class Router implements \ArrayAccess, PsrMiddlewareInterface {
 		$pattern->matchesRequest($request);
 
 		$values = $pattern->getMatches();
-		$route_handler = $route->toCallable($request);
-		$arguments = Arguments::fromCallable($route_handler, $values);
-		$definition = new Definition($route_handler, $arguments->toArray());
+		$route_handler = $route->toCallable($request, $values);
+		$definition = new Definition($route_handler);
 
 		$container = new Container(new Definitions([
 			PsrServerRequestInterface::class => new Definition($request),

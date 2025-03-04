@@ -28,7 +28,7 @@ class Definition implements DefinitionInterface {
 		return false;
 	}
 
-	public function resolve(PsrContainerInterface $container): mixed {
+	public function resolve(?PsrContainerInterface $container = null): mixed {
 		if ($this->shared && !\is_null($this->resolved)) {
 			return $this->resolved;
 		}
@@ -36,17 +36,17 @@ class Definition implements DefinitionInterface {
 		return $this->resolveNew($container);
 	}
 
-	protected function resolveClosure(PsrContainerInterface $container): mixed {
-		$arguments = Arguments::fromValues($this->arguments);
-		return \call_user_func($this->concrete, ...$arguments->resolve($container));
+	protected function resolveClosure(?PsrContainerInterface $container = null): mixed {
+		$fn = \Closure::bind($this->concrete, $container);
+		return $fn();
 	}
 
-	protected function resolveClass(PsrContainerInterface $container): mixed {
+	protected function resolveClass(?PsrContainerInterface $container = null): mixed {
 		$arguments = Arguments::fromValues($this->arguments);
 		return new $this->concrete(...$arguments->resolve($container));
 	}
 
-	protected function resolveNew(PsrContainerInterface $container): mixed {
+	protected function resolveNew(?PsrContainerInterface $container = null): mixed {
 		if ($this->concrete instanceof \Closure) {
 			$this->resolved = $this->resolveClosure($container);
 		} else {

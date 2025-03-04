@@ -97,7 +97,7 @@ class Arguments extends \NaN\Collections\TypedCollection {
 		}, $values));
 	}
 
-	public function resolve(PsrContainerInterface $container): array {
+	public function resolve(?PsrContainerInterface $container = null): array {
 		return $this->map(fn(ArgumentInterface $argument) => $argument->resolve($container));
 	}
 }

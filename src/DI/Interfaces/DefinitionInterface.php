@@ -7,5 +7,5 @@ use Psr\Container\ContainerInterface as PsrContainerInterface;
 interface DefinitionInterface {
 	public function is(string $id): bool;
 
-	public function resolve(PsrContainerInterface $container): mixed;
+	public function resolve(?PsrContainerInterface $container = null): mixed;
 }

@@ -5,7 +5,7 @@ namespace NaN\DI\Interfaces;
 use Psr\Container\ContainerInterface as PsrContainerInterface;
 
 interface ArgumentInterface {
-	public function resolve(PsrContainerInterface $container): mixed;
+	public function resolve(?PsrContainerInterface $container = null): mixed;
 
 	public function setName(string $name): ArgumentInterface;
 

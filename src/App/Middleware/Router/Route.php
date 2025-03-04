@@ -3,7 +3,7 @@
 namespace NaN\App\Middleware\Router;
 
 use NaN\App\Controller\Interfaces\ControllerInterface;
-use NaN\Http\Response;
+use NaN\DI\Arguments;
 use Psr\Http\Message\ServerRequestInterface as PsrServerRequestInterface;
 
 class Route implements \ArrayAccess {
@@ -66,24 +66,30 @@ class Route implements \ArrayAccess {
 		unset($this->children[$offset]);
 	}
 
-	public function toCallable(PsrServerRequestInterface $request): callable {
+	public function toCallable(PsrServerRequestInterface $request, array $values = []): callable {
 		$handler = $this->handler;
-		if (!\is_callable($handler)) {
-			if (\is_subclass_of($handler, ControllerInterface::class))  {
-				$handler = new $handler();
-				$allowed_methods = $handler->getAllowedMethods();
-				$method = $request->getMethod();
 
-				if ($allowed_methods[$method] ?? false) {
-					return \Closure::fromCallable([$handler, \strtolower($method)]);
-				}
+		if (\is_subclass_of($handler, ControllerInterface::class))  {
+			$handler = new $handler();
+			$allowed_methods = $handler->getAllowedMethods();
+			$method = $request->getMethod();
+
+			if ($allowed_methods[$method] ?? false) {
+				return function () use ($handler, $method, $values) {
+					/** @var \NaN\DI\Container $this */
+					$method = \strtolower($method);
+					$callable = \Closure::fromCallable([$handler, $method]);
+					$arguments = Arguments::fromCallable($callable, $values);
+					return \call_user_func($callable, ...$arguments->resolve($this));
+				};
 			}
-
-			$handler = function () {
-				return new Response(501);
-			};
 		}
-		return $handler(...);
+
+		return function () use ($handler, $values) {
+			/** @var \NaN\DI\Container $this */
+			$arguments = Arguments::fromCallable($handler, $values);
+			return \call_user_func($handler, ...$arguments->resolve($this));
+		};
 	}
 
 	public function withHandler(mixed $handler): static {

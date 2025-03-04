@@ -133,6 +133,14 @@ $container[SomeClassInterface::class] = new Definition(function () {
 ##### Single instance
 
 Typically, when retrieving an entry, a new instance will be instantiated for any given factory or fully-qualified class name.
+
+```php
+$one = $container[SomeClassInterface::class];
+$two = $container[SomeClassInterface::class];
+
+($one === $two) === false;
+```
+
 Sometimes you may want the same instance every time you retrieve an entry.
 For this we provide an optional third parameter: `shared`.
 Pass in `true` if you want the same instance to be retrieved every, single time.
@@ -147,9 +155,18 @@ $container[SomeClassInterface::class]
 	= new Definition(SomeClass::class, shared: true);
 ```
 
-Now, when you retrieve the same entry, the same instance is returned.
+```php
+$one = $container[SomeClassInterface::class];
+$two = $container[SomeClassInterface::class];
+
+($one === $two) === true;
+```
+
+In the case where real values are used, the entries automatically become shared.
 
 ```php
+$container[SomeClassInterface::class] = new Definition(new SomeClass());
+
 $one = $container[SomeClassInterface::class];
 $two = $container[SomeClassInterface::class];
 

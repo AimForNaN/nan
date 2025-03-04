@@ -3,7 +3,7 @@ title: Dependency injection
 ---
 
 Dependency injection is a way of dynamically injecting arguments into a callable.
-In NaN, dependency injection is managed by the `NaN\DI\Container` class.
+In NaN, dependency injection is managed by the `NaN\DI` namespace.
 It is PSR-11 compatible and is highly inspired by the PHP league's [container](https://container.thephpleague.com/4.x/) system, with some of the fat cut off and some adjustments made to help improve performance.
 
 ### Adding entries
@@ -51,7 +51,7 @@ You can also use the array-access operator to retrieve an entry.
 $entry = $container[$alias];
 ```
 
-As per the PSR-11 standard, an exception will be thrown if an entry cannot be found.
+As per the PSR-11 standard, an exception will be thrown if an entry cannot be found when retrieving an entry.
 You can check if an entry exists before retrieving or simply catch the exception.
 
 ```php
@@ -116,7 +116,7 @@ $container[SomeClassInterface::class]
 
 Sometimes you need a little extra boilerplate than what can be provided through the `Definition` class.
 In such cases you can use a function to act as a factory.
-The relevant container can be accessed through `$this`.
+The container instance can be accessed through `$this`.
 
 ```php
 $container[SomeOtherClassInterface::class]
@@ -128,4 +128,30 @@ $container[SomeClassInterface::class] = new Definition(function () {
 	// Do some stuff...
 	return $some_class;
 }):
+```
+
+##### Single instance
+
+Typically, when retrieving an entry, a new instance will be instantiated for any given factory or fully-qualified class name.
+Sometimes you may want the same instance every time you retrieve an entry.
+For this we provide an optional third parameter: `shared`.
+Pass in `true` if you want the same instance to be retrieved every, single time.
+
+```php
+$container[SomeClassInterface::class]
+	= new Definition(SomeClass::class, [], true);
+```
+
+```php
+$container[SomeClassInterface::class]
+	= new Definition(SomeClass::class, shared: true);
+```
+
+Now, when you retrieve the same entry, the same instance is returned.
+
+```php
+$one = $container[SomeClassInterface::class];
+$two = $container[SomeClassInterface::class];
+
+($one === $two) === true;
 ```

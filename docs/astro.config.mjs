@@ -9,7 +9,8 @@ import markdoc from '@astrojs/markdoc';
 export default defineConfig({
 	integrations: [
 		starlight({
-			title: 'NaN micro-framework',
+			title: 'NaN',
+			description: 'NaN micro-framework',
 			social: {
 				github: 'https://github.com/withastro/starlight',
 			},

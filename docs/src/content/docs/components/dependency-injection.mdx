@@ -155,13 +155,6 @@ $container[SomeClassInterface::class]
 	= new Definition(SomeClass::class, shared: true);
 ```
 
-```php
-$one = $container[SomeClassInterface::class];
-$two = $container[SomeClassInterface::class];
-
-($one === $two) === true;
-```
-
 In the case where real values are used, the entries automatically become shared.
 
 ```php

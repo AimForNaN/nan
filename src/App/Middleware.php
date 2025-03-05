@@ -75,7 +75,11 @@ class Middleware implements \ArrayAccess, \Iterator, PsrContainerInterface, PsrM
 	}
 
 	public function offsetSet(mixed $offset, mixed $value): void {
-		$this->children[$offset] = $value;
+		if (!\is_null($offset)) {
+			$this->children[] = $value;
+		} else {
+			$this->children[$offset] = $value;
+		}
 	}
 
 	public function offsetUnset(mixed $offset): void {

@@ -65,7 +65,7 @@ class App implements \ArrayAccess, PsrContainerInterface, PsrRequestHandlerInter
 	}
 
 	public function use(PsrMiddlewareInterface $middleware): static {
-		$this->middleware[] = $middleware;
+		$this->middleware[$middleware::class] = $middleware;
 		return $this;
 	}
 }

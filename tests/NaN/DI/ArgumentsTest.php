@@ -3,12 +3,11 @@
 use NaN\DI\{
 	Arguments,
 	Container,
-	Definitions,
 };
 
 describe('Dependency Injection: Arguments', function () {
 	test('Basic resolution', function () {
-		$container = new Container(new Definitions());
+		$container = new Container();
 		$callable = function (int $test1, string $test2) {};
 		$arguments = Arguments::fromCallable($callable, [1, '']);
 		expect($arguments)->toHaveCount(2);

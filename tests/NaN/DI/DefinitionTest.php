@@ -1,17 +1,14 @@
 <?php
 
-use NaN\DI\{
-	Container,
-	Definition,
-	Definitions,
-};
+use NaN\DI\Container;
+use NaN\DI\Container\Entry;
 use NaN\Http\{
 	Request,
 };
 
 describe('Dependency Injection: Definition', function () {
 	test('Resolve class', function () {
-		$definition = new Definition(Request::class, ['POST', '/']);
+		$definition = new Entry(Request::class, ['POST', '/']);
 
 		$request = $definition->resolve();
 		expect($request)->toBeInstanceOf(Request::class);
@@ -20,10 +17,10 @@ describe('Dependency Injection: Definition', function () {
 	});
 
 	test('Resolve closure', function () {
-		$container = new Container(new Definitions([
-			new Definition(Request::class, ['GET', '/']),
-		]));
-		$definition = new Definition(function () {
+		$container = new Container([
+			new Entry(Request::class, ['GET', '/']),
+		]);
+		$definition = new Entry(function () {
 			expect(\func_get_args())->toHaveLength(0);
 			expect($this)->toBeInstanceOf(Container::class);
 
@@ -36,7 +33,7 @@ describe('Dependency Injection: Definition', function () {
 	});
 
 	test('Resolve concrete value', function () {
-		$definition = new Definition(new Request('GET', '/'));
+		$definition = new Entry(new Request('GET', '/'));
 
 		$request = $definition->resolve();
 		expect($request)->toBeInstanceOf(Request::class);
@@ -44,7 +41,7 @@ describe('Dependency Injection: Definition', function () {
 	});
 
 	test('Resolve single instance class', function () {
-		$definition = new Definition(Request::class, ['GET', '/'], true);
+		$definition = new Entry(Request::class, ['GET', '/'], true);
 
 		$request = $definition->resolve();
 		expect($request)->toBeInstanceOf(Request::class);
@@ -52,7 +49,7 @@ describe('Dependency Injection: Definition', function () {
 	});
 
 	test('Resolve single instance closure', function () {
-		$definition = new Definition(function () {
+		$definition = new Entry(function () {
 			return new Request('GET', '/');
 		}, shared: true);
 

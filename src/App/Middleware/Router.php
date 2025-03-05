@@ -4,7 +4,8 @@ namespace NaN\App\Middleware;
 
 use NaN\App;
 use NaN\App\Middleware\Router\{Route, RoutePattern};
-use NaN\DI\{Arguments, Container, Definition, Definitions};
+use NaN\DI\Container;
+use NaN\DI\Container\Entry;
 use NaN\Http\Response;
 use Psr\Http\Message\{
 	ResponseInterface as PsrResponseInterface,
@@ -92,12 +93,12 @@ class Router implements \ArrayAccess, PsrMiddlewareInterface {
 
 		$values = $pattern->getMatches();
 		$route_handler = $route->toCallable($request, $values);
-		$definition = new Definition($route_handler);
+		$definition = new Entry($route_handler);
 
-		$container = new Container(new Definitions([
-			PsrServerRequestInterface::class => new Definition($request),
-			PsrResponseInterface::class => new Definition($response),
-		]));
+		$container = new Container([
+			PsrServerRequestInterface::class => new Entry($request),
+			PsrResponseInterface::class => new Entry($response),
+		]);
 
 		if ($app) {
 			$container->addDelegate($app);

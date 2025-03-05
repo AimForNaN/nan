@@ -1,11 +1,12 @@
 <?php
 
-namespace NaN\DI;
+namespace NaN\DI\Container;
 
-use NaN\DI\Interfaces\DefinitionInterface;
+use NaN\DI\Arguments;
+use NaN\DI\Container\Interfaces\EntryInterface;
 use Psr\Container\ContainerInterface as PsrContainerInterface;
 
-class Definition implements DefinitionInterface {
+class Entry implements EntryInterface {
 	protected array $method_calls = [];
 	protected mixed $resolved = null;
 

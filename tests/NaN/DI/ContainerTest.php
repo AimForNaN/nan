@@ -3,10 +3,8 @@
 use \NaN\App\TemplateEngine;
 use NaN\DI\{
 	Container,
-	Definition,
-	Definitions,
 };
-use NaN\Env;
+use NaN\DI\Container\Entry;
 use NaN\Http\{
 	Request,
 	Response,
@@ -14,10 +12,10 @@ use NaN\Http\{
 
 describe('Dependency Injection: Container', function () {
 	test('Basic resolution', function () {
-		$container = new Container(new Definitions([
-			'one' => new Definition(1),
-			'test' => new Definition('test'),
-		]));
+		$container = new Container([
+			'one' => new Entry(1),
+			'test' => new Entry('test'),
+		]);
 
 		$one = $container->get('one');
 		expect($one)->toBe(1);
@@ -27,9 +25,9 @@ describe('Dependency Injection: Container', function () {
 	});
 
 	test('Class resolution', function () {
-		$container = new Container(new Definitions([
-			new Definition(Request::class, ['GET', '/']),
-		]));
+		$container = new Container([
+			new Entry(Request::class, ['GET', '/']),
+		]);
 
 		$request = $container->get(Request::class);
 		expect($request)->toBeinstanceOf(Request::class);
@@ -39,9 +37,9 @@ describe('Dependency Injection: Container', function () {
 
 	test('Concrete resolution', function () {
 		$response = new Response();
-		$container = new Container(new Definitions([
-			new Definition($response),
-		]));
+		$container = new Container([
+			new Entry($response),
+		]);
 
 		expect($container->has(Response::class))->toBeTrue();
 		$response = $container->get(Response::class);
@@ -50,10 +48,10 @@ describe('Dependency Injection: Container', function () {
 	});
 
 	test('Delegate', function () {
-		$container = new Container(new Definitions());
-		$delegate = new Container(new Definitions([
-			new Definition(TemplateEngine::class),
-		]));
+		$container = new Container();
+		$delegate = new Container([
+			new Entry(TemplateEngine::class),
+		]);
 
 		$container->addDelegate($delegate);
 

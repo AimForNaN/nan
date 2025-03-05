@@ -2,29 +2,30 @@
 
 namespace NaN\DI;
 
+use NaN\DI\Container\Entry;
+use NaN\DI\Container\Interfaces\EntryInterface;
 use NaN\DI\Interfaces\ContainerInterface;
 use Psr\Container\{
-	ContainerExceptionInterface as PsrContainerExceptionInterface,
 	ContainerInterface as PsrContainerInterface,
 };
-use NaN\DI\Interfaces\DefinitionInterface;
 
-class Container implements \ArrayAccess, ContainerInterface {
+class Container extends \NaN\Collections\TypedCollection implements ContainerInterface {
 	protected array $delegates = [];
-
-	public function __construct(
-		protected Definitions $definitions = new Definitions(),
-	) {
-	}
+	protected mixed $type = Entry::class;
 
 	public function addDelegate(PsrContainerInterface $container) {
 		$this->delegates[] = $container;
 	}
 
 	public function get(string $id): mixed {
-		$definition = $this->definitions->get($id);
-		if ($definition instanceof DefinitionInterface) {
-			return $definition->resolve($this);
+		$entry = $this->data[$id] ?? null;
+
+		if (!$entry) {
+			$entry = $this->find(fn(EntryInterface $entry) => $entry->is($id));
+		}
+
+		if ($entry instanceof EntryInterface) {
+			return $entry->resolve($this);
 		}
 
 		foreach ($this->delegates as $delegate) {
@@ -37,7 +38,12 @@ class Container implements \ArrayAccess, ContainerInterface {
 	}
 
 	public function has(string $id): bool {
-		if ($this->definitions->has($id)) {
+		if (isset($this->data[$id])) {
+			return true;
+		}
+
+		$entry = $this->find(fn(EntryInterface $entry) => $entry->is($id));
+		if ($entry instanceof EntryInterface) {
 			return true;
 		}
 
@@ -56,13 +62,5 @@ class Container implements \ArrayAccess, ContainerInterface {
 
 	public function offsetGet(mixed $offset): mixed {
 		return $this->get($offset);
-	}
-
-	public function offsetSet(mixed $offset, mixed $value): void {
-		$this->definitions[$offset] = $value;
-	}
-
-	public function offsetUnset(mixed $offset): void {
-		$this->definitions->offsetUnset($offset);
 	}
 }

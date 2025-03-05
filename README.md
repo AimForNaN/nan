@@ -27,5 +27,5 @@ Edit your composer configuration to include our git repository.
 After which, you can install the NaN micro-framework with composer.
 
 ```shell
-composer require AimForNaN/nan
+composer require aimfornan/nan
 ```

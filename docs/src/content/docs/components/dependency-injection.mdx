@@ -11,21 +11,22 @@ It is PSR-11 compatible and is highly inspired by the PHP league's [container](h
 You can conveniently and optionally add entries through the constructor.
 
 ```php
-use NaN\DI\{Container, Definition, Definitions};
+use NaN\DI\Container;
+use NaN\DI\Container\Entry;
 
-$container = new Container(new Definitions([
-	SomeClassInterface::class => new Definition(SomeClass::class),
-]));
+$container = new Container([
+	SomeClassInterface::class => new Entry(SomeClass::class),
+]);
 ```
 
 You can also use the array-access operator to add definitions to the container.
 
 ```php
-$container[SomeClassInterface::class] = new Definition(SomeClass::class):
+$container[SomeClassInterface::class] = new Entry(SomeClass::class):
 ```
 
 The array keys act as aliases.
-When aliases are provided, look-up time achieves a complexity of O(n), so long as delegates are not involved.
+When aliases are provided, look-up time achieves a complexity of O(1), so long as delegates are not involved.
 If an alias is not provided, the system will loop through all definitions until it finds a matching definition.
 Without an alias it will only be able to match against a class that inherits from the hinted type on a FIFO basis.
 Therefore, for best performance and predictability, be sure to always provide an alias and type hint using only that alias.
@@ -85,9 +86,9 @@ Since there is no global store of containers, each container will store their ow
 ```php
 $first_container = new Container();
 
-$second_container = new Container(new Definitions([
-	SomeClass::class => new Definition(SomeClass::class),
-]));
+$second_container = new Container([
+	SomeClass::class => new Entry(SomeClass::class),
+]);
 
 $first_container->addDelegate($second_container);
 
@@ -106,10 +107,10 @@ Dependency injection will also work here, too, so long as a definition exists fo
 
 ```php
 $container[SomeOtherClassInterface::class]
-	= new Definition(SomeOtherClass::class);
+	= new Entry(SomeOtherClass::class);
 
 $container[SomeClassInterface::class]
-	= new Definition(SomeClass::class, ['argument', SomeOtherClass::class]);
+	= new Entry(SomeClass::class, ['argument', SomeOtherClass::class]);
 ```
 
 ##### Factories
@@ -120,9 +121,9 @@ The container instance can be accessed through `$this`.
 
 ```php
 $container[SomeOtherClassInterface::class]
-	= new Definition(SomeOtherClass::class);
+	= new Entry(SomeOtherClass::class);
 
-$container[SomeClassInterface::class] = new Definition(function () {
+$container[SomeClassInterface::class] = new Entry(function () {
 	/** @var \NaN\DI\Container $this */
 	$dependency = $this->get(SomeOtherClassInterface::class);
 	// Do some stuff...
@@ -147,18 +148,18 @@ Pass in `true` if you want the same instance to be retrieved every, single time.
 
 ```php
 $container[SomeClassInterface::class]
-	= new Definition(SomeClass::class, [], true);
+	= new Entry(SomeClass::class, [], true);
 ```
 
 ```php
 $container[SomeClassInterface::class]
-	= new Definition(SomeClass::class, shared: true);
+	= new Entry(SomeClass::class, shared: true);
 ```
 
 In the case where real values are used, the entries automatically become shared.
 
 ```php
-$container[SomeClassInterface::class] = new Definition(new SomeClass());
+$container[SomeClassInterface::class] = new Entry(new SomeClass());
 
 $one = $container[SomeClassInterface::class];
 $two = $container[SomeClassInterface::class];

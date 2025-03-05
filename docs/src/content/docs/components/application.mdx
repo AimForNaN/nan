@@ -27,17 +27,18 @@ $app->run();
 Services can be conveniently and optionally registered through the `NaN\App` constructor.
 
 ```php
-use NaN\DI\{Container, Definition, Definitions};
+use NaN\DI\Container;
+use NaN\DI\Container\Entry;
 
-$app = new App(new Container(new Definitions([
-	CustomService::class => new Definition(CustomService::class),
-])));
+$app = new App(new Container([
+	CustomService::class => new Entry(CustomService::class),
+]));
 ```
 
 Services can also be later registered through the array-access operator.
 
 ```php
-$app[CustomService::class] = new Definition(CustomService::class);
+$app[CustomService::class] = new Entry(CustomService::class);
 ```
 
 An instance of the service can be retrieved through the same array-access operator.

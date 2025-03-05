@@ -55,6 +55,7 @@ describe('Dependency Injection: Container', function () {
 
 		$container->addDelegate($delegate);
 
+		expect($container)->toHaveCount(1);
 		expect($container->has(TemplateEngine::class))->toBeTrue();
 		expect($container->get(TemplateEngine::class))->toBeinstanceOf(TemplateEngine::class);
 	});

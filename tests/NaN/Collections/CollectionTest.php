@@ -3,6 +3,13 @@
 use NaN\Collections\Collection;
 
 describe('Collection', function () {
+	test('Append', function () {
+		$collection = new Collection();
+		$collection[] = 1;
+		$collection[] = 2;
+		expect($collection)->toHaveCount(2);
+	});
+
 	test('Count', function () {
 		$collection = new Collection([1,2,3]);
 		expect($collection)->toHaveCount(3);

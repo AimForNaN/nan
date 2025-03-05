@@ -19,7 +19,7 @@ $container = new Container([
 ]);
 ```
 
-You can also use the array-access operator to add definitions to the container.
+You can also use the array-access operator to add entries to the container.
 
 ```php
 $container[SomeClassInterface::class] = new Entry(SomeClass::class):
@@ -27,7 +27,7 @@ $container[SomeClassInterface::class] = new Entry(SomeClass::class):
 
 The array keys act as aliases.
 When aliases are provided, look-up time achieves a complexity of O(1), so long as delegates are not involved.
-If an alias is not provided, the system will loop through all definitions until it finds a matching definition.
+If an alias is not provided, the system will loop through all entries until it finds a matching entry.
 Without an alias it will only be able to match against a class that inherits from the hinted type on a FIFO basis.
 Therefore, for best performance and predictability, be sure to always provide an alias and type hint using only that alias.
 
@@ -96,14 +96,14 @@ $first_container->addDelegate($second_container);
 $first_container->get(SomeClass::class);
 ```
 
-### Definitions
+### Entries
 
 ##### Arguments
 
 Some class constructors have parameters that need to be filled.
 You can supply an array of arguments to be autowired into the class constructor.
 The arguments must be in the same order as the definition of the class constructor.
-Dependency injection will also work here, too, so long as a definition exists for the hinted types within the container.
+Dependency injection will also work here, too, so long as an entry exists for the hinted types within the container.
 
 ```php
 $container[SomeOtherClassInterface::class]
@@ -115,7 +115,7 @@ $container[SomeClassInterface::class]
 
 ##### Factories
 
-Sometimes you need a little extra boilerplate than what can be provided through the `Definition` class.
+Sometimes you need a little extra boilerplate than your typical entry.
 In such cases you can use a function to act as a factory.
 The container instance can be accessed through `$this`.
 

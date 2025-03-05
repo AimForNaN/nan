@@ -1,8 +1,6 @@
 ---
-title: Your first application
-description: Introduction to your first application.
-sidebar:
-  order: 2
+title: Application
+description: \Nan\App.
 ---
 
 import {Card} from '@astrojs/starlight/components';
@@ -11,14 +9,10 @@ import {Card} from '@astrojs/starlight/components';
 	Request &#129106; Application &#129106; Middleware &#129106; Response
 </Card>
 
-The NaN application manages all services and middleware.
-Upon running the application, all request data will be passed on to the middleware in exchange for a response.
-The response will, therefrom, be processed to  be sent to the client.
-
-### NaN application
-
 At the core of every NaN application stands `NaN\App`.
 It is a PSR-15-compatible request handler with support for services and middleware.
+Upon running the application, all request data will be passed on to the middleware in exchange for a response.
+The response will, therefrom, be processed to  be sent to the client.
 
 ```php title="index.php"
 use NaN\App;
@@ -28,7 +22,7 @@ $app = new App();
 $app->run();
 ```
 
-### Application-level services
+### Services
 
 Services can be conveniently and optionally registered through the `NaN\App` constructor.
 
@@ -36,14 +30,14 @@ Services can be conveniently and optionally registered through the `NaN\App` con
 use NaN\DI\{Container, Definition, Definitions};
 
 $app = new App(new Container(new Definitions([
-	new Definition(CustomService::class),
+	CustomService::class => new Definition(CustomService::class),
 ])));
 ```
 
 Services can also be later registered through the array-access operator.
 
 ```php
-$app[] = new Definition(CustomService::class);
+$app[CustomService::class] = new Definition(CustomService::class);
 ```
 
 An instance of the service can be retrieved through the same array-access operator.
@@ -56,7 +50,7 @@ These services will be available only on an application level (or wherever the `
 As such, the dependencies injected into the routes will come from the `App` instance that manages the route.
 Any service you want access to from your routes should be registered through the NaN application.
 
-### Application-level middleware
+### Middleware
 
 Middleware can be conveniently and optionally registered through the `NaN\App` constructor.
 
@@ -102,8 +96,3 @@ $router['/'] = function (
 	return $response; // 200 status code by default!
 };
 ```
-
-### Further learning
-
-While the examples on this page are sufficient to get you started, it's not necessarily the most efficient approach.
-You stand to gain from a deeper understanding of the system.

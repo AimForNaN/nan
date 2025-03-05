@@ -8,7 +8,7 @@ It adheres to the PSR-15 standard for middleware.
 ```php
 use NaN\App\Middleware\Router;
 
-$router = new Router(Route $root);
+$router = new Router();
 ```
 
 Each route is represented by the `NaN\App\Middleware\Router\Route` class.
@@ -28,7 +28,7 @@ Each node of the radix trie represents a segment of the path.
 <root> / path / to / endpoint
 ```
 
-The root will always represent the top-level path `/`.
+The root will (should) always represent the top-level path `/`.
 
 ##### Parameterized routes
 
@@ -56,7 +56,7 @@ Performance measurements are compared against one thousand routes.
 
 This is the slowest method, since all the work is done conveniently for you.
 It can perform **up to** six times slower than array insertion, depending on the length of the path and the number of paths registered.
-This, however, may not be a problem for your typical application.
+This, however, should not be a problem for your typical application.
 
 ```php
 $router['/'] = function () {};

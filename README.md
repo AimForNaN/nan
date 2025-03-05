@@ -1,25 +1,31 @@
-# NaN micro framework
+# NaN
 
-This is a collection of PHP scripts that I have written over the course of time which have proven useful, turned into a library.
+A PHP micro-framework focused on simplicity and performance.
 
-Common components include:
- - Getter/setter functionality
- - REST/RPC
- - HTTP client
- - Session management
- - Collection (data structure)
- - DateTime (with basic holiday and business day support)
- - File system helpers
- - Image manipulation (GD wrapper)
- - Debugging
- - Database/ORM
+## Installation
 
-### Code style
+#### Requirements
 
- - Namespace names: pascal case (with the exception of "NaN").
- - Class names: pascal case.
- - Function names: camel case.
- - Variable names: snake case.
- - Constants: macro case.
+ - PHP 8.1 or greater.
+ - PDO extension.
 
- - Opening curly brackets on the same line.
+#### Composer
+
+Edit your composer configuration to include our git repository.
+
+```json title="composer.json"
+{
+    "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/AimForNaN/nan.git"
+        }
+    ]
+}
+```
+
+After which, you can install the NaN micro-framework with composer.
+
+```shell
+composer require AimForNaN/nan
+```

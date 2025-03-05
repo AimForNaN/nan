@@ -2,6 +2,8 @@
 
 namespace NaN\Collections;
 
+use NaN\Collections\Interfaces\CollectionInterface;
+
 class Collection implements CollectionInterface {
 	/**
 	 * @param iterable $data 

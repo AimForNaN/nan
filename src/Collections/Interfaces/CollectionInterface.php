@@ -1,6 +1,6 @@
 <?php
 
-namespace NaN\Collections;
+namespace NaN\Collections\Interfaces;
 
 interface CollectionInterface extends \ArrayAccess, \Countable, \IteratorAggregate {
 	public function every(callable $fn): bool;

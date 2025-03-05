@@ -21,7 +21,12 @@ class Container extends \NaN\Collections\TypedCollection implements ContainerInt
 		$entry = $this->data[$id] ?? null;
 
 		if (!$entry) {
-			$entry = $this->find(fn(EntryInterface $entry) => $entry->is($id));
+			foreach ($this->data as $container_entry) {
+				if ($container_entry->is($id)) {
+					$entry = $container_entry;
+					break;
+				}
+			}
 		}
 
 		if ($entry instanceof EntryInterface) {
@@ -34,7 +39,7 @@ class Container extends \NaN\Collections\TypedCollection implements ContainerInt
 			}
 		}
 
-		throw new Exceptions\NotFoundException("Entity {$id} not found!");
+		throw new Exceptions\NotFoundException("Entity {$id} could not be found!");
 	}
 
 	public function getIterator(): \Traversable {
@@ -54,9 +59,10 @@ class Container extends \NaN\Collections\TypedCollection implements ContainerInt
 			return true;
 		}
 
-		$entry = $this->find(fn(EntryInterface $entry) => $entry->is($id));
-		if ($entry instanceof EntryInterface) {
-			return true;
+		foreach ($this->data as $entry) {
+			if ($entry->is($id)) {
+				return true;
+			}
 		}
 
 		foreach ($this->delegates as $delegate) {

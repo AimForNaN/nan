@@ -1,5 +1,5 @@
 {
-	"name": "truefusion/nan",
+	"name": "AimForNaN/nan",
 	"description": "NaN micro-framework",
 	"license": "MIT",
 	"autoload": {

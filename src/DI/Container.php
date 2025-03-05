@@ -37,6 +37,18 @@ class Container extends \NaN\Collections\TypedCollection implements ContainerInt
 		throw new Exceptions\NotFoundException("Entity {$id} not found!");
 	}
 
+	public function getIterator(): \Traversable {
+		$iter = new \AppendIterator();
+
+		$iter->append(new \ArrayIterator($this->data));
+
+		foreach ($this->delegates as $delegate) {
+			$iter->append(new \ArrayIterator($delegate->data));
+		}
+
+		return $iter;
+	}
+
 	public function has(string $id): bool {
 		if (isset($this->data[$id])) {
 			return true;

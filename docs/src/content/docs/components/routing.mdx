@@ -198,3 +198,53 @@ class UserController implements ControllerInterface, GetControllerInterface {
 
 $router['/users/{id}'] = UserController::class;
 ```
+
+### Responses
+
+Every route has the option to use any PSR-7-compatible response.
+NaN provides `NaN\Http\Response` for you to use, that extends `GuzzleHttp\Psr7\Response`.
+Unlike the guzzle response, the NaN response will attempt to use the HTTP protocol version specified by your server if none is specified, and will fall back to HTTP/1.1 as a last resort.
+
+```php
+use NaN\Http\Response;
+
+$router['/'] = function () {
+	return new Response(body: 'Hello, world!');
+}
+```
+
+The NaN response also provides factories for common response types.
+
+##### JSON
+
+```php
+use NaN\Http\Response;
+
+$router['/'] = function () {
+	return Response::json($json_data);
+}
+```
+
+##### Redirects
+
+Redirects default to 302 status code.
+
+```php
+use NaN\Http\Response;
+
+$router['/'] = function () {
+	return Response::redirect('/redirect/path');
+}
+```
+
+You can change the status code through the second argument.
+You must provide a status code within the 300-399 range.
+Otherwise, it will default to 302.
+
+```php
+use NaN\Http\Response;
+
+$router['/'] = function () {
+	return Response::redirect('/redirect/path', 307);
+}
+```

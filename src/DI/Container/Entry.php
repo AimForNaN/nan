@@ -17,6 +17,10 @@ class Entry implements EntryInterface {
 	) {
 	}
 
+	public function getClassName(): ?string {
+		return $this->isClass() ? $this->concrete : null;
+	}
+
 	public function is(string $id): bool {
 		if ($this->concrete === $id) {
 			return true;
@@ -27,6 +31,10 @@ class Entry implements EntryInterface {
 		}
 
 		return false;
+	}
+
+	public function isClass(): bool {
+		return \is_string($this->concrete) && \class_exists($this->concrete);
 	}
 
 	public function resolve(?PsrContainerInterface $container = null): mixed {

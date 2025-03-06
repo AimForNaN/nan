@@ -48,6 +48,10 @@ class App implements \ArrayAccess, PsrContainerInterface, PsrRequestHandlerInter
 	}
 
 	public function offsetSet(mixed $offset, mixed $value): void {
+		if (\is_null($offset)) {
+			$offset = $value->getClassName();
+		}
+
 		$this->services->offsetSet($offset, $value);
 	}
 

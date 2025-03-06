@@ -34,4 +34,11 @@ describe('Router', function () {
 
 		expect($get)->toBeInstanceOf(Route::class);
 	})->skip();
+
+	test('Get non-existent route', function () {
+		$routes = new Router();
+		$route = $routes['/bad/route'];
+
+		expect($route)->toBeNull();
+	});
 });

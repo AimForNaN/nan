@@ -7,17 +7,30 @@ use NaN\App\Controller\Interfaces\{
 };
 use NaN\App\Controller\Traits\ControllerTrait;
 use NaN\App\Middleware\Router;
-use NaN\Http\Request;
+use NaN\Http\{
+	Request,
+	Response,
+};
 use Psr\Http\Message\{
 	ResponseInterface as PsrResponseInterface,
 };
 
 describe('App', function () {
+	test('Non-existent route', function () {
+		$routes = new Router();
+
+		$app = new App();
+		$app->use($routes);
+
+		$rsp = $app->handle(new Request('GET', '/bad/route'));
+		expect($rsp)->toBeInstanceOf(PsrResponseInterface::class);
+		expect($rsp->getStatusCode())->toBe(404);
+	});
+
 	test('Route dependency injection (closure)', function () {
 		$routes = new Router();
-		$routes['/'] = function (PsrResponseInterface $rsp) {
-			$rsp->getBody()->write('good');
-			return $rsp;
+		$routes['/'] = function () {
+			return new Response(body: 'good');
 		};
 
 		$app = new App();
@@ -31,10 +44,9 @@ describe('App', function () {
 
 	test('Route param injection (closure)', function () {
 		$routes = new Router();
-		$routes['/{id}'] = function ($id, PsrResponseInterface $rsp) {
+		$routes['/{id}'] = function ($id) {
 			expect($id)->toBe('1');
-			$rsp->getBody()->write('good');
-			return $rsp;
+			return new Response(body: 'good');
 		};
 
 		$app = new App();
@@ -50,12 +62,10 @@ describe('App', function () {
 		class TestController implements ControllerInterface, GetControllerInterface {
 			use ControllerTrait;
 
-			public function get(int $id = null, ?PsrResponseInterface $rsp = null): PsrResponseInterface {
+			public function get(int $id = null): PsrResponseInterface {
 				expect($id)->toBe(1);
 				expect($this)->toBeInstanceOf(TestController::class);
-				expect($rsp)->toBeInstanceOf(PsrResponseInterface::class);
-				$rsp->getBody()->write('good');
-				return $rsp;
+				return new Response(body: 'good');
 			}
 		}
 

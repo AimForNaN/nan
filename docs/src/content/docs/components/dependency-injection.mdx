@@ -27,9 +27,7 @@ $container[SomeClassInterface::class] = new Entry(SomeClass::class):
 
 The array keys act as aliases.
 When aliases are provided, look-up time achieves a complexity of O(1), so long as delegates are not involved.
-If an alias is not provided, the system will loop through all entries until it finds a matching entry.
-Without an alias it will only be able to match against a class that inherits from the hinted type on a FIFO basis.
-Therefore, for best performance and predictability, be sure to always provide an alias and type hint using only that alias.
+If an alias is not provided, the system will attempt to provide one from the entry.
 
 :::note
 
@@ -52,8 +50,12 @@ You can also use the array-access operator to retrieve an entry.
 $entry = $container[$alias];
 ```
 
+If an alias was not provided when the entry was added, the system will be forced to loop through all entries until it finds the most compatible entry.
+Without an alias it will only be able to match against a class that inherits from the hinted type on a FIFO basis.
 As per the PSR-11 standard, an exception will be thrown if an entry cannot be found when retrieving an entry.
-You can check if an entry exists before retrieving or simply catch the exception.
+Therefore, for best performance and predictability, be sure to always provide an alias and type hint using only that alias.
+
+As per the same standard, you can check if an entry exists before retrieving through the `has` method.
 
 ```php
 if ($container->has($alias)) {
@@ -61,11 +63,15 @@ if ($container->has($alias)) {
 }
 ```
 
+Or with the array-access operator.
+
 ```php
 if (isset($container[$alias]) {
 	$entry = $container->get($alias);
 }
 ```
+
+Or you can simply catch the exception.
 
 ```php
 use Psr\Container\NotFoundExceptionInterface;

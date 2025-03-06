@@ -26,7 +26,9 @@ describe('Dependency Injection: Container', function () {
 
 	test('Class resolution', function () {
 		$container = new Container([
-			new Entry(Request::class, ['GET', '/']),
+			Request::class => new Entry(function () {
+				return new Request('GET', '/');
+			}),
 		]);
 
 		$request = $container->get(Request::class);
@@ -38,7 +40,7 @@ describe('Dependency Injection: Container', function () {
 	test('Concrete resolution', function () {
 		$response = new Response();
 		$container = new Container([
-			new Entry($response),
+			Response::class => new Entry($response),
 		]);
 
 		expect($container->has(Response::class))->toBeTrue();
@@ -50,7 +52,7 @@ describe('Dependency Injection: Container', function () {
 	test('Delegate', function () {
 		$container = new Container();
 		$delegate = new Container([
-			new Entry(TemplateEngine::class),
+			TemplateEngine::class => new Entry(TemplateEngine::class),
 		]);
 
 		$container->addDelegate($delegate);

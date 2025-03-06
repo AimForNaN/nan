@@ -12,7 +12,6 @@ class Entry implements EntryInterface {
 
 	public function __construct(
 		protected mixed $concrete,
-		protected array $arguments = [],
 		protected bool $shared = false,
 	) {
 	}
@@ -46,13 +45,12 @@ class Entry implements EntryInterface {
 	}
 
 	protected function resolveClosure(?PsrContainerInterface $container = null): mixed {
-		$fn = \Closure::bind($this->concrete, $container);
+		$fn = $container ? \Closure::bind($this->concrete, $container) : $this->concrete;
 		return $fn();
 	}
 
-	protected function resolveClass(?PsrContainerInterface $container = null): mixed {
-		$arguments = Arguments::fromValues($this->arguments);
-		return new $this->concrete(...$arguments->resolve($container));
+	protected function resolveClass(): mixed {
+		return new $this->concrete();
 	}
 
 	protected function resolveNew(?PsrContainerInterface $container = null): mixed {
@@ -63,13 +61,7 @@ class Entry implements EntryInterface {
 
 			if (\is_string($this->concrete)) {
 				if (\class_exists($this->concrete)) {
-					$this->resolved = $this->resolveClass($container);
-
-					foreach ($this->method_calls as $method_call) {
-						\extract($method_call);
-						$arguments = Arguments::fromValues($arguments);
-						$this->resolved->$method(...$arguments->resolve($container));
-					}
+					$this->resolved = $this->resolveClass();
 				}
 			}
 		}

@@ -4,7 +4,8 @@ title: Dependency injection
 
 Dependency injection is a way of dynamically injecting arguments into a callable.
 In NaN, dependency injection is managed by the `NaN\DI` namespace.
-It is PSR-11 compatible and is highly inspired by the PHP league's [container](https://container.thephpleague.com/4.x/) system, with some of the fat cut off and some adjustments made to help improve performance.
+It is PSR-11 compatible and is highly inspired by the PHP league's [container](https://container.thephpleague.com/4.x/) system,
+	with some of the fat cut off and some adjustments made to help improve performance and reduce redundancy.
 
 ### Adding entries
 
@@ -50,7 +51,7 @@ You can also use the array-access operator to retrieve an entry.
 $entry = $container[$alias];
 ```
 
-Without an alias, the system will be forced to loop through all entries until it finds the most compatible entry.
+If an entry was added without an alias, the system will be forced to loop through all entries until it finds the most compatible entry.
 It will only be able to match against a class that inherits from the hinted type on a FIFO basis.
 As per the PSR-11 standard, an exception will be thrown if an entry cannot be found when retrieving an entry.
 Therefore, for best performance and predictability, be sure to always provide an alias and type hint using only that alias.
@@ -93,33 +94,16 @@ Since there is no global store of containers, each container will store their ow
 $first_container = new Container();
 
 $second_container = new Container([
-	SomeClass::class => new Entry(SomeClass::class),
+	SomeClassInterface::class => new Entry(SomeClass::class),
 ]);
 
 $first_container->addDelegate($second_container);
 
 // Will search $second_container if an entry can't be found!
-$first_container->get(SomeClass::class);
+$first_container->get(SomeClassInterface::class);
 ```
 
-### Entries
-
-##### Arguments
-
-Some class constructors have parameters that need to be filled.
-You can supply an array of arguments to be autowired into the class constructor.
-The arguments must be in the same order as the definition of the class constructor.
-Dependency injection will also work here, too, so long as an entry exists for the hinted types within the container.
-
-```php
-$container[SomeOtherClassInterface::class]
-	= new Entry(SomeOtherClass::class);
-
-$container[SomeClassInterface::class]
-	= new Entry(SomeClass::class, ['argument', SomeOtherClass::class]);
-```
-
-##### Factories
+### Factories
 
 Sometimes you need a little extra boilerplate than your typical entry.
 In such cases you can use a function to act as a factory.
@@ -137,7 +121,7 @@ $container[SomeClassInterface::class] = new Entry(function () {
 }):
 ```
 
-##### Single instance
+### Single instance
 
 Typically, when retrieving an entry, a new instance will be instantiated for any given factory or fully-qualified class name.
 
@@ -154,12 +138,7 @@ Pass in `true` if you want the same instance to be retrieved every, single time.
 
 ```php
 $container[SomeClassInterface::class]
-	= new Entry(SomeClass::class, [], true);
-```
-
-```php
-$container[SomeClassInterface::class]
-	= new Entry(SomeClass::class, shared: true);
+	= new Entry(SomeClass::class, true);
 ```
 
 In the case where real values are used, the entries automatically become shared.

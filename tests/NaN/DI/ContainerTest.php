@@ -1,14 +1,9 @@
 <?php
 
 use \NaN\App\TemplateEngine;
-use NaN\DI\{
-	Container,
-};
+use NaN\DI\Container;
 use NaN\DI\Container\Entry;
-use NaN\Http\{
-	Request,
-	Response,
-};
+use NaN\Http\Response;
 
 describe('Dependency Injection: Container', function () {
 	test('Basic resolution', function () {
@@ -26,25 +21,34 @@ describe('Dependency Injection: Container', function () {
 
 	test('Class resolution', function () {
 		$container = new Container([
-			Request::class => new Entry(function () {
-				return new Request('GET', '/');
+			Response::class => new Entry(Response::class),
+		]);
+		$response = $container->get(Response::class);
+
+		expect($response)->toBeinstanceOf(Response::class);
+	});
+
+	test('Closure resolution', function () {
+		$container = new Container([
+			Response::class => new Entry(function () {
+				expect(\func_get_args())->toHaveLength(0);
+				expect($this)->toBeInstanceOf(Container::class);
+				
+				return new Response();
 			}),
 		]);
+		$response = $container->get(Response::class);
 
-		$request = $container->get(Request::class);
-		expect($request)->toBeinstanceOf(Request::class);
-		expect($request->getMethod())->toBe('GET');
-		expect($request->getUri()->getPath())->toBe('/');
+		expect($response)->toBeinstanceOf(Response::class);
 	});
 
 	test('Concrete resolution', function () {
-		$response = new Response();
 		$container = new Container([
-			Response::class => new Entry($response),
+			Response::class => new Entry(new Response()),
 		]);
+		$response = $container->get(Response::class);
 
 		expect($container->has(Response::class))->toBeTrue();
-		$response = $container->get(Response::class);
 		expect($response)->toBeinstanceOf(Response::class);
 		expect($response)->toBe($container->get(Response::class));
 	});

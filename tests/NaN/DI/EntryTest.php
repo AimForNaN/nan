@@ -16,22 +16,6 @@ describe('Dependency Injection: Definition', function () {
 		expect($response)->not()->toBe($entry->resolve());
 	});
 
-	test('Resolve closure', function () {
-		$container = new Container([
-			Request::class => new Entry(Request::class),
-		]);
-		$entry = new Entry(function () {
-			expect(\func_get_args())->toHaveLength(0);
-			expect($this)->toBeInstanceOf(Container::class);
-
-			return new class {};
-		});
-		$anon = $entry->resolve($container);
-
-		expect($anon)->toBeObject();
-		expect($anon)->not()->toBe($entry->resolve($container));
-	});
-
 	test('Resolve concrete value', function () {
 		$entry = new Entry(new Request('GET', '/'));
 		$request = $entry->resolve();

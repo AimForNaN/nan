@@ -20,6 +20,10 @@ class Response extends \GuzzleHttp\Psr7\Response {
 	}
 
 	static public function redirect(string $path, int $status = 302): ResponseInterface {
+		if ($status < 300 || $status > 399) {
+			$status = 302;
+		}
+
 		return new static($status, [
 			'Location' => $path,
 		]);

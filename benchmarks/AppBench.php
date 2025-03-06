@@ -3,12 +3,7 @@
 use NaN\App;
 use NaN\App\Middleware;
 use NaN\App\Middleware\Router;
-use NaN\DI\{
-	Container,
-	Definition,
-	Definitions,
-};
-use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
+use NaN\Http\Response;
 
 class AppBench {
 	/**
@@ -29,8 +24,8 @@ class AppBench {
 		$_SERVER['REQUEST_URI'] = '/';
 
 		$router = new Router();
-		$router['/'] = function (PsrResponseInterface $rsp) {
-			return $rsp;
+		$router['/'] = function () {
+			return new Response();
 		};
 
 		$app = new App(middleware: new Middleware([

@@ -50,12 +50,12 @@ You can also use the array-access operator to retrieve an entry.
 $entry = $container[$alias];
 ```
 
-If an alias was not provided when the entry was added, the system will be forced to loop through all entries until it finds the most compatible entry.
-Without an alias it will only be able to match against a class that inherits from the hinted type on a FIFO basis.
+Without an alias, the system will be forced to loop through all entries until it finds the most compatible entry.
+It will only be able to match against a class that inherits from the hinted type on a FIFO basis.
 As per the PSR-11 standard, an exception will be thrown if an entry cannot be found when retrieving an entry.
 Therefore, for best performance and predictability, be sure to always provide an alias and type hint using only that alias.
 
-As per the same standard, you can check if an entry exists before retrieving through the `has` method.
+As per the same standard, you can check if an entry exists through the `has` method.
 
 ```php
 if ($container->has($alias)) {

@@ -79,7 +79,7 @@ Since all middleware must be registered with the application, a barebones applic
 The NaN router is PSR-15 compatible and can be used anywhere that follows the same middleware standard.
 Each route will have access to its own parameters,
 	any services registered through the NaN application,
-	along with PSR-7-compatible request and response instances.
+	along with a PSR-7-compatible request instances.
 
 Every route must return a PSR-7-compatible response.
 
@@ -90,7 +90,6 @@ use \Psr\Http\Message\{
 };
 
 $router['/'] = function (
-	Response $response,
 	Request $request,
 	// parameters and services...
 ) {

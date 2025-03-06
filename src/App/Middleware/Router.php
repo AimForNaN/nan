@@ -4,9 +4,6 @@ namespace NaN\App\Middleware;
 
 use NaN\App;
 use NaN\App\Middleware\Router\{Route, RoutePattern};
-use NaN\DI\Container;
-use NaN\DI\Container\Entry;
-use NaN\Http\Response;
 use Psr\Http\Message\{
 	ResponseInterface as PsrResponseInterface,
 	ServerRequestInterface as PsrServerRequestInterface,
@@ -80,30 +77,12 @@ class Router implements \ArrayAccess, PsrMiddlewareInterface {
 	}
 
 	public function process(PsrServerRequestInterface $request, PsrRequestHandlerInterface $handler, ?App $app = null): PsrResponseInterface {
-		$response = new Response();
 		$route = $this->match($request->getUri()->getPath());
 
 		if (!$route) {
-			return $response->withStatus(404);
+			return $handler->handle($request, $app);
 		}
 
-		$pattern = new RoutePattern($route->path);
-		$pattern->compile();
-		$pattern->matchesRequest($request);
-
-		$values = $pattern->getMatches();
-		$route_handler = $route->toCallable($request, $values);
-		$definition = new Entry($route_handler);
-
-		$container = new Container([
-			PsrServerRequestInterface::class => new Entry($request),
-			PsrResponseInterface::class => new Entry($response),
-		]);
-
-		if ($app) {
-			$container->addDelegate($app);
-		}
-
-		return $definition->resolve($container);
+		return $route->handle($request, $app);
 	}
 }

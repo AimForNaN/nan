@@ -6,6 +6,19 @@ use GuzzleHttp\Psr7\Utils;
 use Psr\Http\Message\ResponseInterface;
 
 class Response extends \GuzzleHttp\Psr7\Response {
+	public function __construct(int $status = 200, array $headers = [], $body = null, ?string $version = null, ?string $reason = null) {
+		if (!$version) {
+			[, $version] = \explode('/', $_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.1');
+		}
+		parent::__construct($status, $headers, $body, $version, $reason);
+	}
+
+	static public function json(mixed $data) {
+		return new static(200, [
+			'Content-Type' => 'application/json',
+		], \json_encode($data));
+	}
+
 	static public function redirect(string $path, int $status = 302): ResponseInterface {
 		return new static($status, [
 			'Location' => $path,
@@ -13,12 +26,9 @@ class Response extends \GuzzleHttp\Psr7\Response {
 	}
 
 	static public function send(ResponseInterface $rsp) {
-		$status = $rsp->getStatusCode();
-		\http_response_code($status);
-
 		static::sendHeaders($rsp);
 
-		if ($status !== 204) {
+		if ($rsp->getStatusCode() !== 204) {
 			static::sendBody($rsp);
 		}
 	}
@@ -30,10 +40,15 @@ class Response extends \GuzzleHttp\Psr7\Response {
 	}
 
 	static public function sendHeaders(ResponseInterface $rsp) {
+		$protocol = $rsp->getProtocolVersion();
+		$status = $rsp->getStatusCode();
+		$phrase = $rsp->getReasonPhrase();
+		\header("HTTP/{$protocol} {$status} {$phrase}");
+
 		$headers = $rsp->getHeaders();
 		foreach ($headers as $name => $value) {
 			$value = \implode(';', $value);
-			\header("{$name}: {$value}", true);
+			\header("{$name}: {$value}");
 		}
 	}
 }

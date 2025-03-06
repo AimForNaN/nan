@@ -31,6 +31,7 @@ class App implements \ArrayAccess, PsrContainerInterface, PsrRequestHandlerInter
 	}
 
 	public function handle(PsrServerRequestInterface $request): PsrResponseInterface {
+		$this->middleware->rewind();
 		return $this->middleware->handle($request, $this);
 	}
 

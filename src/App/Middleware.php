@@ -40,7 +40,6 @@ class Middleware implements \ArrayAccess, \Iterator, PsrContainerInterface, PsrM
 	}
 
 	public function handle(PsrServerRequestInterface $request, ?App $app = null): PsrResponseInterface {
-		$this->rewind();
 		return $this->process($request, $this, $app);
 	}
 

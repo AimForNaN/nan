@@ -2,18 +2,46 @@
 
 namespace NaN\App\Middleware\Router;
 
+use NaN\App;
 use NaN\App\Controller\Interfaces\ControllerInterface;
-use NaN\DI\Arguments;
+use NaN\DI\{
+	Arguments,
+	Container,
+};
+use NaN\DI\Container\Entry;
 use NaN\Http\Response;
-use Psr\Http\Message\ResponseInterface as PsrResponseInterface;
-use Psr\Http\Message\ServerRequestInterface as PsrServerRequestInterface;
+use Psr\Http\Message\{
+	ResponseInterface as PsrResponseInterface,
+	ServerRequestInterface as PsrServerRequestInterface,
+};
+use Psr\Http\Server\RequestHandlerInterface as PsrRequestHandlerInterface;
 
-class Route implements \ArrayAccess {
+class Route implements \ArrayAccess, PsrRequestHandlerInterface {
 	public function __construct(
 		public ?string $path = null,
 		public mixed $handler = null,
 		protected array $children = [],
 	) {
+	}
+
+	public function handle(PsrServerRequestInterface $request, ?App $app = null): PsrResponseInterface {
+		$pattern = new RoutePattern($this->path);
+		$pattern->compile();
+		$pattern->matchesRequest($request);
+
+		$values = $pattern->getMatches();
+		$route_handler = $this->toCallable($request, $values);
+		$definition = new Entry($route_handler);
+
+		$container = new Container([
+			PsrServerRequestInterface::class => new Entry($request),
+		]);
+
+		if ($app) {
+			$container->addDelegate($app);
+		}
+
+		return $definition->resolve($container);
 	}
 
 	public function insert(string $part, Route $route): self {

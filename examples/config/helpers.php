@@ -1,20 +1,15 @@
 <?php
 
 use NaN\App;
+use NaN\App\Middleware\Router;
+use NaN\App\TemplateEngine;
+use NaN\Database\{
+	Database,
+	Drivers\Sqlite\Driver as SqliteDriver,
+};
+use NaN\Env;
 
-NaN\Env::load();
-
-function router() {
-	static $router = null;
-
-	if (!$router) {
-		$router = include(__DIR__ . '/routes.php');
-	}
-
-	return $router;
-}
-
-function app() {
+function app(): App {
 	static $app = null;
 
 	if (!$app) {
@@ -26,6 +21,40 @@ function app() {
 	return $app;
 }
 
-function env(string $key, mixed $fallback = null) {
-	return NaN\Env::get($key, $fallback);
+function db(): Database {
+	static $db = null;
+
+	if (!$db) {
+		$db = new Database(new SqliteDriver());
+	}
+
+	return $db;
+}
+
+function env(string $key, mixed $fallback = null): mixed {
+	if (!Env::isLoaded()) {
+		Env::load();
+	}
+
+	return Env::get($key, $fallback);
+}
+
+function router(): Router {
+	static $router = null;
+
+	if (!$router) {
+		$router = include(__DIR__ . '/routes.php');
+	}
+
+	return $router;
+}
+
+function tpl(): TemplateEngine {
+	static $tpl = null;
+
+	if (!$tpl) {
+		$tpl = new TemplateEngine($_SERVER['DOCUMENT_ROOT'] . '/views/', 'tpl.php');
+	}
+
+	return $tpl;
 }

@@ -8,7 +8,6 @@ use NaN\DI\{
 	Arguments,
 	Container,
 };
-use NaN\DI\Container\Entry;
 use NaN\Http\Response;
 use Psr\Http\Message\{
 	ResponseInterface as PsrResponseInterface,
@@ -30,18 +29,19 @@ class Route implements \ArrayAccess, PsrRequestHandlerInterface {
 		$pattern->matchesRequest($request);
 
 		$values = $pattern->getMatches();
-		$route_handler = $this->toCallable($request, $values);
-		$definition = new Entry($route_handler);
+		$handler = $this->toCallable($request, $values);
 
 		$container = new Container([
-			PsrServerRequestInterface::class => new Entry($request),
+			Route::class => $this,
+			PsrServerRequestInterface::class => $request,
 		]);
 
 		if ($app) {
+			$handler = \Closure::bind($handler, $container);
 			$container->addDelegate($app);
 		}
 
-		return $definition->resolve($container);
+		return $handler();
 	}
 
 	public function insert(string $part, Route $route): self {

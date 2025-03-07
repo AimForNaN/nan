@@ -2,16 +2,13 @@
 
 namespace NaN\DI;
 
-use NaN\DI\Container\Entry;
-use NaN\DI\Container\Interfaces\EntryInterface;
 use NaN\DI\Interfaces\ContainerInterface;
 use Psr\Container\{
 	ContainerInterface as PsrContainerInterface,
 };
 
-class Container extends \NaN\Collections\TypedCollection implements ContainerInterface {
+class Container extends \NaN\Collections\Collection implements ContainerInterface {
 	protected array $delegates = [];
-	protected mixed $type = Entry::class;
 
 	public function addDelegate(PsrContainerInterface $container) {
 		$this->delegates[] = $container;
@@ -22,15 +19,15 @@ class Container extends \NaN\Collections\TypedCollection implements ContainerInt
 
 		if (!$entry) {
 			foreach ($this->data as $container_entry) {
-				if ($container_entry->is($id)) {
+				if (\is_a($container_entry, $id)) {
 					$entry = $container_entry;
 					break;
 				}
 			}
 		}
 
-		if ($entry instanceof EntryInterface) {
-			return $entry->resolve($this);
+		if ($entry) {
+			return $this->resolve($entry);
 		}
 
 		foreach ($this->delegates as $delegate) {
@@ -60,7 +57,7 @@ class Container extends \NaN\Collections\TypedCollection implements ContainerInt
 		}
 
 		foreach ($this->data as $entry) {
-			if ($entry->is($id)) {
+			if (\is_a($entry, $id)) {
 				return true;
 			}
 		}
@@ -80,5 +77,18 @@ class Container extends \NaN\Collections\TypedCollection implements ContainerInt
 
 	public function offsetGet(mixed $offset): mixed {
 		return $this->get($offset);
+	}
+
+	protected function resolve(mixed $value): mixed {
+		if ($value instanceof \Closure) {
+			$value = \Closure::bind($value, $this);
+			return $value();
+		}
+
+		if (\is_string($value)) {
+			return new $value();
+		}
+
+		return $value;
 	}
 }

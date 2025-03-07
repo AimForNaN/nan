@@ -29,7 +29,10 @@
 	},
 	"scripts": {
 		"benchmark": "phpbench run benchmarks --report=benchmark",
-		"dev": "php -S localhost:8000 -t examples ./examples/index.php",
+		"dev": [
+			"Composer\\Config::disableProcessTimeout",
+			"php -S localhost:8000 -t examples ./examples/index.php"
+		],
 		"test": "pest"
 	}
 }

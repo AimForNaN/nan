@@ -30,7 +30,7 @@ Since all strings will be treated as fully-qualified class names, the string pro
 
 :::note
 
-While aliases do not necessarily need to be fully-qualified class names,
+While strings do not restrict us to fully-qualified class names,
 	arbitrary aliases are only meaningful if you have direct access to the container instance, since they can't be used for type hinting.
 
 :::
@@ -49,10 +49,12 @@ You can also use the array-access operator to retrieve an entry.
 $entry = $container[$alias];
 ```
 
-If an entry was added without an alias, the system will be forced to loop through all entries until it finds the most compatible entry.
+If entries exist without an alias, the system will be forced to loop through all entries until it finds the most compatible entry.
 It will only be able to match against a class that inherits from the hinted type on a FIFO basis.
 As per the PSR-11 standard, an exception will be thrown if an entry cannot be found when retrieving an entry.
 Therefore, for best performance and predictability, be sure to always provide an alias and type hint using only that alias.
+
+### Verifying entries
 
 As per the same standard, you can check if an entry exists through the `has` method.
 
@@ -130,7 +132,7 @@ $two = $container[SomeClassInterface::class];
 ($one === $two) === false;
 ```
 
-Sometimes you may want the same instance every time you retrieve an entry.
+Sometimes you want the same instance every time you retrieve an entry.
 In such cases you should use real values.
 
 ```php

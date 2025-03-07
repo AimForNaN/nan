@@ -42,6 +42,11 @@ For this to work the service container that was provided in the `App` constructo
 $app[CustomServiceInterface::class] = CustomService::class;
 ```
 
+If the service container is incompatible, a warning will be triggered.
+You'll have to register your services through other means or stick to the NaN DI container.
+
+##### Retrieving services
+
 An instance of the service can be retrieved through the same array-access operator.
 
 ```php

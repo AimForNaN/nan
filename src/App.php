@@ -4,6 +4,7 @@ namespace NaN;
 
 use NaN\App\Middleware;
 use NaN\DI\Container;
+use NaN\DI\Interfaces\ContainerInterface;
 use NaN\Http\{
     Request,
     Response,
@@ -21,9 +22,11 @@ use Psr\Http\Server\{
 class App implements \ArrayAccess, PsrContainerInterface, PsrRequestHandlerInterface {
 	public function __construct(
 		protected PsrContainerInterface $services = new Container(),
-		protected Middleware $middleware = new Middleware(),
+		protected PsrRequestHandlerInterface $middleware = new Middleware(),
 	) {
-		$this->services->addDelegate($this->middleware);
+		if ($this->services instanceof ContainerInterface) {
+			$this->services->addDelegate($this->middleware);
+		}
 	}
 
 	public function get(string $id) {
@@ -31,7 +34,10 @@ class App implements \ArrayAccess, PsrContainerInterface, PsrRequestHandlerInter
 	}
 
 	public function handle(PsrServerRequestInterface $request): PsrResponseInterface {
-		$this->middleware->rewind();
+		if ($this->middleware instanceof Middleware) {
+			$this->middleware->rewind();
+		}
+
 		return $this->middleware->handle($request, $this);
 	}
 
@@ -48,11 +54,15 @@ class App implements \ArrayAccess, PsrContainerInterface, PsrRequestHandlerInter
 	}
 
 	public function offsetSet(mixed $offset, mixed $value): void {
-		$this->services->offsetSet($offset, $value);
+		if ($this->services instanceof \ArrayAccess) {
+			$this->services->offsetSet($offset, $value);
+		}
 	}
 
 	public function offsetUnset(mixed $offset): void {
-		$this->services->offsetUnset($offset);
+		if ($this->services instanceof \ArrayAccess) {
+			$this->services->offsetUnset($offset);
+		}
 	}
 
 	/**
@@ -65,8 +75,11 @@ class App implements \ArrayAccess, PsrContainerInterface, PsrRequestHandlerInter
 		Response::send($rsp);
 	}
 
-	public function use(PsrMiddlewareInterface $middleware): static {
-		$this->middleware[$middleware::class] = $middleware;
-		return $this;
+	public function use(PsrMiddlewareInterface $middleware): void {
+		if ($this->middleware instanceof \ArrayAccess) {
+			$this->middleware[$middleware::class] = $middleware;
+		} else {
+			\trigger_error('Could not register middleware!', E_USER_WARNING);
+		}
 	}
 }

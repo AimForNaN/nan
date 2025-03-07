@@ -29,6 +29,7 @@
 	},
 	"scripts": {
 		"benchmark": "phpbench run benchmarks --report=benchmark",
+		"dev": "php -S localhost:8000 -t examples ./examples/index.php",
 		"test": "pest"
 	}
 }

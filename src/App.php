@@ -56,6 +56,8 @@ class App implements \ArrayAccess, PsrContainerInterface, PsrRequestHandlerInter
 	public function offsetSet(mixed $offset, mixed $value): void {
 		if ($this->services instanceof \ArrayAccess) {
 			$this->services->offsetSet($offset, $value);
+		} else {
+			\trigger_error('Could not register service!', E_USER_WARNING);
 		}
 	}
 
@@ -77,7 +79,7 @@ class App implements \ArrayAccess, PsrContainerInterface, PsrRequestHandlerInter
 
 	public function use(PsrMiddlewareInterface $middleware): void {
 		if ($this->middleware instanceof \ArrayAccess) {
-			$this->middleware[$middleware::class] = $middleware;
+			$this->middleware->offsetSet($middleware::class, $middleware);
 		} else {
 			\trigger_error('Could not register middleware!', E_USER_WARNING);
 		}

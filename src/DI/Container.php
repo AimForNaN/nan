@@ -79,6 +79,14 @@ class Container extends \NaN\Collections\Collection implements ContainerInterfac
 		return $this->get($offset);
 	}
 
+	public function offsetSet(mixed $offset, mixed $value): void {
+		if (\is_null($offset) && \is_string($value)) {
+			$offset = $value;
+		}
+
+		parent::offsetSet($offset, $value);
+	}
+
 	protected function resolve(mixed $value): mixed {
 		if ($value instanceof \Closure) {
 			$value = \Closure::bind($value, $this);

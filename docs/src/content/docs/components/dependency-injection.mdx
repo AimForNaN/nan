@@ -4,36 +4,34 @@ title: Dependency injection
 
 Dependency injection is a way of dynamically injecting arguments into a callable.
 In NaN, dependency injection is managed by the `NaN\DI` namespace.
-It is PSR-11 compatible and is highly inspired by the PHP league's [container](https://container.thephpleague.com/4.x/) system,
-	with some of the fat cut off and some adjustments made to help improve performance and reduce redundancy.
+At its core stands the `NaN\DI\Container` class, and functions as a PSR-11-compatible container system.
 
 ### Adding entries
 
-You can conveniently and optionally add entries through the constructor.
+You can conveniently and optionally add entries through the container's constructor.
 
 ```php
 use NaN\DI\Container;
-use NaN\DI\Container\Entry;
 
 $container = new Container([
-	SomeClassInterface::class => new Entry(SomeClass::class),
+	SomeClassInterface::class => SomeClass::class,
 ]);
 ```
 
 You can also use the array-access operator to add entries to the container.
 
 ```php
-$container[SomeClassInterface::class] = new Entry(SomeClass::class):
+$container[SomeClassInterface::class] = SomeClass::class:
 ```
 
 The array keys act as aliases.
 When aliases are provided, look-up time achieves a complexity of O(1), so long as delegates are not involved.
-If an alias is not provided, the system will attempt to provide one from the entry.
+Since all strings will be treated as fully-qualified class names, the string provided will be used as the alias when no alias is provided.
 
 :::note
 
 While aliases do not necessarily need to be fully-qualified class names,
-	arbitrary aliases are only meaningful if you have direct access to the container instance since they can't be used for type hinting.
+	arbitrary aliases are only meaningful if you have direct access to the container instance, since they can't be used for type hinting.
 
 :::
 
@@ -94,7 +92,7 @@ Since there is no global store of containers, each container will store their ow
 $first_container = new Container();
 
 $second_container = new Container([
-	SomeClassInterface::class => new Entry(SomeClass::class),
+	SomeClassInterface::class => SomeClass::class,
 ]);
 
 $first_container->addDelegate($second_container);
@@ -111,19 +109,19 @@ The container instance can be accessed through `$this`.
 
 ```php
 $container[SomeOtherClassInterface::class]
-	= new Entry(SomeOtherClass::class);
+	= SomeOtherClass::class;
 
-$container[SomeClassInterface::class] = new Entry(function () {
+$container[SomeClassInterface::class] = function () {
 	/** @var \NaN\DI\Container $this */
 	$dependency = $this->get(SomeOtherClassInterface::class);
 	// Do some stuff...
 	return $some_class;
-}):
+}:
 ```
 
 ### Single instance
 
-Typically, when retrieving an entry, a new instance will be instantiated for any given factory or fully-qualified class name.
+Typically, when retrieving an entry a new instance will be instantiated for any given factory or fully-qualified class name.
 
 ```php
 $one = $container[SomeClassInterface::class];
@@ -133,18 +131,10 @@ $two = $container[SomeClassInterface::class];
 ```
 
 Sometimes you may want the same instance every time you retrieve an entry.
-For this we provide an optional third parameter: `shared`.
-Pass in `true` if you want the same instance to be retrieved every, single time.
+In such cases you should use real values.
 
 ```php
-$container[SomeClassInterface::class]
-	= new Entry(SomeClass::class, true);
-```
-
-In the case where real values are used, the entries automatically become shared.
-
-```php
-$container[SomeClassInterface::class] = new Entry(new SomeClass());
+$container[SomeClassInterface::class] = new SomeClass();
 
 $one = $container[SomeClassInterface::class];
 $two = $container[SomeClassInterface::class];

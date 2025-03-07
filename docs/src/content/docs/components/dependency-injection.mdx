@@ -64,7 +64,7 @@ if ($container->has($alias)) {
 }
 ```
 
-Or with the array-access operator.
+You can also check if an entry exists with the array-access operator.
 
 ```php
 if (isset($container[$alias]) {
@@ -72,7 +72,7 @@ if (isset($container[$alias]) {
 }
 ```
 
-Or you can simply catch the exception.
+Or you can ignore everything and simply catch the exception.
 
 ```php
 use Psr\Container\NotFoundExceptionInterface;

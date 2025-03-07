@@ -203,7 +203,8 @@ $router['/users/{id}'] = UserController::class;
 
 Every route has the option to use any PSR-7-compatible response.
 NaN provides `NaN\Http\Response` for you to use, that extends `GuzzleHttp\Psr7\Response`.
-Unlike the guzzle response, the NaN response will attempt to use the HTTP protocol version specified by your server if none is specified, and will fall back to HTTP/1.1 as a last resort.
+Unlike the guzzle response, the NaN response will attempt to use the HTTP protocol version specified by your server if none is specified in the constructor,
+	and will fall back to `1.1` as a last resort.
 
 ```php
 use NaN\Http\Response;
@@ -216,6 +217,8 @@ $router['/'] = function () {
 The NaN response also provides factories for common response types.
 
 ##### JSON
+
+You can use any value supported by `json_encode`.
 
 ```php
 use NaN\Http\Response;

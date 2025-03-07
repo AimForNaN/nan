@@ -6,9 +6,9 @@ namespace NaN;
  * Manange environment variables.
  */
 final class Env {
-	static protected array $env = [];
 	static protected array $aliases = [];
-	/** @var string $root Default directory of .env file. */
+	static protected array $env = [];
+	static protected bool $loaded = false;
 
 	/**
 	 * Load .env file.
@@ -30,9 +30,21 @@ final class Env {
 		return static::$env[$key] ?? $_ENV[$key] ?? $_SERVER[$key] ?? $fallback;
 	}
 
+	static public function isLoaded(): bool {
+		return static::$loaded;
+	}
+
+	/**
+	 * Load variables from `.env` file.
+	 *
+	 * Can only be run once per session.
+	 */
 	static public function load(?string $dir = null): void {
-		$env = \Dotenv\Dotenv::createImmutable($dir ?? $_SERVER['DOCUMENT_ROOT']);
-		static::$env = $env->safeLoad();
+		if (!static::$loaded) {
+			$env = \Dotenv\Dotenv::createImmutable($dir ?? $_SERVER['DOCUMENT_ROOT']);
+			static::$env = $env->safeLoad();
+			static::$loaded = true;
+		}
 	}
 
 	/**

@@ -39,6 +39,10 @@ function env(string $key, mixed $fallback = null): mixed {
 	return Env::get($key, $fallback);
 }
 
+function dbg(mixed $msg) {
+	NaN\Debug::log($msg);
+}
+
 function router(): Router {
 	static $router = null;
 

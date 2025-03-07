@@ -34,7 +34,7 @@ class App implements \ArrayAccess, PsrContainerInterface, PsrRequestHandlerInter
 	}
 
 	public function handle(PsrServerRequestInterface $request): PsrResponseInterface {
-		if ($this->middleware instanceof Middleware) {
+		if ($this->middleware instanceof \Iterator) {
 			$this->middleware->rewind();
 		}
 

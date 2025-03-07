@@ -36,6 +36,7 @@ $app = new App(new Container([
 ```
 
 Services can also be later registered through the array-access operator.
+For this to work the service container that was provided in the `App` constructor must allow registration through array-access operators.
 
 ```php
 $app[CustomServiceInterface::class] = CustomService::class;

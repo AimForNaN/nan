@@ -22,8 +22,6 @@ class SqlDriver implements DriverInterface {
 				$this->config['password'] ?? null,
 				$this->config['options'] ?? null,
 			),
-			$this->config['table'] ?? null,
-			$this->config['database'] ?? null,
 		);
 	}
 

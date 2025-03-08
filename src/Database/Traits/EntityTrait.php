@@ -2,6 +2,13 @@
 
 namespace NaN\Database\Traits;
 
+use NaN\Database\Query\Statements\{
+	Patch,
+	Pull,
+	Purge,
+	Push,
+};
+
 trait EntityTrait {
 	public function __get(string $name) {
 		$column = $this->getMapping($name);
@@ -36,21 +43,38 @@ trait EntityTrait {
 
 	static public function patch(callable $fn): mixed {
 		$db = static::database();
-		return $db->patch($fn);
+		$patch = new Patch();
+
+		$fn($patch);
+
+		return $db->exec($fn);
 	}
 
 	static public function pull(callable $fn): mixed {
 		$db = static::database();
-		return $db->pull($fn);
+		$pull = new Pull();
+
+		$fn($pull);
+		$pull->from($db->table, $db->database);
+
+		return $db->exec($fn);
 	}
 
 	static public function push(callable $fn): mixed {
 		$db = static::database();
-		return $db->push($fn);
+		$push = new Push();
+
+		$fn($push);
+
+		return $db->exec($fn);
 	}
 
 	static public function purge(callable $fn): mixed {
 		$db = static::database();
-		return $db->purge($fn);
+		$purge = new Purge();
+
+		$fn($purge);
+
+		return $db->exec($fn);
 	}
 }

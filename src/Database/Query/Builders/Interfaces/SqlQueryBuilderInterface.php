@@ -12,7 +12,4 @@ interface SqlQueryBuilderInterface extends QueryBuilderInterface {
 	public function raw(string $query, array $bindings = []): mixed;
 
 	public function transact(callable $fn): bool;
-
-	public function withDatabase(string $database): static;
-	public function withTable(string $table): static;
 }

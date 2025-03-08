@@ -2,24 +2,22 @@
 
 namespace NaN\Database\Query\Statements;
 
-use NaN\Database\Query\Statements\{
-	Clauses\LimitClause,
-	Clauses\UpdateClause,
-	Clauses\UpdateValuesClause,
-	Clauses\WhereClause,
-	Clauses\Traits\LimitClauseTrait,
-	Clauses\Traits\WhereClauseTrait,
-	Interfaces\PatchInterface,
-	Traits\StatementTrait,
+use NaN\Database\Query\Statements\Clauses\{
+	LimitClause,
+	UpdateClause,
+	UpdateValuesClause,
+	WhereClause,
 };
+use NaN\Database\Query\Statements\Clauses\Traits\{
+	LimitClauseTrait,
+	WhereClauseTrait,
+};
+use NaN\Database\Query\Statements\Traits\StatementTrait;
 
-class Patch implements PatchInterface {
+class Patch implements Interfaces\PatchInterface {
 	use LimitClauseTrait;
 	use StatementTrait;
 	use WhereClauseTrait;
-
-	public function __construct() {
-	}
 
 	public function __invoke(...$args): static {
 		return $this->patch(...$args);
@@ -30,14 +28,30 @@ class Patch implements PatchInterface {
 		return $this;
 	}
 
-	public function setLimit(LimitClause $limit): static {
-		$this->query[3] = $limit;
+	public function setLimit(LimitClause $limit_clause): static {
+		$this->query[3] = $limit_clause;
 		return $this;
 	}
 
 	public function setWhere(WhereClause $where_clause): static {
 		$this->query[2] = $where_clause;
 		return $this;
+	}
+
+	public function validate(): bool {
+		if (\count($this->query) === 0) {
+			return false;
+		}
+
+		if (!\is_a($this->query[0], UpdateClause::class)) {
+			return false;
+		}
+
+		if (!\is_a($this->query[2], WhereClause::class)) {
+			return false;
+		}
+
+		return true;
 	}
 
 	public function with(iterable $columns): static {

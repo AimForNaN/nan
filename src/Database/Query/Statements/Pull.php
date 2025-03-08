@@ -2,23 +2,22 @@
 
 namespace NaN\Database\Query\Statements;
 
-use NaN\Database\Query\Statements\{
-	Clauses\FromClause,
-	Clauses\GroupByClause,
-	Clauses\LimitClause,
-	Clauses\OrderByClause,
-	Clauses\SelectClause,
-	Clauses\WhereClause,
-	Clauses\Traits\FromClauseTrait,
-	Clauses\Traits\GroupByTrait,
-	Clauses\Traits\LimitClauseTrait,
-	Clauses\Traits\OrderByTrait,
-	Clauses\Traits\WhereClauseTrait,
-	Interfaces\PullInterface,
-	Traits\StatementTrait,
+use NaN\Database\Query\Statements\Clauses\{FromClause,
+	GroupByClause,
+	LimitClause,
+	OrderByClause,
+	SelectClause,
+	WhereClause};
+use NaN\Database\Query\Statements\Clauses\Traits\{
+	FromClauseTrait,
+	GroupByTrait,
+	LimitClauseTrait,
+	OrderByTrait,
+	WhereClauseTrait,
 };
+use NaN\Database\Query\Statements\Traits\StatementTrait;
 
-class Pull implements PullInterface {
+class Pull implements Interfaces\PullInterface {
 	use FromClauseTrait;
 	use GroupByTrait;
 	use LimitClauseTrait;
@@ -26,21 +25,18 @@ class Pull implements PullInterface {
 	use StatementTrait;
 	use WhereClauseTrait;
 
-	public function __construct() {
-	}
-
 	public function __invoke(...$args): static {
 		return $this->pull(...$args);
 	}
 
 	public function first(): static {
-		$this->limit(1);
+		$this->limit();
 		return $this;
 	}
 
 	public function last(string $column): static {
 		$this->orderBy([$column => 'desc']);
-		$this->limit(1);
+		$this->limit();
 		return $this;
 	}
 
@@ -83,5 +79,21 @@ class Pull implements PullInterface {
 	public function setWhere(WhereClause $where_clause): static {
 		$this->query[2] = $where_clause;
 		return $this;
+	}
+
+	public function validate(): bool {
+		if (\count($this->query) === 0) {
+			return false;
+		}
+
+		if (!\is_a($this->query[0], SelectClause::class)) {
+			return false;
+		}
+
+		if (!\is_a($this->query[1], FromClause::class)) {
+			return false;
+		}
+
+		return true;
 	}
 }

@@ -9,12 +9,16 @@ use NaN\Database\Query\Statements\Interfaces\StatementInterface;
 class SqlQueryBuilder implements SqlQueryBuilderInterface {
 	public function __construct(
 		protected \PDO $connection,
-		protected ?string $table = null,
-		protected ?string $database = null,
+		public readonly string $table = '',
+		public readonly string $database = '',
 	) {
 	}
 
 	public function exec(StatementInterface $statement): mixed {
+		if (!$statement->validate()) {
+			\trigger_error('Mal-structured database query!', \E_USER_ERROR);
+		}
+
 		$bindings = $statement->getBindings();
 		return $this->raw(
 			$statement->render(!empty($bindings)),
@@ -90,17 +94,5 @@ class SqlQueryBuilder implements SqlQueryBuilderInterface {
 		}
 
 		return false;
-	}
-
-	public function withDatabase(string $database): static {
-		$copy = clone $this;
-		$copy->database = $database;
-		return $copy;
-	}
-
-	public function withTable(string $table): static {
-		$copy = clone $this;
-		$copy->table = $table;
-		return $copy;
 	}
 }

@@ -1,3 +1,24 @@
 ---
 title: Database
 ---
+
+NaN provides its own database abstraction layer (DAL).
+It is designed to be as database-agnostic as possible.
+We provide fully-functional abstractions around PDO.
+These abstractions only support the most commonly used SQL queries that share the same syntax found in the MySQL, Postgres and SQLite databases.
+For more complex queries you'll have to write the queries raw or implement a more complex abstraction.
+Likewise for any databases that don't share the same syntax.
+
+For databases not supported by PDO you'll have to write your own driver.
+
+### Pull
+
+### Push
+
+### Patch
+
+### Purge
+
+### Entities
+
+### Custom drivers

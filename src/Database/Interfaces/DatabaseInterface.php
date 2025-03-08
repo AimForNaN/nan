@@ -1,6 +1,6 @@
 <?php
 
-namespace NaN\Database;
+namespace NaN\Database\Interfaces;
 
 interface DatabaseInterface {
 	/**
@@ -52,7 +52,7 @@ interface DatabaseInterface {
 	/**
 	 * Perform a transaction.
 	 *
-	 * Will automatically rollback at the first throwable.
+	 * Will automatically roll back at the first throwable.
 	 *
 	 * @param callable $fn Callback with DatabaseInterface as first argument.
 	 */

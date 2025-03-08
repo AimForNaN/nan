@@ -1,6 +1,6 @@
 <?php
 
-namespace NaN\Database\Query;
+namespace NaN\Database\Query\Interfaces;
 
 use NaN\Database\Query\Statements\Interfaces\{
 	PatchInterface,

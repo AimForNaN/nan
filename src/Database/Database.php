@@ -2,11 +2,13 @@
 
 namespace NaN\Database;
 
+use NaN\Database\Drivers\Interfaces\DriverInterface;
+use NaN\Database\Interfaces\DatabaseInterface;
 use NaN\Database\Query\Statements\Interfaces\StatementInterface;
 
 class Database implements DatabaseInterface {
 	public function __construct(
-		private Drivers\DriverInterface $driver,
+		private DriverInterface $driver,
 	) {
 		$driver->openConnection();
 	}

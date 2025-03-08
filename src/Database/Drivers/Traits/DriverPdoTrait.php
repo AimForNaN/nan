@@ -1,9 +1,9 @@
 <?php
 
-namespace NaN\Database\Drivers;
+namespace NaN\Database\Drivers\Traits;
 
 trait DriverPdoTrait {
-	private \PDO $connection;
+	protected ?\PDO $connection;
 
 	public function closeConnection() {
 		$this->connection = null;

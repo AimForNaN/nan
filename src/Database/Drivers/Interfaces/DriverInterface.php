@@ -1,8 +1,8 @@
 <?php
 
-namespace NaN\Database\Drivers;
+namespace NaN\Database\Drivers\Interfaces;
 
-use NaN\Database\Query\BuilderInterface;
+use NaN\Database\Query\Interfaces\BuilderInterface;
 
 /**
  * It's best to instantiate without a database name and let the system

@@ -2,6 +2,7 @@
 
 namespace NaN\Database\Query;
 
+use NaN\Database\Query\Interfaces\BuilderInterface;
 use NaN\Database\Query\Statements\{
 	Interfaces\PatchInterface,
 	Interfaces\PullInterface,

@@ -2,12 +2,10 @@
 
 namespace NaN\Database\Drivers\Sqlite;
 
-use NaN\Database\{
-	Drivers\DriverInterface,
-	Drivers\DriverPdoTrait,
-	Query\Builder,
-	Query\BuilderInterface,
-};
+use NaN\Database\Drivers\Interfaces\DriverInterface;
+use NaN\Database\Drivers\Traits\DriverPdoTrait;
+use NaN\Database\Query\Builder;
+use NaN\Database\Query\Interfaces\BuilderInterface;
 
 class Driver implements DriverInterface, \ArrayAccess {
 	use DriverPdoTrait;

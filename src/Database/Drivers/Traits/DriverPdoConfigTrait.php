@@ -1,12 +1,12 @@
 <?php
 
-namespace NaN\Database\Drivers;
+namespace NaN\Database\Drivers\Traits;
 
 trait DriverPdoConfigTrait {
 	use DriverPdoTrait;
 
 	public function __construct(
-		private array $config,
+		protected array $config,
 	) {
 	}
 

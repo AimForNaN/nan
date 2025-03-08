@@ -2,12 +2,10 @@
 
 namespace NaN\Database\Drivers\Postgre;
 
-use NaN\Database\{
-	Drivers\DriverInterface,
-	Drivers\DriverPdoConfigTrait,
-	Query\BuilderInterface,
-	Query\Builder,
-};
+use NaN\Database\Drivers\Interfaces\DriverInterface;
+use NaN\Database\Drivers\Traits\DriverPdoConfigTrait;
+use NaN\Database\Query\Builder;
+use NaN\Database\Query\Interfaces\BuilderInterface;
 
 class Driver implements DriverInterface, \ArrayAccess {
 	use DriverPdoConfigTrait;

@@ -23,6 +23,7 @@ class Purge implements PurgeInterface {
 	use StatementTrait;
 	use WhereClauseTrait;
 
+
 	public function __construct() {
 		$this->query[0] = new DeleteClause();
 	}

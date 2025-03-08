@@ -18,6 +18,13 @@ class Patch implements PatchInterface {
 	use StatementTrait;
 	use WhereClauseTrait;
 
+	public function __construct() {
+	}
+
+	public function __invoke(...$args): static {
+		return $this->patch(...$args);
+	}
+
 	public function patch(string $table, string $database = ''): static {
 		$this->query[0] = new UpdateClause($table, $database);
 		return $this;

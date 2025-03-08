@@ -15,6 +15,13 @@ class Push implements PushInterface {
 	use StatementTrait;
 	use WhereClauseTrait;
 
+	public function __construct() {
+	}
+
+	public function __invoke(...$args): static {
+		return $this->push(...$args);
+	}
+
 	public function into(string $table, string $database = ''): static {
 		$this->query[0] = new InsertClause($table, $database);
 		return $this;

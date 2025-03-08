@@ -26,6 +26,13 @@ class Pull implements PullInterface {
 	use StatementTrait;
 	use WhereClauseTrait;
 
+	public function __construct() {
+	}
+
+	public function __invoke(...$args): static {
+		return $this->pull(...$args);
+	}
+
 	public function first(): static {
 		$this->limit(1);
 		return $this;

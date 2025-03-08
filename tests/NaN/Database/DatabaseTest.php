@@ -1,7 +1,6 @@
 <?php
 
-use NaN\Database\Database;
-use NaN\Database\Drivers\Sqlite\Driver;
+use NaN\Database\Drivers\SqlDriver;
 use NaN\Database\Query\Statements\Interfaces\{
 	PullInterface,
 	PushInterface,
@@ -9,7 +8,12 @@ use NaN\Database\Query\Statements\Interfaces\{
 
 describe('Database', function () {
 	test('Push and pull', function () {
-		$db = new Database(new Driver());
+		$driver = new SqlDriver([
+			'driver' => 'sqlite',
+			'sqlite' => ':memory:',
+			'table' => 'test',
+		]);
+		$db = $driver->createConnection();
 
 		expect($db->raw('CREATE TABLE `test` (`id` int);'))->toBeTruthy();
 
@@ -23,7 +27,7 @@ describe('Database', function () {
 			])->into('test');
 		});
 		$results = $db->pull(function (PullInterface $pull) {
-			$pull->pull([
+			$pull([
 				'id',
 			])->from('test');
 		});

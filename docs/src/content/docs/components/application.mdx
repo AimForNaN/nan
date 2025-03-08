@@ -61,6 +61,7 @@ Any service you want access to from your routes should be registered through the
 
 Middleware can be conveniently and optionally registered through the `NaN\App` constructor.
 It will accept any PSR-15-compatible request handlers.
+If the middleware container is also PSR-11 compatible, it will be added as a delegate to the services container.
 
 ```php
 use NaN\App\Middleware;
@@ -69,7 +70,7 @@ use NaN\App\Middleware\Router;
 $router = new Router();
 
 $app = new App($services, new Middleware([
-	$router,
+	Router::class => $router,
 ]));
 ```
 

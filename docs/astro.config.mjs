@@ -12,7 +12,7 @@ export default defineConfig({
 			title: 'NaN',
 			description: 'NaN micro-framework',
 			social: {
-				github: 'https://github.com/withastro/starlight',
+				github: 'https://github.com/AimForNaN/nan',
 			},
 			sidebar: [
 				{

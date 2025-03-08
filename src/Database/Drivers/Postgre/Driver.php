@@ -3,12 +3,12 @@
 namespace NaN\Database\Drivers\Postgre;
 
 use NaN\Database\Drivers\Interfaces\DriverInterface;
-use NaN\Database\Drivers\Traits\DriverPdoConfigTrait;
+use NaN\Database\Drivers\Traits\DriverTrait;
 use NaN\Database\Query\Builder;
 use NaN\Database\Query\Interfaces\BuilderInterface;
 
-class Driver implements DriverInterface, \ArrayAccess {
-	use DriverPdoConfigTrait;
+class Driver implements DriverInterface {
+	use DriverTrait;
 
 	public function __toString(): string {
 		return $this->generateDsn('pgsql');

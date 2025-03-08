@@ -2,6 +2,7 @@
 
 namespace NaN\Database\Query\Interfaces;
 
+use NaN\Database\Interfaces\DatabaseInterface;
 use NaN\Database\Query\Statements\Interfaces\{
 	PatchInterface,
 	PullInterface,
@@ -10,11 +11,11 @@ use NaN\Database\Query\Statements\Interfaces\{
 };
 
 interface BuilderInterface {
-	public function createPatch(): PatchInterface;
+	public function createPatch(DatabaseInterface $db): PatchInterface;
 
-	public function createPull(): PullInterface;
+	public function createPull(DatabaseInterface $db): PullInterface;
 
-	public function createPurge(): PurgeInterface;
+	public function createPurge(DatabaseInterface $db): PurgeInterface;
 
-	public function createPush(): PushInterface;
+	public function createPush(DatabaseInterface $db): PushInterface;
 }

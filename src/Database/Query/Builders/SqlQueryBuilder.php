@@ -9,12 +9,12 @@ use NaN\Database\Query\Statements\Interfaces\StatementInterface;
 class SqlQueryBuilder implements SqlQueryBuilderInterface {
 	public function __construct(
 		protected \PDO $connection,
-		protected string $table,
+		protected ?string $table = null,
 		protected ?string $database = null,
 	) {
 	}
 
-	protected function exec(StatementInterface $statement): \PDOStatement | false {
+	public function exec(StatementInterface $statement): mixed {
 		$bindings = $statement->getBindings();
 		return $this->raw(
 			$statement->render(!empty($bindings)),
@@ -27,7 +27,7 @@ class SqlQueryBuilder implements SqlQueryBuilderInterface {
 	}
 
 	public function patch(callable $fn): mixed {
-		$patch = new Patch($this->table, $this->database);
+		$patch = new Patch();
 
 		$fn($patch);
 
@@ -35,7 +35,7 @@ class SqlQueryBuilder implements SqlQueryBuilderInterface {
 	}
 
 	public function pull(callable $fn): mixed {
-		$pull = new Pull($this->table, $this->database);
+		$pull = new Pull();
 
 		$fn($pull);
 
@@ -43,7 +43,7 @@ class SqlQueryBuilder implements SqlQueryBuilderInterface {
 	}
 
 	public function purge(callable $fn): mixed {
-		$purge = new Purge($this->table, $this->database);
+		$purge = new Purge();
 
 		$fn($purge);
 
@@ -51,7 +51,7 @@ class SqlQueryBuilder implements SqlQueryBuilderInterface {
 	}
 
 	public function push(callable $fn): mixed {
-		$push = new Push($this->table, $this->database);
+		$push = new Push();
 
 		$fn($push);
 
@@ -90,5 +90,17 @@ class SqlQueryBuilder implements SqlQueryBuilderInterface {
 		}
 
 		return false;
+	}
+
+	public function withDatabase(string $database): static {
+		$copy = clone $this;
+		$copy->database = $database;
+		return $copy;
+	}
+
+	public function withTable(string $table): static {
+		$copy = clone $this;
+		$copy->table = $table;
+		return $copy;
 	}
 }

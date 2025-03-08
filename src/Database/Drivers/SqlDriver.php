@@ -8,7 +8,9 @@ use NaN\Database\Query\Builders\SqlQueryBuilder;
 
 class SqlDriver implements DriverInterface {
 	public function __construct(
-		protected array $config,
+		protected array $config = [
+			\PDO::ATTR_EMULATE_PREPARES => false,
+		],
 	) {
 	}
 
@@ -32,6 +34,10 @@ class SqlDriver implements DriverInterface {
 
 		$prefix = $this->config['driver'];
 		$config = $this->config[$prefix] ?? null;
+
+		if (empty($config)) {
+			\trigger_error('Driver not configured!', E_USER_ERROR);
+		}
 
 		if (\is_array($config)) {
 			$config = \array_map(fn($key, $value) => "{$key}={$value}", \array_keys($config), \array_values($config),);

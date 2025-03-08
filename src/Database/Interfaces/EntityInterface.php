@@ -5,9 +5,6 @@ namespace NaN\Database\Interfaces;
 use NaN\Database\Query\Builders\Interfaces\QueryBuilderInterface;
 
 interface EntityInterface {
-	/**
-	 * @return DatabaseInterface Database connection interface.
-	 */
 	static public function database(): QueryBuilderInterface;
 
 	public function fill(iterable $data): void;

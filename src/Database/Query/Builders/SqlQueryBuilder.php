@@ -6,11 +6,10 @@ use NaN\Database\Query\Builders\Interfaces\SqlQueryBuilderInterface;
 use NaN\Database\Query\Statements\{Patch, Pull, Purge, Push};
 use NaN\Database\Query\Statements\Interfaces\StatementInterface;
 
-class SqlQueryBuilder implements SqlQueryBuilderInterface {
+class SqlQueryBuilder implements \ArrayAccess, SqlQueryBuilderInterface {
 	public function __construct(
 		protected \PDO $connection,
-		public readonly string $table = '',
-		public readonly string $database = '',
+		protected array $options = [],
 	) {
 	}
 
@@ -28,6 +27,21 @@ class SqlQueryBuilder implements SqlQueryBuilderInterface {
 
 	public function getLastInsertId(): string | false {
 		return $this->connection->lastInsertId();
+	}
+
+	public function offsetExists($offset): bool {
+		return isset($this->options[$offset]);
+	}
+
+	public function offsetGet($offset): mixed {
+		return $this->options[$offset] ?? null;
+	}
+
+	public function offsetSet($offset, $value): void {
+		$this->options[$offset] = $value;
+	}
+
+	public function offsetUnset($offset): void {
 	}
 
 	public function patch(callable $fn): mixed {

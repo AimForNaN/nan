@@ -55,7 +55,7 @@ trait EntityTrait {
 		$pull = new Pull();
 
 		$fn($pull);
-		$pull->from($db->table, $db->database);
+		$pull->from($db['table'], $db['database']);
 
 		return $db->exec($fn);
 	}

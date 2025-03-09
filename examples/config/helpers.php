@@ -3,10 +3,8 @@
 use NaN\App;
 use NaN\App\Middleware\Router;
 use NaN\App\TemplateEngine;
-use NaN\Database\{
-	Database,
-	Drivers\Sqlite\Driver as SqliteDriver,
-};
+use NaN\Database\Drivers\SqlDriver;
+use NaN\Database\Query\Builders\SqlQueryBuilder;
 use NaN\Env;
 
 function app(): App {
@@ -21,14 +19,17 @@ function app(): App {
 	return $app;
 }
 
-function db(): Database {
+function db(): SqlQueryBuilder {
 	static $db = null;
 
 	if (!$db) {
-		$db = new Database(new SqliteDriver());
+		$db = new SqlDriver([
+			'driver' => 'sqlite',
+			'sqlite' => ':memory:',
+		]);
 	}
 
-	return $db;
+	return $db->createConnection();
 }
 
 function env(string $key, mixed $fallback = null): mixed {

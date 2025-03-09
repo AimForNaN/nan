@@ -60,14 +60,14 @@ PDO options can be provided in the `options` key.
 $driver = new SqlDriver([
 	'options' => [
 		\PDO::ATTR_EMULATE_PREPARES => false,
-	]
+	],
 ]);
 ```
 
 #### Connect to a database
 
 To establish a connection you must call the `createConnection` method.
-This will return a query builder that has access to the database.
+This will return a query builder that has access to the database connection (i.e. `PDO` instance).
 You can use the first argument to pass data to the query builder for you to access at a later time.
 The data can be accessed through the array-access operator.
 
@@ -81,7 +81,100 @@ $table_name = $query_builder['table'];
 
 ## Query builder
 
+CRUD operations are represented by four specific concepts.
+
+ - `Create` &#129106; `Push`.
+ - `Retrieve` &#129106; `Pull`.
+ - `Update` &#129106; `Patch`.
+ - `Delete` &#129106; `Purge`.
+
+These operations pertain only to table rows.
+For operations outside the scope of table rows (e.g database schemas) or for more complex queries, you can execute raw queries.
+
+```php
+$query_builder->raw('CREATE TABLE `table_name`');
+```
+
+For raw prepared statements, bindings can be passed in the second argument.
+
+```php
+// Positional!
+$query_builder->raw(
+<<<SQL
+	SELECT * FROM `tb1`
+	LEFT JOIN `tb2`
+	ON `tb1`.`id` = `tb2`.`tb1_id`
+	WHERE `field` = ?
+SQL, [
+	'field value',
+]);
+
+// Parameterized!
+$query_builder->raw(
+<<<SQL
+	SELECT * FROM `tb1`
+	LEFT JOIN `tb2`
+	ON `tb1`.`id` = `tb2`.`tb1_id`
+	WHERE `field` = :value
+SQL, [
+	':value' => 'field value',
+]);
+```
+
+:::note
+
+The NaN database abstraction layer does not try to distinguish between prepared and non-prepared statements.
+Instead, the system will activate prepared statements when bindings are supplied regardless of the query supplied.
+Don't provide bindings if you aren't planning on using prepared statements.
+
+:::
+
 #### Pull
+
+The pull operation is represented by the `NaN\Database\Query\Statements\Pull` class.
+It is equivalent to the `SELECT` statement of the typical SQL query.
+By default, the pull operation will select all columns.
+If you need to select specific columns, use the `pull` method or the invokable.
+
+```php
+use NaN\Database\Query\Statements\Pull;
+
+$query_builder->pull(function (Pull $pull) {
+	$pull->pull([
+		'column_one',
+		'column_two',
+	]);
+});
+
+$query_builder->pull(function (Pull $pull) {
+	$pull([
+		'column_one',
+		'column_two',
+	]);
+});
+```
+
+Alternatively, you can provide the columns into the constructor and execute the statement yourself.
+
+```php
+$pull = new Pull([
+	'column_one',
+	'column_two',
+]);
+
+$query_builder->exec($pull);
+```
+
+You can also use array keys as column aliases.
+
+```php
+$query_builder->pull(function (Pull $pull) {
+	$pull([
+		'column_alias_one' => 'column_one',
+		'column_alias_two' => 'column_two',
+	]);
+});
+```
 
 #### Push
 

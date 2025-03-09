@@ -19,7 +19,7 @@ describe('Statements', function () {
 	test('Pull', function () {
 		$pull = new Pull();
 
-		$pull->pull()->from('test');
+		$pull->from('test');
 		expect($pull->render())->toBe('SELECT * FROM test');
 
 		$pull->pull(['id'])->from('test');

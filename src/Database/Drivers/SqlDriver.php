@@ -8,13 +8,11 @@ use NaN\Database\Query\Builders\SqlQueryBuilder;
 
 class SqlDriver implements DriverInterface {
 	public function __construct(
-		protected array $config = [
-			\PDO::ATTR_EMULATE_PREPARES => false,
-		],
+		protected array $config = [],
 	) {
 	}
 
-	public function createConnection(): QueryBuilderInterface {
+	public function createConnection(array $options = []): QueryBuilderInterface {
 		return new SqlQueryBuilder(
 			new \PDO(
 				$this->generateDsn(),
@@ -22,7 +20,7 @@ class SqlDriver implements DriverInterface {
 				$this->config['password'] ?? null,
 				$this->config['options'] ?? null,
 			),
-			$this->config['builder'] ?? [],
+			$options,
 		);
 	}
 

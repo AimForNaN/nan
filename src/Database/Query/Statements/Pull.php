@@ -25,8 +25,12 @@ class Pull implements Interfaces\PullInterface {
 	use StatementTrait;
 	use WhereClauseTrait;
 
-	public function __construct() {
-		$this->setSelect(new SelectClause());
+	public function __construct(array $columns = []) {
+		if (empty($columns)) {
+			$this->setSelect(new SelectClause());
+		} else {
+			$this->pull($columns);
+		}
 	}
 
 	public function __invoke(...$args): static {

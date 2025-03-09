@@ -10,7 +10,7 @@ For more complex queries you'll have to write the queries raw or implement a mor
 Likewise for any databases that don't share the same syntax.
 For databases not supported by PDO you'll have to write your own driver.
 
-### SQL driver
+## SQL driver
 
 At the center of the NaN database abstraction layer stands the `NaN\Database\Drivers\SqlDriver` class.
 It's a PDO abstraction that supplies its own query builder.
@@ -40,7 +40,7 @@ $driver = new SqlDriver([
 ]);
 ```
 
-##### Authentication
+#### Authentication
 
 For databases that require a username and password you may provide them in the relevant keys.
 
@@ -51,7 +51,7 @@ $driver = new SqlDriver([
 ]);
 ```
 
-##### PDO options
+#### PDO options
 
 There may be times when you want to provide options for the PDO connection.
 PDO options can be provided in the `options` key.
@@ -64,7 +64,7 @@ $driver = new SqlDriver([
 ]);
 ```
 
-##### Connect to a database and query building
+#### Connect to a database
 
 To establish a connection you must call the `createConnection` method.
 This will return a query builder that has access to the database.
@@ -79,14 +79,16 @@ $query_builder = $driver->createConnection([
 $table_name = $query_builder['table'];
 ```
 
-### Pull
+## Query builder
 
-### Push
+#### Pull
 
-### Patch
+#### Push
 
-### Purge
+#### Patch
 
-### Entities
+#### Purge
 
-### Custom drivers
+## Entities
+
+## Custom drivers

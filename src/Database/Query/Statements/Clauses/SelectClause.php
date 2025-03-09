@@ -5,22 +5,31 @@ namespace NaN\Database\Query\Statements\Clauses;
 use NaN\Database\Query\Statements\Clauses\Interfaces\ClauseInterface;
 
 class SelectClause extends \NaN\Collections\Collection implements ClauseInterface {
-	private bool $distinct = false;
-
-	public function __invoke(array $columns) {
-		$this->addColumns($columns);
+	public function __construct(
+		array $columns = ['*'],
+		private bool $distinct = false,
+	) {
+		parent::__construct();
+		$this->setColumns($columns);
 	}
 
-	public function addColumn(string $column, string $alias = ''): static {
+	public function __invoke(array $columns) {
+		$this->setColumns($columns);
+	}
+
+	protected function addColumn(string $column, string $alias = ''): static {
 		$this->data[] = [
 			'expr' => 'column',
 			'alias' => $alias,
 			'column' => $column,
 		];
+
 		return $this;
 	}
 
-	public function addColumns(array $columns): static {
+	public function setColumns(array $columns): static {
+		$this->data = [];
+
 		foreach ($columns as $alias => $column) {
 			if (!\is_numeric($alias)) {
 				$this->addColumn($column, $alias);
@@ -28,6 +37,7 @@ class SelectClause extends \NaN\Collections\Collection implements ClauseInterfac
 				$this->addColumn($column);
 			}
 		}
+
 		return $this;
 	}
 

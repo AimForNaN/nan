@@ -25,6 +25,10 @@ class Pull implements Interfaces\PullInterface {
 	use StatementTrait;
 	use WhereClauseTrait;
 
+	public function __construct() {
+		$this->setSelect(new SelectClause());
+	}
+
 	public function __invoke(...$args): static {
 		return $this->pull(...$args);
 	}
@@ -40,9 +44,9 @@ class Pull implements Interfaces\PullInterface {
 		return $this;
 	}
 
-	public function pull(array $columns = ['*'], bool $distinct = false): static {
+	public function pull(array $columns, bool $distinct = false): static {
 		$select_clause = new SelectClause();
-		$select_clause->addColumns($columns);
+		$select_clause->setColumns($columns);
 
 		if ($distinct) {
 			$select_clause->distinct();

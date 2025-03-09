@@ -4,12 +4,80 @@ title: Database
 
 NaN provides its own database abstraction layer (DAL).
 It is designed to be as database-agnostic as possible.
-We provide fully-functional abstractions around PDO.
-These abstractions only support the most commonly used SQL queries that share the same syntax found in the MySQL, Postgres and SQLite databases.
+We provide fully-functional abstractions around PDO out-of-the-box.
+These abstractions only support the most commonly used SQL queries that are shared among MySQL, Postgres and SQLite databases.
 For more complex queries you'll have to write the queries raw or implement a more complex abstraction.
 Likewise for any databases that don't share the same syntax.
-
 For databases not supported by PDO you'll have to write your own driver.
+
+### SQL driver
+
+At the center of the NaN database abstraction layer stands the `NaN\Database\Drivers\SqlDriver` class.
+It's a PDO abstraction that supplies its own query builder.
+All configuration necessary to construct a PDO connection is provided through its constructor.
+In it you must specify the type of driver to load.
+The DSN for that driver is to be specified in a key whose name matches the driver name.
+For example, if the driver is `sqlite`, then there must be a matching `sqlite` key.
+The value can be either a string or an array of DSN properties.
+
+```php
+use NaN\Database\Drivers\SqlDriver;
+
+$driver = new SqlDriver([
+	'driver' => 'sqlite',
+	'sqlite' => ':memory:',
+]);
+```
+
+```php
+$driver = new SqlDriver([
+	'driver' => 'mysql',
+	'mysql' => [
+		'host' => 'localhost',
+		'port' => 3306,
+		'charset' => 'utf8mb4',
+	],
+]);
+```
+
+##### Authentication
+
+For databases that require a username and password you may provide them in the relevant keys.
+
+```php
+$driver = new SqlDriver([
+	'username' => 'root',
+	'password' => '',
+]);
+```
+
+##### PDO options
+
+There may be times when you want to provide options for the PDO connection.
+PDO options can be provided in the `options` key.
+
+```php
+$driver = new SqlDriver([
+	'options' => [
+		\PDO::ATTR_EMULATE_PREPARES => false,
+	]
+]);
+```
+
+##### Connect to a database and query building
+
+To establish a connection you must call the `createConnection` method.
+This will return a query builder that has access to the database.
+You can use the first argument to pass data to the query builder for you to access at a later time.
+The data can be accessed through the array-access operator.
+
+```php
+$query_builder = $driver->createConnection([
+	'table' => 'table_name',
+]);
+
+$table_name = $query_builder['table'];
+```
 
 ### Pull
 

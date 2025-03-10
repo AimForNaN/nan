@@ -82,6 +82,10 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 
 			switch ($expr) {
 				case 'condition':
+					if (\is_array($value)) {
+						return \array_merge($ret, $value);
+					}
+
 					$ret[] = $value;
 					break;
 				case 'group':

@@ -39,5 +39,6 @@ describe('Statements', function () {
 		$push->push(['id' => 255])->into('test');
 		expect($push->render())->toBe('INSERT INTO test (id) VALUES (255)');
 		expect($push->render(true))->toBe('INSERT INTO test (id) VALUES (?)');
+		expect($push->getBindings())->toBe([255]);
 	});
 });

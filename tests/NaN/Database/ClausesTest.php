@@ -41,5 +41,6 @@ describe('Clauses', function () {
 
 		expect($where->render())->toBe('WHERE test = 255 AND test IN (255) OR (test > 255)');
 		expect($where->render(true))->toBe('WHERE test = ? AND test IN (?) OR (test > ?)');
+		expect($where->getBindings())->toBe([255, 255, 255]);
 	});
 });

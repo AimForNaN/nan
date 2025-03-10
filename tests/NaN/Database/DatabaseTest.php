@@ -11,7 +11,6 @@ describe('Database', function () {
 		$driver = new SqlDriver([
 			'driver' => 'sqlite',
 			'sqlite' => ':memory:',
-			'table' => 'test',
 		]);
 		$db = $driver->createConnection();
 
@@ -27,7 +26,7 @@ describe('Database', function () {
 			])->into('test');
 		});
 		$results = $db->pull(function (PullInterface $pull) {
-			$pull([
+			$pull->pull([
 				'id',
 			])->from('test');
 		});

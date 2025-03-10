@@ -4,12 +4,18 @@ namespace NaN\Database\Query\Statements\Clauses;
 
 use NaN\Database\Query\Statements\Clauses\Interfaces\ClauseInterface;
 
-class InsertValuesClause implements ClauseInterface {
-	public function __construct(protected iterable $columns) {
+class InsertValuesClause implements ClauseInterface, \Countable {
+	public function __construct(
+		protected array $columns,
+	) {
+	}
+
+	public function count(): int {
+		return \count($this->columns);
 	}
 
 	public function getBindings(): array {
-		return \iterator_to_array($this->columns, false);
+		return \array_values($this->columns);
 	}
 
 	static public function generatePlaceHolders(int $count): string {
@@ -37,7 +43,7 @@ class InsertValuesClause implements ClauseInterface {
 		return (string)$value;
 	}
 
-	static public function renderValues(iterable $values, bool $prepared = false): string {
+	static public function renderValues(array $values, bool $prepared = false): string {
 		$args = [];
 
 		foreach ($values as $value) {

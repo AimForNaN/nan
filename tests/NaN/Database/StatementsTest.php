@@ -24,6 +24,12 @@ describe('Statements', function () {
 
 		$pull->pull(['id'])->from('test');
 		expect($pull->render())->toBe('SELECT id FROM test');
+
+		$pull->from(function ($pull) {
+			expect($pull)->toBeInstanceOf(Pull::class);
+			$pull->from('test');
+		});
+		expect($pull->render())->toBe('SELECT id FROM (SELECT * FROM test)');
 	});
 
 	test('Purge', function () {

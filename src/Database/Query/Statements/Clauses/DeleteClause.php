@@ -5,7 +5,7 @@ namespace NaN\Database\Query\Statements\Clauses;
 use NaN\Database\Query\Statements\Interfaces\StatementInterface;
 use NaN\Database\Query\Statements\Traits\StatementTrait;
 
-class DeleteClause implements StatementInterface {
+final class DeleteClause implements StatementInterface {
 	use StatementTrait;
 
 	public function getBindings(): array {

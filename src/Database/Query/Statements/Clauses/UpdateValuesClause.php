@@ -2,7 +2,12 @@
 
 namespace NaN\Database\Query\Statements\Clauses;
 
-class UpdateValuesClause extends InsertValuesClause {
+use NaN\Database\Query\Statements\Interfaces\StatementInterface;
+use NaN\Database\Query\Statements\Traits\ValuesClauseTrait;
+
+final class UpdateValuesClause implements \Countable, StatementInterface {
+	use ValuesClauseTrait;
+
 	public function render(bool $prepared = false): string {
 		return 'SET ' . static::renderValues($this->data, $prepared);
 	}

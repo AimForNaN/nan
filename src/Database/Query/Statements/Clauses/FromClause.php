@@ -5,7 +5,7 @@ namespace NaN\Database\Query\Statements\Clauses;
 use NaN\Database\Query\Statements\Interfaces\StatementInterface;
 use NaN\Database\Query\Statements\Traits\StatementTrait;
 
-class FromClause implements StatementInterface {
+final class FromClause implements StatementInterface {
 	use StatementTrait;
 
 	public function __construct(string $table = '', string $database = '', string $alias = '') {

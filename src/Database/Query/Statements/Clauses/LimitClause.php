@@ -5,7 +5,7 @@ namespace NaN\Database\Query\Statements\Clauses;
 use NaN\Database\Query\Statements\Interfaces\StatementInterface;
 use NaN\Database\Query\Statements\Traits\StatementTrait;
 
-class LimitClause implements StatementInterface {
+final class LimitClause implements StatementInterface {
 	use StatementTrait;
 
 	public function __construct(

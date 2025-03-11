@@ -29,4 +29,12 @@ final class LimitClause implements StatementInterface {
 
 		return $ret;
 	}
+
+	public function validate(): bool {
+		if (!isset($this->data['limit'])) {
+			return false;
+		}
+
+		return true;
+	}
 }

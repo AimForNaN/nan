@@ -25,4 +25,12 @@ final class OrderByClause implements StatementInterface {
 
 		return 'ORDER BY ' . \implode(', ', $columns);
 	}
+
+	public function validate(): bool {
+		if (empty($this->data)) {
+			return false;
+		}
+
+		return true;
+	}
 }

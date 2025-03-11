@@ -5,9 +5,15 @@ namespace NaN\Database\Query\Statements\Traits;
 use NaN\Database\Query\Statements\Clauses\WhereClause;
 
 trait WhereClauseTrait {
-	public function where(\Closure $fn): static {
+	public function where(\Closure|string $column, string $operator = '', mixed $value = ''): static {
 		$where_clause = new WhereClause();
-		$fn($where_clause);
+
+		if ($column instanceof \Closure) {
+			$column($where_clause);
+		} else {
+			$where_clause($column, $operator, $value);
+		}
+
 		return $this->setWhere($where_clause);
 	}
 }

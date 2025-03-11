@@ -21,7 +21,7 @@ trait StatementTrait {
 	}
 
 	public function validate(): bool {
-		if (\count($this->data) === 0) {
+		if (empty($this->data)) {
 			return false;
 		}
 

@@ -19,4 +19,12 @@ final class GroupByClause implements StatementInterface {
 	public function render(bool $prepared = false): string {
 		return 'GROUP BY ' . \implode(', ', $this->data);
 	}
+
+	public function validate(): bool {
+		if (empty($this->data)) {
+			return false;
+		}
+
+		return true;
+	}
 }

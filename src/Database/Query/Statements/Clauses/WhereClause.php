@@ -8,12 +8,6 @@ use NaN\Database\Query\Statements\Traits\StatementTrait;
 final class WhereClause implements StatementInterface {
 	use StatementTrait;
 
-	public function __construct(string $column = '', string $operator = '', mixed $value = '') {
-		if (!empty($column) && !empty($operator)) {
-			$this->_addColumn(null, $column, $operator, $value);
-		}
-	}
-
 	public function __invoke(string $column, string $operator, mixed $value): static {
 		$this->_addColumn(null, $column, $operator, $value);
 		return $this;
@@ -30,7 +24,7 @@ final class WhereClause implements StatementInterface {
 	 * @return static
 	 */
 	protected function _addColumn(?string $delimiter, string $column, string $operator, mixed $value): static {
-		$this->data[$delimiter ? \count($this->data) : 0] = [
+		$this->data[$delimiter ?: \count($this->data)] = [
 			'expr' => 'condition',
 			'delimiter' => $delimiter,
 			'column' => $column,
@@ -50,10 +44,10 @@ final class WhereClause implements StatementInterface {
 	 */
 	protected function _addGroup(?string $delimiter, \Closure $fn): static {
 		$where_group = new static();
-		$this->data[$delimiter ? \count($this->data) : 0] = [
+		$this->data[$delimiter ?: \count($this->data)] = [
 			'expr' => 'group',
 			'delimiter' => $delimiter,
-			'group' => $where_group,
+			'value' => $where_group,
 		];
 
 		$fn($where_group);
@@ -84,7 +78,6 @@ final class WhereClause implements StatementInterface {
 		return \array_reduce($this->data, function ($ret, $item) {
 			/**
 			 * @var string $expr
-			 * @var WhereClause $group
 			 * @var mixed $value
 			 */
 			\extract($item);
@@ -98,7 +91,7 @@ final class WhereClause implements StatementInterface {
 					$ret[] = $value;
 					break;
 				case 'group':
-					return \array_merge($ret, $group->getBindings());
+					return \array_merge($ret, $value->getBindings());
 			}
 
 			return $ret;
@@ -130,7 +123,6 @@ final class WhereClause implements StatementInterface {
 			 * @var string $condition
 			 * @var string $delimiter
 			 * @var string $expr
-			 * @var WhereClause $group
 			 * @var mixed $value
 			 */
 			\extract($item);
@@ -141,10 +133,10 @@ final class WhereClause implements StatementInterface {
 
 			switch ($expr) {
 				case 'condition':
-					$ret .= "$column $operator " . $this->renderValue($value, $prepared);
+					$ret .= "{$column} {$operator} " . static::renderValue($value, $prepared);
 					break;
 				case 'group':
-					$ret .= '(' . \str_replace('WHERE ', '', $group->render($prepared)) . ')';
+					$ret .= '(' . \str_replace('WHERE ', '', $value->render($prepared)) . ')';
 					break;
 			}
 
@@ -152,14 +144,41 @@ final class WhereClause implements StatementInterface {
 		}, '');
 	}
 	
-	public function renderValue(mixed $value, bool $prepared = false): string {
+	static public function renderValue(mixed $value, bool $prepared = false): string {
 		switch (gettype($value)) {
 			case 'array':
-				return '(' . \implode(', ', \array_map(fn($v) => $this->renderValue($v, $prepared), $value)) . ')';
+				return '(' . \implode(', ', \array_map(fn($v) => static::renderValue($v, $prepared), $value)) . ')';
 			case 'string':
 				return $prepared ? '?' : '"' . $value . '"';
 		}
 
 		return $prepared ? '?' : (string)$value;
+	}
+
+	public function validate(): bool {
+		if (empty($this->data)) {
+			return false;
+		}
+
+		foreach ($this->data as $item) {
+			switch ($item['expr']) {
+				case 'condition':
+					if (empty($item['condition'])) {
+						return false;
+					}
+
+					if (empty($item['operator'])) {
+						return false;
+					}
+					break;
+				case 'group':
+					if (!$item['value']->validate()) {
+						return false;
+					}
+					break;
+			}
+		}
+
+		return true;
 	}
 }

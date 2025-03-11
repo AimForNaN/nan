@@ -8,12 +8,6 @@ use NaN\Database\Query\Statements\Traits\StatementTrait;
 final class FromClause implements StatementInterface {
 	use StatementTrait;
 
-	public function __construct(string $table = '', string $database = '', string $alias = '') {
-		if (!empty($table)) {
-			$this->addTable($table, $database, $alias);
-		}
-	}
-
 	public function addSubQuery(StatementInterface $query, string $alias = ''): static {
 		$this->data[] = [
 			'expr' => 'query',

@@ -29,4 +29,12 @@ final class UpdateClause implements StatementInterface {
 
 		return 'UPDATE ' . $table;
 	}
+
+	public function validate(): bool {
+		if (empty($this->data['table'])) {
+			return false;
+		}
+
+		return true;
+	}
 }

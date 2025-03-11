@@ -16,7 +16,7 @@ trait FromClauseTrait {
 		if ($table instanceof \Closure) {
 			$sub_query = new Pull();
 			$table($sub_query);
-			$from_clause->addSubQuery($sub_query);
+			$from_clause->addSubQuery($sub_query, $database);
 		} else {
 			$from_clause->addTable($table, $database);
 		}

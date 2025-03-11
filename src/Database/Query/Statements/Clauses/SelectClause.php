@@ -54,6 +54,11 @@ final class SelectClause implements StatementInterface {
 
 	public function render(bool $prepared = false): string {
 		return 'SELECT ' . ($this->distinct ? 'DISTINCT ' : '') . \implode(', ', \array_map(function ($item) {
+			/**
+			 * @var string $expr
+			 * @var string $column
+			 * @var string $alias
+			 */
 			\extract($item);
 
 			switch ($expr) {
@@ -65,5 +70,23 @@ final class SelectClause implements StatementInterface {
 
 			return $column;
 		}, $this->data));
+	}
+
+	public function validate(): bool {
+		if (empty($this->data)) {
+			return false;
+		}
+
+		foreach ($this->data as $item) {
+			switch ($item['expr']) {
+				case 'column':
+					if (empty($item['column'])) {
+						return false;
+					}
+					break;
+			}
+		}
+
+		return true;
 	}
 }

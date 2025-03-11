@@ -31,4 +31,12 @@ trait ValuesClauseTrait {
 
 		return (string)$value;
 	}
+
+	public function validate(): bool {
+		if (empty($this->data)) {
+			return false;
+		}
+
+		return true;
+	}
 }

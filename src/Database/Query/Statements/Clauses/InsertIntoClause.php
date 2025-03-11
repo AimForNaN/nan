@@ -33,4 +33,12 @@ final class InsertIntoClause implements StatementInterface {
 	public function toUpdate(): UpdateClause {
 		return new UpdateClause($this->data['table'], $this->data['database']);
 	}
+
+	public function validate(): bool {
+		if (empty($this->data['table'])) {
+			return false;
+		}
+
+		return true;
+	}
 }

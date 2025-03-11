@@ -28,11 +28,7 @@ class Pull implements Interfaces\PullInterface {
 	use WhereClauseTrait;
 
 	public function __construct(array $columns = []) {
-		if (empty($columns)) {
-			$this->setSelect(new SelectClause());
-		} else {
-			$this->pull($columns);
-		}
+		$this->setSelect(new SelectClause());
 	}
 
 	public function __invoke(...$args): static {
@@ -61,32 +57,32 @@ class Pull implements Interfaces\PullInterface {
 		return $this->setSelect($select_clause);
 	}
 
-	public function setFrom(FromClause $from_clause): static {
+	protected function setFrom(FromClause $from_clause): static {
 		$this->data[1] = $from_clause;
 		return $this;
 	}
 
-	public function setGroupBy(GroupByClause $group_by_clause): static {
+	protected function setGroupBy(GroupByClause $group_by_clause): static {
 		$this->data[3] = $group_by_clause;
 		return $this;
 	}
 
-	public function setLimit(LimitClause $limit_clause): static {
+	protected function setLimit(LimitClause $limit_clause): static {
 		$this->data[5] = $limit_clause;
 		return $this;
 	}
 
-	public function setOrderBy(OrderByClause $order_by_clause): static {
+	protected function setOrderBy(OrderByClause $order_by_clause): static {
 		$this->data[4] = $order_by_clause;
 		return $this;
 	}
 
-	public function setSelect(SelectClause $select_clause): static {
+	protected function setSelect(SelectClause $select_clause): static {
 		$this->data[0] = $select_clause;
 		return $this;
 	}
 
-	public function setWhere(WhereClause $where_clause): static {
+	protected function setWhere(WhereClause $where_clause): static {
 		$this->data[2] = $where_clause;
 		return $this;
 	}

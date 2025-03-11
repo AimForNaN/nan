@@ -25,25 +25,30 @@ class Purge implements Interfaces\PurgeInterface {
 	use WhereClauseTrait;
 
 	public function __construct() {
-		$this->data[0] = new DeleteClause();
+		$this->setDelete(new DeleteClause());
 	}
 
-	public function setFrom(FromClause $from_clause): static {
+	protected function setDelete(DeleteClause $delete_clause): static {
+		$this->data[0] = $delete_clause;
+		return $this;
+	}
+
+	protected function setFrom(FromClause $from_clause): static {
 		$this->data[1] = $from_clause;
 		return $this;
 	}
 
-	public function setLimit(LimitClause $limit_clause): static {
+	protected function setLimit(LimitClause $limit_clause): static {
 		$this->data[4] = $limit_clause;
 		return $this;
 	}
 
-	public function setOrderBy(OrderByClause $order_by_clause): static {
+	protected function setOrderBy(OrderByClause $order_by_clause): static {
 		$this->data[3] = $order_by_clause;
 		return $this;
 	}
 
-	public function setWhere(WhereClause $where_clause): static {
+	protected function setWhere(WhereClause $where_clause): static {
 		$this->data[2] = $where_clause;
 		return $this;
 	}

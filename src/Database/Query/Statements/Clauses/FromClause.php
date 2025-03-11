@@ -49,14 +49,6 @@ final class FromClause implements StatementInterface {
 		}, []);
 	}
 
-	public function offsetGet(mixed $offset): mixed {
-		throw new \BadMethodCallException('Getting value through array accessor is not supported!');
-	}
-
-	public function offsetSet(mixed $offset, mixed $value): void {
-		throw new \BadMethodCallException('Setting value through array accessor is not supported!');
-	}
-
 	public function render(bool $prepared = false): string {
 		return 'FROM ' . \implode(', ', \array_filter(\array_map(function ($column) {
 			/**

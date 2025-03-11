@@ -17,9 +17,8 @@ class Push implements Interfaces\PushInterface {
 	use StatementTrait;
 	use WhereClauseTrait;
 
-	public function __construct(array $columns = []) {
-		$this->data[0] = new InsertClause();
-		$this->push($columns);
+	public function __construct() {
+		$this->setInsert(new InsertClause());
 	}
 
 	public function __invoke(...$args): static {
@@ -34,17 +33,22 @@ class Push implements Interfaces\PushInterface {
 		return $this->setInsertValues(new InsertValuesClause($columns));
 	}
 
-	public function setInsertInto(InsertIntoClause $into): static {
+	protected function setInsert(InsertClause $insert_clause): static {
+		$this->data[0] = $insert_clause;
+		return $this;
+	}
+
+	protected function setInsertInto(InsertIntoClause $into): static {
 		$this->data[1] = $into;
 		return $this;
 	}
 
-	public function setInsertValues(InsertValuesClause $values): static {
+	protected function setInsertValues(InsertValuesClause $values): static {
 		$this->data[2] = $values;
 		return $this;
 	}
 
-	public function setWhere(WhereClause $where_clause): static {
+	protected function setWhere(WhereClause $where_clause): static {
 		$this->data[3] = $where_clause;
 		return $this;
 	}

@@ -55,8 +55,14 @@ class SqlQueryBuilder implements \ArrayAccess, SqlQueryBuilderInterface {
 
 	public function pull(?callable $fn = null): mixed {
 		$pull = new Pull();
+		$table = $this->options['table'] ?? '';
+		$database = $this->options['database'] ?? '';
 
 		$fn($pull);
+
+		if (!empty($table)) {
+			$pull->from($table, $database);
+		}
 
 		return $this->exec($pull);
 	}

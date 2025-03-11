@@ -24,16 +24,25 @@ class Patch implements Interfaces\PatchInterface {
 	}
 
 	public function patch(string $table, string $database = ''): static {
-		$this->data[0] = new UpdateClause($table, $database);
-		return $this;
+		return $this->setUpdate(new UpdateClause($table, $database));
 	}
 
-	public function setLimit(LimitClause $limit_clause): static {
+	protected function setLimit(LimitClause $limit_clause): static {
 		$this->data[3] = $limit_clause;
 		return $this;
 	}
 
-	public function setWhere(WhereClause $where_clause): static {
+	protected function setUpdate(UpdateClause $update_clause): static {
+		$this->data[0] = $update_clause;
+		return $this;
+	}
+
+	protected function setValues(UpdateValuesClause $insert_values_clause): static {
+		$this->data[1] = $insert_values_clause;
+		return $this;
+	}
+
+	protected function setWhere(WhereClause $where_clause): static {
 		$this->data[2] = $where_clause;
 		return $this;
 	}
@@ -63,8 +72,7 @@ class Patch implements Interfaces\PatchInterface {
 	}
 
 	public function with(array $columns): static {
-		$this->data[1] = new UpdateValuesClause($columns);
-		return $this;
+		return $this->setValues(new UpdateValuesClause($columns));
 	}
 }
 

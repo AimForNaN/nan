@@ -14,10 +14,11 @@ final class FromClause implements StatementInterface {
 		}
 	}
 
-	public function addSubQuery(StatementInterface $query): static {
+	public function addSubQuery(StatementInterface $query, string $alias = ''): static {
 		$this->data[] = [
 			'expr' => 'query',
 			'query' => $query,
+			'alias' => $alias,
 		];
 		return $this;
 	}
@@ -59,12 +60,18 @@ final class FromClause implements StatementInterface {
 			 */
 			\extract($column);
 
+			$ret = '';
+
 			switch ($expr) {
 				case 'query':
-					return '(' . $query->render($prepared) . ')';
-				case 'table':
-					$ret = '';
+					$ret .= '(' . $query->render($prepared) . ')';
 
+					if (!empty($alias)) {
+						$ret .= 'AS ' . $alias;
+					}
+
+					break;
+				case 'table':
 					if (!empty($database)) {
 						$ret .= $database . '.';
 					}
@@ -75,10 +82,10 @@ final class FromClause implements StatementInterface {
 						$ret .= 'AS ' . $alias;
 					}
 
-					return $ret;
+					break;
 			}
 
-			return '';
+			return $ret;
 		}, $this->data)));
 	}
 }

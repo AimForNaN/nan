@@ -76,7 +76,7 @@ $query_builder = $driver->createConnection([
 	'table' => 'table_name',
 ]);
 
-$table_name = $query_builder['table'];
+$default_table = $query_builder['table'];
 ```
 
 ## Query builder
@@ -115,21 +115,36 @@ $query_builder->raw(
 	SELECT * FROM `tb1`
 	LEFT JOIN `tb2`
 	ON `tb1`.`id` = `tb2`.`tb1_id`
-	WHERE `field` = :value
+	WHERE `field` = value
 SQL, [
-	':value' => 'field value',
+	'value' => 'field value',
 ]);
 ```
-
-:::note
 
 The NaN database abstraction layer does not try to distinguish between prepared and non-prepared statements.
 Instead, the system will activate prepared statements when bindings are supplied regardless of the query supplied.
 Don't provide bindings if you aren't planning on using prepared statements.
 
-:::
+##### Default table and database
 
-#### Pull
+The query builder reserves the `table` and `database` options for specifying the default table and database for all CRUD queries.
+This only holds true if you use any of the CRUD methods of the query builder itself.
+Manually constructing a CRUD class and executing it yourself will not make the same assumptions.
+
+```php
+$query_builder = $driver->createConnection([
+	'table' => 'table_name',
+	'database' => 'database_name',
+]);
+
+// Will assume table and database!
+$query_builder->pull(...):
+
+// Will *not* assume table and database!
+$query_builder->exec(...);
+```
+
+### Pull
 
 The pull operation is represented by the `NaN\Database\Query\Statements\Pull` class.
 It is equivalent to the `SELECT` statement of the typical SQL query.
@@ -139,6 +154,7 @@ If you need to select specific columns, use the `pull` method or the invokable.
 ```php
 use NaN\Database\Query\Statements\Pull;
 
+// `pull` method!
 $query_builder->pull(function (Pull $pull) {
 	$pull->pull([
 		'column_one',
@@ -146,6 +162,7 @@ $query_builder->pull(function (Pull $pull) {
 	]);
 });
 
+// Invokable!
 $query_builder->pull(function (Pull $pull) {
 	$pull([
 		'column_one',
@@ -154,33 +171,83 @@ $query_builder->pull(function (Pull $pull) {
 });
 ```
 
-Alternatively, you can provide the columns into the constructor and execute the statement yourself.
+Alternatively, you can provide the columns into the constructor.
 
 ```php
 $pull = new Pull([
 	'column_one',
 	'column_two',
 ]);
-
-$query_builder->exec($pull);
 ```
 
-You can also use array keys as column aliases.
+##### Aliases
+
+You can use array keys as column aliases.
 
 ```php
-$query_builder->pull(function (Pull $pull) {
-	$pull([
-		'column_alias_one' => 'column_one',
-		'column_alias_two' => 'column_two',
-	]);
+$pull->pull([
+	'column_one_alias' => 'column_one',
+	'column_two_alias' => 'column_two',
+]);
+```
+
+##### From clause
+
+The `Pull` class provides abstraction for the `FROM` clause.
+The `database` and `alias` arguments are optional.
+
+```php
+$pull->from('table', 'database', 'alias');
+```
+
+If you want to add sub queries, use a closure.
+The `alias` argument is optional.
+
+```php
+$pull->from(function (Pull $pull) {
+	$pull->from('table', 'database')->where('column', 'IN', [0, 1, 2]);
+}, 'alias');
+```
+
+##### Where clause
+
+The `Pull` class provides abstraction for the `WHERE` clause.
+
+```php
+use NaN\Database\Query\Statements\Clauses\WhereClause;
+
+$pull->where('column_two', 'IN', [0, 1, 2]);
+```
+
+You can also pass in a closure for more complex `WHERE` expressions.
+Use the invokable to set the initial condition.
+From there you can use `and` and `or` methods for more conditions.
+
+```php
+$pull->where(function (WhereClause $where) {
+	$where('column_one', '=', $value)->and('column_two', '=', $value_two);
 });
 ```
 
-#### Push
+Every sub closure will be treated as a sub group.
 
-#### Patch
+```php
+$pull->where(function (WhereClause $where) {
+	$where('column_one', '=', $value)->and(function (WhereClause $where) {
+		$where('column_two', '=', $value_two)->or('column_two', '=', $value_three):
+	});
+});
+```
 
-#### Purge
+##### Group-by clause
+
+##### Limit clause
+
+### Push
+
+### Patch
+
+### Purge
 
 ## Entities
 

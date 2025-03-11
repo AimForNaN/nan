@@ -50,7 +50,7 @@ final class FromClause implements StatementInterface {
 	}
 
 	public function render(bool $prepared = false): string {
-		return 'FROM ' . \implode(', ', \array_filter(\array_map(function ($column) {
+		return 'FROM ' . \implode(', ', \array_filter(\array_map(function ($column) use ($prepared) {
 			/**
 			 * @var string $alias
 			 * @var string $database

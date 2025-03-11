@@ -3,6 +3,7 @@
 namespace NaN\Database\Query\Statements\Traits;
 
 use NaN\Database\Query\Statements\Clauses\FromClause;
+use NaN\Database\Query\Statements\Pull;
 
 trait FromClauseTrait {
 	public function from(\Closure|string $table, string $database = ''): static {
@@ -13,7 +14,7 @@ trait FromClauseTrait {
 		$from_clause = new FromClause();
 
 		if ($table instanceof \Closure) {
-			$sub_query = new static();
+			$sub_query = new Pull();
 			$table($sub_query);
 			$from_clause->addSubQuery($sub_query);
 		} else {

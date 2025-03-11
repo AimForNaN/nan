@@ -214,8 +214,6 @@ $pull->from(function (Pull $pull) {
 The `Pull` class provides abstraction for the `WHERE` clause.
 
 ```php
-use NaN\Database\Query\Statements\Clauses\WhereClause;
-
 $pull->where('column_two', 'IN', [0, 1, 2]);
 ```
 
@@ -224,6 +222,8 @@ Use the invokable to set the initial condition.
 From there you can use `and` and `or` methods for more conditions.
 
 ```php
+use NaN\Database\Query\Statements\Clauses\WhereClause;
+
 $pull->where(function (WhereClause $where) {
 	$where('column_one', '=', $value)->and('column_two', '=', $value_two);
 });

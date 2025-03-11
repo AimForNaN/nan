@@ -2,10 +2,14 @@
 
 namespace NaN\Database\Query\Statements\Clauses;
 
-use NaN\Database\Query\Statements\Clauses\Interfaces\ClauseInterface;
+use NaN\Database\Query\Statements\Interfaces\StatementInterface;
+use NaN\Database\Query\Statements\Traits\StatementTrait;
 
-class OrderByClause implements ClauseInterface {
-	public function __construct(private array $columns) {
+class OrderByClause implements StatementInterface {
+	use StatementTrait;
+
+	public function __construct(array $columns) {
+		$this->data = $columns;
 	}
 
 	public function getBindings(): array {
@@ -15,7 +19,7 @@ class OrderByClause implements ClauseInterface {
 	public function render(bool $prepared = false): string {
 		$columns = [];
 
-		foreach ($this->columns as $column => $order) {
+		foreach ($this->data as $column => $order) {
 			$columns[] = "$column $order";
 		}
 

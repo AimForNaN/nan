@@ -7,20 +7,13 @@ use NaN\Database\Query\Builders\Interfaces\QueryBuilderInterface;
 interface EntityInterface {
 	static public function database(): QueryBuilderInterface;
 
-	public function fill(iterable $data): void;
-
-	/**
-	 * Aliases for database field names.
-	 *
-	 * @return array Database column mappings.
-	 */
 	static public function mappings(): array;
 
-	static public function patch(callable $fn): mixed;
+	public function patch(): mixed;
 
-	static public function pull(callable $fn): mixed;
+	static public function pull(array $filters): mixed;
 
-	static public function purge(callable $fn): mixed;
+	public function purge(): mixed;
 
-	static public function push(callable $fn): mixed;
+	static public function push(array $data): mixed;
 }

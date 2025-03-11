@@ -1,6 +1,6 @@
 <?php
 
-namespace NaN\Database\Query\Statements\Clauses\Interfaces;
+namespace NaN\Database\Query\Statements\Interfaces;
 
 use NaN\Database\Query\Statements\Clauses\OrderByClause;
 

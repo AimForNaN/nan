@@ -2,14 +2,16 @@
 
 namespace NaN\Database\Query\Statements\Clauses;
 
-use NaN\Database\Query\Statements\Clauses\Interfaces\ClauseInterface;
+use NaN\Database\Query\Statements\Interfaces\StatementInterface;
+use NaN\Database\Query\Statements\Traits\StatementTrait;
 
-class SelectClause extends \NaN\Collections\Collection implements ClauseInterface {
+class SelectClause implements StatementInterface {
+	use StatementTrait;
+
 	public function __construct(
 		array $columns = ['*'],
 		private bool $distinct = false,
 	) {
-		parent::__construct();
 		$this->setColumns($columns);
 	}
 
@@ -50,16 +52,8 @@ class SelectClause extends \NaN\Collections\Collection implements ClauseInterfac
 		return [];
 	}
 
-	public function offsetGet(mixed $offset): mixed {
-		throw new \BadMethodCallException('Getting value through array accessor is not supported!');
-	}
-
-	public function offsetSet(mixed $offset, mixed $value): void {
-		throw new \BadMethodCallException('Setting value through array accessor is not supported!');
-	}
-
 	public function render(bool $prepared = false): string {
-		return 'SELECT ' . ($this->distinct ? 'DISTINCT ' : '') . \implode(', ', $this->map(function ($item) {
+		return 'SELECT ' . ($this->distinct ? 'DISTINCT ' : '') . \implode(', ', \array_map(function ($item) {
 			\extract($item);
 
 			switch ($expr) {
@@ -70,6 +64,6 @@ class SelectClause extends \NaN\Collections\Collection implements ClauseInterfac
 			}
 
 			return $column;
-		}));
+		}, $this->data));
 	}
 }

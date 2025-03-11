@@ -2,10 +2,18 @@
 
 namespace NaN\Database\Query\Statements\Clauses;
 
-use NaN\Database\Query\Statements\Clauses\Interfaces\ClauseInterface;
 use NaN\Database\Query\Statements\Interfaces\StatementInterface;
+use NaN\Database\Query\Statements\Traits\StatementTrait;
 
-class FromClause extends \NaN\Collections\Collection implements ClauseInterface {
+class FromClause implements StatementInterface {
+	use StatementTrait;
+
+	public function __construct(string $table = '', string $database = '', string $alias = '') {
+		if (!empty($table)) {
+			$this->addTable($table, $database, $alias);
+		}
+	}
+
 	public function addSubQuery(StatementInterface $query): static {
 		$this->data[] = [
 			'expr' => 'query',
@@ -14,7 +22,7 @@ class FromClause extends \NaN\Collections\Collection implements ClauseInterface 
 		return $this;
 	}
 
-	public function addTable(string $table, ?string $database = null, ?string $alias = null): static {
+	public function addTable(string $table, string $database = '', string $alias = ''): static {
 		$this->data[] = [
 			'expr' => 'table',
 			'alias' => $alias,
@@ -24,16 +32,11 @@ class FromClause extends \NaN\Collections\Collection implements ClauseInterface 
 		return $this;
 	}
 
-	public function addTableFromClass($class, ?string $alias = null): static {
-		$this->addTable($class::table(), $class::database(), $alias);
-		return $this;
-	}
-
 	public function getBindings(): array {
-		return $this->reduce(function ($ret, $item) {
+		return \array_reduce($this->data, function ($ret, $item) {
 			/**
-			 * @var Array $bindings
-			 * @var \NaN\Database\Query\Statements\StatementInterface $query
+			 * @var array $bindings
+			 * @var StatementInterface $query
 			 */
 			\extract($item);
 
@@ -55,7 +58,7 @@ class FromClause extends \NaN\Collections\Collection implements ClauseInterface 
 	}
 
 	public function render(bool $prepared = false): string {
-		return 'FROM ' . \implode(', ', \array_filter($this->map(function ($column) {
+		return 'FROM ' . \implode(', ', \array_filter(\array_map(function ($column) {
 			/**
 			 * @var string $alias
 			 * @var string $database
@@ -76,7 +79,7 @@ class FromClause extends \NaN\Collections\Collection implements ClauseInterface 
 
 					$ret .= $table;
 
-					if ($alias) {
+					if (!empty($alias)) {
 						$ret .= 'AS ' . $alias;
 					}
 
@@ -84,6 +87,6 @@ class FromClause extends \NaN\Collections\Collection implements ClauseInterface 
 			}
 
 			return '';
-		})));
+		}, $this->data)));
 	}
 }

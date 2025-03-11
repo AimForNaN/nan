@@ -2,13 +2,18 @@
 
 namespace NaN\Database\Query\Statements\Clauses;
 
-use NaN\Database\Query\Statements\Clauses\Interfaces\ClauseInterface;
+use NaN\Database\Query\Statements\Interfaces\StatementInterface;
+use NaN\Database\Query\Statements\Traits\StatementTrait;
 
-class InsertIntoClause implements ClauseInterface {
+class InsertIntoClause implements StatementInterface {
+	use StatementTrait;
+
 	public function __construct(
-		private string $table,
-		private string $database = '',
+		string $table,
+		string $database = '',
 	) {
+		$this->data['table'] = $table;
+		$this->data['database'] = $database;
 	}
 
 	public function getBindings(): array {
@@ -16,16 +21,16 @@ class InsertIntoClause implements ClauseInterface {
 	}
 
 	public function render(bool $prepared = false): string {
-		$table = $this->table;
+		$table = $this->data['table'];
 
-		if (!empty($this->database)) {
-			$table .= '.' . $this->database;
+		if (!empty($this->data['database'])) {
+			$table .= '.' . $this->data['database'];
 		}
 
 		return 'INTO ' . $table;
 	}
 
 	public function toUpdate(): UpdateClause {
-		return new UpdateClause($this->table, $this->database);
+		return new UpdateClause($this->data['table'], $this->data['database']);
 	}
 }

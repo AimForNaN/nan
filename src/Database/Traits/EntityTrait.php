@@ -2,6 +2,7 @@
 
 namespace NaN\Database\Traits;
 
+use NaN\Database\Interfaces\EntityInterface;
 use NaN\Database\Query\Statements\{
 	Patch,
 	Pull,
@@ -41,13 +42,11 @@ trait EntityTrait {
 		return $mappings[$name] ?? null;
 	}
 
-	static public function patch(callable $fn): mixed {
+	public function patch(): mixed {
 		$db = static::database();
 		$patch = new Patch();
 
-		$fn($patch);
-
-		return $db->exec($fn);
+		return $db->exec($patch);
 	}
 
 	static public function pull(callable $fn): mixed {
@@ -55,26 +54,24 @@ trait EntityTrait {
 		$pull = new Pull();
 
 		$fn($pull);
-		$pull->from($db['table'], $db['database']);
+		$pull->pull(['*'])->from($db['table'], $db['database']);
 
-		return $db->exec($fn);
+		return $db->exec($pull);
 	}
 
-	static public function push(callable $fn): mixed {
-		$db = static::database();
-		$push = new Push();
-
-		$fn($push);
-
-		return $db->exec($fn);
-	}
-
-	static public function purge(callable $fn): mixed {
+	public function purge(callable $fn): mixed {
 		$db = static::database();
 		$purge = new Purge();
 
 		$fn($purge);
 
-		return $db->exec($fn);
+		return $db->exec($purge);
+	}
+
+	static public function push(array $data): mixed {
+		$db = static::database();
+		$push = new Push();
+
+		return $db->exec($push);
 	}
 }

@@ -15,7 +15,7 @@ class SqlQueryBuilder implements \ArrayAccess, SqlQueryBuilderInterface {
 
 	public function exec(StatementInterface $statement): mixed {
 		if (!$statement->validate()) {
-			\trigger_error('Mal-structured database query!', \E_USER_ERROR);
+			\trigger_error('Malformed query statement!', \E_USER_ERROR);
 		}
 
 		$bindings = $statement->getBindings();
@@ -38,13 +38,14 @@ class SqlQueryBuilder implements \ArrayAccess, SqlQueryBuilderInterface {
 	}
 
 	public function offsetSet($offset, $value): void {
-		$this->options[$offset] = $value;
+		\trigger_error('Query builder options are immutable!', \E_USER_ERROR);
 	}
 
 	public function offsetUnset($offset): void {
+		\trigger_error('Query builder options are immutable!', \E_USER_ERROR);
 	}
 
-	public function patch(callable $fn): mixed {
+	public function patch(?callable $fn = null): mixed {
 		$patch = new Patch();
 
 		$fn($patch);
@@ -52,7 +53,7 @@ class SqlQueryBuilder implements \ArrayAccess, SqlQueryBuilderInterface {
 		return $this->exec($patch);
 	}
 
-	public function pull(callable $fn): mixed {
+	public function pull(?callable $fn = null): mixed {
 		$pull = new Pull();
 
 		$fn($pull);
@@ -60,7 +61,7 @@ class SqlQueryBuilder implements \ArrayAccess, SqlQueryBuilderInterface {
 		return $this->exec($pull);
 	}
 
-	public function purge(callable $fn): mixed {
+	public function purge(?callable $fn = null): mixed {
 		$purge = new Purge();
 
 		$fn($purge);
@@ -68,7 +69,7 @@ class SqlQueryBuilder implements \ArrayAccess, SqlQueryBuilderInterface {
 		return $this->exec($purge);
 	}
 
-	public function push(callable $fn): mixed {
+	public function push(?callable $fn = null): mixed {
 		$push = new Push();
 
 		$fn($push);

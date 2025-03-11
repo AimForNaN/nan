@@ -2,21 +2,37 @@
 
 namespace NaN\Database\Query\Statements\Traits;
 
-use NaN\Database\Query\Statements\Clauses\Interfaces\ClauseInterface;
+use NaN\Database\Query\Statements\Interfaces\StatementInterface;
 
 trait StatementTrait {
-	private array $query = [];
+	protected array $data = [];
 
 	public function getBindings(): array {
-		return \array_reduce($this->query, function (array $ret, ClauseInterface $stmt): array {
+		return \array_reduce($this->data, function (array $ret, StatementInterface $stmt): array {
 			return \array_merge($ret, $stmt->getBindings());
 		}, []);
 	}
 
 	public function render(bool $prepared = false): string {
-		ksort($this->query);
-		return \implode(' ', \array_filter(
-			\array_map(fn(ClauseInterface $stmt) => $stmt->render($prepared), $this->query)
-		));
+		ksort($this->data);
+		return \implode(' ',
+			\array_map(fn(StatementInterface $stmt) => $stmt->render($prepared), $this->data)
+		);
+	}
+
+	public function validate(): bool {
+		if (\count($this->data) === 0) {
+			return false;
+		}
+
+		foreach ($this->data as $clause) {
+			if ($clause instanceof StatementInterface) {
+				if (!$clause->validate()) {
+					return false;
+				}
+			}
+		}
+
+		return true;
 	}
 }

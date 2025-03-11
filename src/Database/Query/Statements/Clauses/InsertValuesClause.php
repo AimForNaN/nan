@@ -2,20 +2,24 @@
 
 namespace NaN\Database\Query\Statements\Clauses;
 
-use NaN\Database\Query\Statements\Clauses\Interfaces\ClauseInterface;
+use NaN\Database\Query\Statements\Interfaces\StatementInterface;
+use NaN\Database\Query\Statements\Traits\StatementTrait;
 
-class InsertValuesClause implements ClauseInterface, \Countable {
+class InsertValuesClause implements StatementInterface, \Countable {
+	use StatementTrait;
+
 	public function __construct(
-		protected array $columns,
+		array $columns,
 	) {
+		$this->data = $columns;
 	}
 
 	public function count(): int {
-		return \count($this->columns);
+		return \count($this->data);
 	}
 
 	public function getBindings(): array {
-		return \array_values($this->columns);
+		return \array_values($this->data);
 	}
 
 	static public function generatePlaceHolders(int $count): string {
@@ -26,7 +30,7 @@ class InsertValuesClause implements ClauseInterface, \Countable {
 		$columns = [];
 		$values = [];
 
-		foreach ($this->columns as $column => $value) {
+		foreach ($this->data as $column => $value) {
 			$columns[] = $column;
 			$values[] = $value;
 		}
@@ -54,6 +58,6 @@ class InsertValuesClause implements ClauseInterface, \Countable {
 	}
 
 	public function toUpdateValues(): UpdateValuesClause {
-		return new UpdateValuesClause($this->columns);
+		return new UpdateValuesClause($this->data);
 	}
 }

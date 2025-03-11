@@ -1,6 +1,6 @@
 <?php
 
-namespace NaN\Database\Query\Statements\Clauses\Traits;
+namespace NaN\Database\Query\Statements\Traits;
 
 use NaN\Database\Query\Statements\Clauses\FromClause;
 
@@ -13,7 +13,9 @@ trait FromClauseTrait {
 		$from_clause = new FromClause();
 
 		if ($table instanceof \Closure) {
-			$table($from_clause);
+			$sub_query = new static();
+			$table($sub_query);
+			$from_clause->addSubQuery($sub_query);
 		} else {
 			$from_clause->addTable($table, $database);
 		}

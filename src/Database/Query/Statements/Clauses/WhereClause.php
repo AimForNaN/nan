@@ -2,9 +2,18 @@
 
 namespace NaN\Database\Query\Statements\Clauses;
 
-use NaN\Database\Query\Statements\Clauses\Interfaces\ClauseInterface;
+use NaN\Database\Query\Statements\Interfaces\StatementInterface;
+use NaN\Database\Query\Statements\Traits\StatementTrait;
 
-class WhereClause extends \NaN\Collections\Collection implements ClauseInterface {
+class WhereClause implements StatementInterface {
+	use StatementTrait;
+
+	public function __construct(string $column = '', string $operator = '', mixed $value = '') {
+		if (!empty($column) && !empty($operator)) {
+			$this->_addColumn(null, $column, $operator, $value);
+		}
+	}
+
 	public function __invoke(string $column, string $operator, mixed $value): static {
 		$this->_addColumn(null, $column, $operator, $value);
 		return $this;
@@ -72,7 +81,7 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 	}
 
 	public function getBindings(): array {
-		return $this->reduce(function ($ret, $item) {
+		return \array_reduce($this->data, function ($ret, $item) {
 			/**
 			 * @var string $expr
 			 * @var WhereClause $group
@@ -96,14 +105,6 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 		}, []);
 	}
 
-	public function offsetGet(mixed $offset): mixed {
-		throw new \BadMethodCallException('Getting value through array accessor is not supported!');
-	}
-
-	public function offsetSet(mixed $offset, mixed $value): void {
-		throw new \BadMethodCallException('Setting value through array accessor is not supported!');
-	}
-
 	/**
 	 * Add OR where expression.
 	 *
@@ -124,7 +125,7 @@ class WhereClause extends \NaN\Collections\Collection implements ClauseInterface
 	}
 
 	public function render(bool $prepared = false): string {
-		return 'WHERE ' . $this->reduce(function ($ret, $item) use ($prepared) {
+		return 'WHERE ' . \array_reduce($this->data, function ($ret, $item) use ($prepared) {
 			/**
 			 * @var string $condition
 			 * @var string $delimiter

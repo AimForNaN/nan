@@ -1,6 +1,6 @@
 <?php
 
-namespace NaN\Database\Query\Statements\Clauses\Traits;
+namespace NaN\Database\Query\Statements\Traits;
 
 use NaN\Database\Query\Statements\Clauses\LimitClause;
 

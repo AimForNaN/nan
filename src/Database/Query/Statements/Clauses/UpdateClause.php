@@ -2,13 +2,18 @@
 
 namespace NaN\Database\Query\Statements\Clauses;
 
-use NaN\Database\Query\Statements\Clauses\Interfaces\ClauseInterface;
+use NaN\Database\Query\Statements\Interfaces\StatementInterface;
+use NaN\Database\Query\Statements\Traits\StatementTrait;
 
-class UpdateClause implements ClauseInterface {
+class UpdateClause implements StatementInterface {
+	use StatementTrait;
+
 	public function __construct(
-		private string $table,
-		private string $database = '',
+		string $table,
+		string $database = '',
 	) {
+		$this->data['table'] = $table;
+		$this->data['database'] = $database;
 	}
 
 	public function getBindings(): array {
@@ -16,10 +21,10 @@ class UpdateClause implements ClauseInterface {
 	}
 
 	public function render(bool $prepared = false): string {
-		$table = $this->table;
+		$table = $this->data['table'];
 
-		if (!empty($this->database)) {
-			$table .= '.' . $this->database;
+		if (!empty($this->data['database'])) {
+			$table .= '.' . $this->data['database'];
 		}
 
 		return 'UPDATE ' . $table;

@@ -8,15 +8,17 @@ use NaN\Database\Query\Statements\Clauses\{
 	InsertValuesClause,
 	WhereClause,
 };
-use NaN\Database\Query\Statements\Clauses\Traits\WhereClauseTrait;
-use NaN\Database\Query\Statements\Traits\StatementTrait;
+use NaN\Database\Query\Statements\Traits\{
+	StatementTrait,
+	WhereClauseTrait,
+};
 
 class Push implements Interfaces\PushInterface {
 	use StatementTrait;
 	use WhereClauseTrait;
 
 	public function __construct(array $columns = []) {
-		$this->query[0] = new InsertClause();
+		$this->data[0] = new InsertClause();
 		$this->push($columns);
 	}
 
@@ -33,35 +35,47 @@ class Push implements Interfaces\PushInterface {
 	}
 
 	public function setInsertInto(InsertIntoClause $into): static {
-		$this->query[1] = $into;
+		$this->data[1] = $into;
 		return $this;
 	}
 
 	public function setInsertValues(InsertValuesClause $values): static {
-		$this->query[2] = $values;
+		$this->data[2] = $values;
 		return $this;
 	}
 
 	public function setWhere(WhereClause $where_clause): static {
-		$this->query[3] = $where_clause;
+		$this->data[3] = $where_clause;
 		return $this;
 	}
 
 	public function validate(): bool {
-		if (\count($this->query) === 0) {
+		if (\count($this->data) === 0) {
 			return false;
 		}
 
-		if (!\is_a($this->query[0] ?? null, InsertClause::class)) {
+		if (empty($this->data[0])) {
 			return false;
 		}
 
-		if (!\is_a($this->query[1] ?? null, InsertIntoClause::class)) {
+		if (!\is_a($this->data[0], InsertClause::class)) {
 			return false;
 		}
 
-		if (!\is_a($this->query[2] ?? null, InsertValuesClause::class)) {
-			return \count($this->query[2]);
+		if (empty($this->data[1])) {
+			return false;
+		}
+
+		if (!\is_a($this->data[1], InsertIntoClause::class)) {
+			return false;
+		}
+
+		if (empty($this->data[2])) {
+			return false;
+		}
+
+		if (!\is_a($this->data[2], InsertValuesClause::class)) {
+			return \count($this->data[2]);
 		}
 
 		return true;

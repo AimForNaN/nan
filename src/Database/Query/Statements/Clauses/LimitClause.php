@@ -2,13 +2,18 @@
 
 namespace NaN\Database\Query\Statements\Clauses;
 
-use NaN\Database\Query\Statements\Clauses\Interfaces\ClauseInterface;
+use NaN\Database\Query\Statements\Interfaces\StatementInterface;
+use NaN\Database\Query\Statements\Traits\StatementTrait;
 
-class LimitClause implements ClauseInterface {
+class LimitClause implements StatementInterface {
+	use StatementTrait;
+
 	public function __construct(
-		public readonly int $limit = 1,
-		public readonly int $offset = 0,
+		int $limit = 1,
+		int $offset = 0,
 	) {
+		$this->data['limit'] = $limit;
+		$this->data['offset'] = $offset;
 	}
 
 	public function getBindings(): array {
@@ -16,10 +21,10 @@ class LimitClause implements ClauseInterface {
 	}
 
 	public function render(bool $prepared = false): string {
-		$ret = 'LIMIT ' . $this->limit;
+		$ret = 'LIMIT ' . $this->data['limit'];
 
-		if ($this->offset) {
-			$ret .= ', ' . $this->offset;
+		if (!empty($this->data['offset'])) {
+			$ret .= ', ' . $this->data['offset'];
 		}
 
 		return $ret;

@@ -19,17 +19,19 @@ describe('Statements', function () {
 	test('Pull', function () {
 		$pull = new Pull();
 
-		$pull->from('test');
-		expect($pull->render())->toBe('SELECT * FROM test');
+		$pull->from('test')->where('id', '=', 1);
+		expect($pull->render())->toBe('SELECT * FROM test WHERE id = 1');
 
+		$pull = new Pull();
 		$pull->pull(['id'])->from('test');
 		expect($pull->render())->toBe('SELECT id FROM test');
 
+		$pull = new Pull();
 		$pull->from(function ($pull) {
 			expect($pull)->toBeInstanceOf(Pull::class);
 			$pull->from('test');
 		});
-		expect($pull->render())->toBe('SELECT id FROM (SELECT * FROM test)');
+		expect($pull->render())->toBe('SELECT * FROM (SELECT * FROM test)');
 	});
 
 	test('Purge', function () {

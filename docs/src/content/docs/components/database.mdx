@@ -193,7 +193,7 @@ $pull->pull([
 
 ##### From clause
 
-The `Pull` class provides abstraction for the `FROM` clause.
+The `Pull` class provides basic abstraction for the `FROM` clause.
 The `database` and `alias` arguments are optional.
 
 ```php
@@ -211,7 +211,7 @@ $pull->from(function (Pull $pull) {
 
 ##### Where clause
 
-The `Pull` class provides abstraction for the `WHERE` clause.
+The `Pull` class provides basic abstraction for the `WHERE` clause.
 
 ```php
 $pull->where('column_two', 'IN', [0, 1, 2]);
@@ -239,9 +239,40 @@ $pull->where(function (WhereClause $where) {
 });
 ```
 
+##### Order-by clause
+
+The `Pull` class provides basic abstraction for the `ORDER BY` clause.
+The array keys represent column names and the array values represent the order.
+
+```php
+$pull->orderBy([
+	'column_one' => 'desc',
+	'column_two' => 'asc',
+]);
+```
+
 ##### Group-by clause
 
+The `Pull` class provides basic abstraction for the `GROUP BY` clause.
+
+```php
+$pull->groupBy(['column_one', 'column_two']);
+```
+
 ##### Limit clause
+
+The `Pull` class provides basic abstraction for the `LIMIT` clause.
+The first argument is the limit and the second argument is the offset.
+
+```php
+$pull->limit(10, 20);
+```
+
+The offset is `0` (zero) by default.
+
+```php
+$pull->limit(1);
+```
 
 ### Push
 

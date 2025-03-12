@@ -35,6 +35,16 @@ class Pull implements Interfaces\PullInterface {
 		return $this->pull(...$args);
 	}
 
+	public function distinct(): static {
+		$select_clause = $this->data[0] ?? null;
+
+		if ($select_clause instanceof SelectClause) {
+			$select_clause->distinct();
+		}
+
+		return $this;
+	}
+
 	public function first(): static {
 		$this->limit();
 		return $this;

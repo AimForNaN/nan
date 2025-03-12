@@ -3,6 +3,8 @@
 namespace NaN\Database\Query\Statements\Interfaces;
 
 interface PullInterface extends FromClauseInterface, GroupByInterface, LimitClauseInterface, OrderByInterface, StatementInterface, WhereClauseInterface {
+	public function distinct(): static;
+
 	public function first(): static;
 
 	public function last(string $column): static;

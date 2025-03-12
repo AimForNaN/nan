@@ -202,12 +202,6 @@ $pull->pull([
 ], true);
 ```
 
-Or through the `distinct` method.
-
-```php
-$pull->distinct();
-```
-
 ##### From clause
 
 The `Pull` class provides basic abstraction for the `FROM` clause.
@@ -222,7 +216,7 @@ The `alias` argument is optional.
 
 ```php
 $pull->from(function (Pull $pull) {
-	$pull->from('table', 'database')->where('column', 'IN', [0, 1, 2]);
+	// ...
 }, 'alias');
 ```
 

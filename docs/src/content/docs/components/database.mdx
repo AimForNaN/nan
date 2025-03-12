@@ -191,6 +191,23 @@ $pull->pull([
 ]);
 ```
 
+##### Distinct
+
+You can mark the selection as distinct in the second argument.
+
+```php
+$pull->pull([
+	'column_one_alias' => 'column_one',
+	'column_two_alias' => 'column_two',
+], true);
+```
+
+Or through the `distinct` method.
+
+```php
+$pull->distinct();
+```
+
 ##### From clause
 
 The `Pull` class provides basic abstraction for the `FROM` clause.

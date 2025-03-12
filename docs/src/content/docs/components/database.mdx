@@ -115,7 +115,7 @@ $query_builder->raw(
 	SELECT * FROM `tb1`
 	LEFT JOIN `tb2`
 	ON `tb1`.`id` = `tb2`.`tb1_id`
-	WHERE `field` = value
+	WHERE `field` = :value
 SQL, [
 	'value' => 'field value',
 ]);
